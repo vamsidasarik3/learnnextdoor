@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="ph" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A020F0" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFB347" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="0" fill="#F5F0FF"/>
+  <rect width="400" height="240" fill="url(#ph)"/>
+  <!-- Stylised building / classroom -->
+  <rect x="140" y="100" width="120" height="90" rx="4" fill="rgba(160,32,240,0.20)"/>
+  <rect x="160" y="80" width="80" height="30" rx="4" fill="rgba(160,32,240,0.30)"/>
+  <rect x="165" y="140" width="30" height="50" rx="3" fill="rgba(160,32,240,0.25)"/>
+  <rect x="205" y="140" width="30" height="50" rx="3" fill="rgba(160,32,240,0.25)"/>
+  <rect x="167" y="115" width="20" height="20" rx="2" fill="rgba(255,215,0,0.6)"/>
+  <rect x="213" y="115" width="20" height="20" rx="2" fill="rgba(255,215,0,0.6)"/>
+  <!-- Star icon top -->
+  <text x="200" y="70" font-size="28" text-anchor="middle" fill="rgba(160,32,240,0.55)">🎓</text>
+  <!-- Label -->
+  <text x="200" y="218" font-size="13" text-anchor="middle" font-family="Poppins,sans-serif" fill="rgba(160,32,240,0.6)" font-weight="600">Class Preview</text>
+</svg>

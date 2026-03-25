@@ -1,0 +1,15 @@
+1. Category and sub category hierarchy not implemented in FIlters 
+2. ⁠provider dashboard > my classes > should have regular class/  course / workshop segregation 
+3. ⁠even after listing is showing active and paid, it is not visible in the user interface 
+4. ⁠admin login > if kyc is approved then message to provider field not mandatory
+5. ⁠the field names for the provider work flow to be same as provided in the documentation 
+6. ⁠basic checks - early bird price : less than base price , date checks - registration date < workshop date to be incorporated 
+7. ⁠remove instructor kyc section from the provider kyc page and add it to  provider dashboard
+8. ⁠in provider kyc do not re direct to my account for phone number verification, verified phone number to auto populate my account phone number 
+9. ⁠regular class- The price  should be choose from (monthly/quaterly) 
+10. ⁠instructor kyc not mandatory 
+11. ⁠add batch Option to appear below the previous batch details 
+12. ⁠full list of instructors not visible 
+13. ⁠At he end of the step while addng a class, upload image > 3-5 images .. it is alredy there.. hwoever, if any one adds a image in the batch,, it needs to include that image in this final step as well
+14. ⁠pending listing is not coming up in inactive listing section.. It should be in inactive...
+15. ⁠for workshops in user interface addition filter to be added I.e ( happening this weekend, happening this week etc...

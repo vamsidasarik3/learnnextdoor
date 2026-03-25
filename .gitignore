@@ -1,0 +1,33 @@
+# Environment files
+.env
+.env.*
+
+# Node / PHP / Python (adjust based on your stack)
+node_modules/
+vendor/
+__pycache__/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Build files
+dist/
+build/
+
+# Config files (custom)
+config.php
+database.php
+settings.json
+
+# XAMPP / local paths
+.htaccess
+
+*.zip
