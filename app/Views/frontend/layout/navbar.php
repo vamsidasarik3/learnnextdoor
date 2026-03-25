@@ -22,7 +22,10 @@
       </a>
 
       <?php
-        $__savedLoc = session()->get('cnd_location_name')
+        $session       = session();
+        $__user        = $session->get('cnd_user'); 
+        $__role        = (int)($__user['role'] ?? 0);
+        $__savedLoc    = $session->get('cnd_location_name')
                    ?? (isset($_COOKIE['cnd_location_name']) && $_COOKIE['cnd_location_name'] !== ''
                        ? rawurldecode($_COOKIE['cnd_location_name'])
                        : null);
@@ -56,42 +59,96 @@
       <!-- ── Collapsible Menu ── -->
       <div class="collapse navbar-collapse" id="cndNavMenu">
         <ul class="navbar-nav mb-2 mb-lg-0 gap-1" role="list">
+          <?php 
+            $__isProviderMode = ($__role == 2 && (session()->get('cnd_provider_mode') ?? true));
+          ?>
+          <?php if (!$__isProviderMode): // Public / Parent Navigation or Provider in User Mode ?>
+            <!-- Home -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= (uri_string() === '' || uri_string() === '/') ? 'active' : '' ?>"
+                 href="<?= base_url('/') ?>"
+                 <?= (uri_string() === '' || uri_string() === '/') ? 'aria-current="page"' : '' ?>>
+                <i class="bi bi-house-door" aria-hidden="true"></i>
+                <span>Home</span>
+              </a>
+            </li>
 
-          <!-- Home -->
-          <li class="nav-item" role="listitem">
-            <a class="nav-link cnd-nav-link <?= (uri_string() === '' || uri_string() === '/') ? 'active' : '' ?>"
-               href="<?= base_url('/') ?>"
-               <?= (uri_string() === '' || uri_string() === '/') ? 'aria-current="page"' : '' ?>>
-              <i class="bi bi-house-door" aria-hidden="true"></i>
-              <span>Home</span>
-            </a>
-          </li>
+            <!-- Browse Classes -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'classes') ? 'active' : '' ?>"
+                 href="<?= base_url('classes') ?>"
+                 <?= str_starts_with(uri_string(), 'classes') ? 'aria-current="page"' : '' ?>>
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <span>Browse Classes</span>
+              </a>
+            </li>
 
-          <!-- Browse Classes -->
-          <li class="nav-item" role="listitem">
-            <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'classes') ? 'active' : '' ?>"
-               href="<?= base_url('classes') ?>"
-               <?= str_starts_with(uri_string(), 'classes') ? 'aria-current="page"' : '' ?>>
-              <i class="bi bi-search" aria-hidden="true"></i>
-              <span>Browse Classes</span>
-            </a>
-          </li>
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'contact') ? 'active' : '' ?>"
+                 href="<?= base_url('contact') ?>"
+                 <?= str_starts_with(uri_string(), 'contact') ? 'aria-current="page"' : '' ?>>
+                <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                <span>Contact Us</span>
+              </a>
+            </li>
+          <?php else: // Provider Specific Navigation ?>
+            <!-- Dashboard -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'provider/dashboard') ? 'active' : '' ?>"
+                 href="<?= base_url('provider/dashboard') ?>">
+                <i class="bi bi-speedometer2" aria-hidden="true"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            
+            <!-- Create Class -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'provider/listings/create') ? 'active' : '' ?>"
+                 href="<?= base_url('provider/listings/create') ?>">
+                <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                <span>Create a New Class</span>
+              </a>
+            </li>
 
+            <!-- My Classes -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= (uri_string() === 'provider/listings') ? 'active' : '' ?>"
+                 href="<?= base_url('provider/listings') ?>">
+                <i class="bi bi-card-list" aria-hidden="true"></i>
+                <span>My Classes</span>
+              </a>
+            </li>
 
-          <li class="nav-item" role="listitem">
-            <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'contact') ? 'active' : '' ?>"
-               href="<?= base_url('contact') ?>"
-               <?= str_starts_with(uri_string(), 'contact') ? 'aria-current="page"' : '' ?>>
-              <i class="bi bi-chat-dots" aria-hidden="true"></i>
-              <span>Contact Us</span>
-            </a>
-          </li>
+            <!-- My Instructors -->
+            <li class="nav-item" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'provider/instructors') ? 'active' : '' ?>"
+                 href="<?= base_url('provider/instructors') ?>">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span>My Instructors</span>
+              </a>
+            </li>
 
+            <!-- My Account -->
+            <li class="nav-item d-lg-none" role="listitem">
+              <a class="nav-link cnd-nav-link <?= str_starts_with(uri_string(), 'profile') ? 'active' : '' ?>"
+                 href="<?= base_url('profile') ?>">
+                <i class="bi bi-person-gear" aria-hidden="true"></i>
+                <span>My Account</span>
+              </a>
+            </li>
+
+            <!-- Logout -->
+            <li class="nav-item d-lg-none" role="listitem">
+              <a class="nav-link cnd-nav-link text-danger"
+                 href="<?= base_url('logout') ?>">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          <?php endif; ?>
         </ul>
 
         <?php 
-          $__user = session()->get('cnd_user'); 
-          $__role = (int)($__user['role'] ?? 0);
           $__verificationStatus = $__user['provider_verification_status'] ?? null;
           
           // Hide "Join as Provider" if already logged in as Provider (role 2) 
@@ -162,30 +219,39 @@
                     </a>
                   </li>
                 <?php elseif ($user_data['role'] == 2): // Provider ?>
-                  <li>
-                    <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/dashboard') ?>">
-                      <i class="bi bi-speedometer2 text-pink"></i>
-                      <span>Provider Dashboard</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/listings/create') ?>">
-                      <i class="bi bi-plus-circle text-pink"></i>
-                      <span>Create a New Class</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/listings') ?>">
-                      <i class="bi bi-card-list text-pink"></i>
-                      <span>My Classes</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/instructors') ?>">
-                      <i class="bi bi-people text-pink"></i>
-                      <span>My Instructors</span>
-                    </a>
-                  </li>
+                  <?php if (session()->get('cnd_provider_mode') ?? true): ?>
+                    <li>
+                      <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/dashboard') ?>">
+                        <i class="bi bi-speedometer2 text-pink"></i>
+                        <span>Provider Dashboard</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/listings/create') ?>">
+                        <i class="bi bi-plus-circle text-pink"></i>
+                        <span>Create a New Class</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/listings') ?>">
+                        <i class="bi bi-card-list text-pink"></i>
+                        <span>My Classes</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('provider/instructors') ?>">
+                        <i class="bi bi-people text-pink"></i>
+                        <span>My Instructors</span>
+                      </a>
+                    </li>
+                  <?php else: ?>
+                    <li>
+                      <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2 fw-bold text-pink" href="<?= base_url('provider/toggle-mode') ?>">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span>Switch to Provider Mode</span>
+                      </a>
+                    </li>
+                  <?php endif; ?>
                   <li>
                     <a class="dropdown-item rounded-3 px-3 py-2 d-flex align-items-center gap-2" href="<?= base_url('activity') ?>">
                       <i class="bi bi-calendar-check text-pink"></i>
@@ -231,3 +297,19 @@
 
   </nav>
 </header>
+
+<?php if ($__role == 2 && (session()->get('cnd_provider_mode') ?? true)): ?>
+<!-- ── Provider Mode Banner ── -->
+<div class="bg-dark text-white py-2 px-3 d-flex justify-content-between align-items-center sticky-top" style="font-size: 0.85rem; background: #222 !important; top: 0; z-index: 1030;">
+   <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-pink rounded-pill px-2">Provider Mode Active</span>
+      <span class="opacity-75 d-none d-md-inline">You are managing your classes. Navigation is restricted.</span>
+   </div>
+   <a href="<?= base_url('provider/toggle-mode') ?>" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 fw-bold" style="font-size: 0.75rem;">
+      <i class="bi bi-arrow-left-right me-1"></i> Back to Site (User Mode)
+   </a>
+</div>
+<style>
+.bg-pink { background-color: var(--cnd-pink) !important; }
+</style>
+<?php endif; ?>

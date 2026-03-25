@@ -27,11 +27,31 @@ class Provider extends BaseController
             session()->set('user_role', $dbUser->role);
         }
 
+        // Default to Provider mode when hitting the dashboard
+        session()->set('cnd_provider_mode', true);
+
         return view('frontend/provider/dashboard', [
             'page_title'        => 'Provider Dashboard | Class Next Door',
             'user'              => $dbUser,
             'show_location_bar' => false,
         ]);
+    }
+
+    /**
+     * Toggle between Provider Mode and User Mode
+     */
+    public function toggleMode()
+    {
+        $session = session();
+        $currentMode = $session->get('cnd_provider_mode') ?? true;
+        $newMode = !$currentMode;
+        $session->set('cnd_provider_mode', $newMode);
+
+        if ($newMode) {
+            return redirect()->to('/provider/dashboard')->with('notifySuccess', 'Switched to Provider Mode');
+        } else {
+            return redirect()->to('/')->with('notifySuccess', 'Switched to User Mode (Browsing)');
+        }
     }
 
     /**

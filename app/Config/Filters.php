@@ -10,8 +10,8 @@ use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\SecureHeaders;
 
 use App\Filters\AuthFilter;
+use App\Filters\RoleRedirectFilter;
 use App\Filters\ApiRateLimitFilter;
-use App\Filters\ApiResponseFilter;
 
 class Filters extends BaseConfig
 {
@@ -28,6 +28,7 @@ class Filters extends BaseConfig
         'invalidchars'    => InvalidChars::class,
         'secureheaders'   => SecureHeaders::class,
         'authentication'  => AuthFilter::class,
+        'role_redirect'   => RoleRedirectFilter::class,
         // ── Subtask 4.1 — API v1 filters ──────────────────────────
         'api_rate_limit'  => ApiRateLimitFilter::class,
         'api_response'    => ApiResponseFilter::class,
@@ -64,7 +65,8 @@ class Filters extends BaseConfig
                 'uploads/*',
                 'assets/*',
                 'v1/*',       // Subtask 4.1 — v1 API is self-guarded (returns 401 JSON)
-            ]]
+            ]],
+            'role_redirect'
         ],
         'after' => [
             'toolbar',

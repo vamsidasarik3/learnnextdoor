@@ -161,6 +161,9 @@ $routes->group('provider', ['filter' => 'authentication'], function($routes) {
 
     // ── Management API (Subtask 2.4) ──
     $routes->post('api/listings/disable-dates', 'Provider::disableDates');
+
+    // ── Mode Toggle ──
+    $routes->get('toggle-mode',          'Provider::toggleMode');
 });
 
 // ── ADMIN DASHBOARD (requires authentication) ──
