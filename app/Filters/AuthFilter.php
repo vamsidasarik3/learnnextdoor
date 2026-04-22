@@ -16,6 +16,11 @@ class AuthFilter implements FilterInterface
             if (strpos($path, 'admin') === 0) {
                 return redirect()->to('/auth/login');
             }
+
+            // Exclude webhooks from redirection
+            if (strpos($path, 'webhooks') === 0) {
+                return null;
+            }
             
             // For frontend/provider routes, redirect to /login with intended URL
             $currentUrl = current_url();

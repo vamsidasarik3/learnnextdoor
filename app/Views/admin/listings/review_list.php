@@ -67,11 +67,13 @@
                 </td>
                 <td>
                   <?php if($l->review_status == 'pending'): ?>
-                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #fef9c3; color: #a16207; border: 1px solid #fde047;">PENDING</span>
-                  <?php elseif($l->review_status == 'approved'): ?>
-                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #dcfce7; color: #16a34a; border: 1px solid #86efac;">APPROVED</span>
+                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #fef9c3; color: #a16207; border: 1px solid #fde047;">PENDING REVIEW</span>
+                  <?php elseif($l->review_status == 'approved' && $l->status == 'active'): ?>
+                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #dcfce7; color: #16a34a; border: 1px solid #86efac;">LIVE / APPROVED</span>
+                  <?php elseif($l->review_status == 'approved' && $l->status == 'inactive'): ?>
+                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">BLOCKED / INACTIVE</span>
                   <?php else: ?>
-                      <span class="badge rounded-pill px-3 py-2 fw-600" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">REJECTED</span>
+                      <span class="badge rounded-pill px-3 py-2 fw-600 space-x-1" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;">REJECTED</span>
                   <?php endif; ?>
                 </td>
                 <td class="px-4 text-right">
@@ -79,10 +81,18 @@
                     <button type="button" class="btn btn-sm btn-white border-right" onclick="viewDetails(<?= $l->id ?>)" title="View Live">
                       <i class="fas fa-external-link-alt text-info"></i>
                     </button>
-                    <?php if($l->review_status != 'approved'): ?>
+                    <a href="<?= url('admin/listings/edit/' . $l->id) ?>" class="btn btn-sm btn-white border-right" title="Edit Listing">
+                      <i class="fas fa-edit text-primary"></i>
+                    </a>
+                    <?php if($l->review_status == 'pending'): ?>
                     <button type="button" class="btn btn-sm btn-white border-right" onclick="approveListing(<?= $l->id ?>)" title="Approve">
                       <i class="fas fa-check-circle text-success"></i>
                     </button>
+                    <?php endif; ?>
+                    <?php if($l->review_status == 'approved'): ?>
+                        <button type="button" class="btn btn-sm btn-white border-right" onclick="toggleBlockRequest(<?= $l->id ?>, '<?= $l->status ?>')" title="<?= $l->status === 'active' ? 'Block Listing' : 'Unblock Listing' ?>">
+                            <i class="fas <?= $l->status === 'active' ? 'fa-ban text-danger' : 'fa-undo text-success' ?>"></i>
+                        </button>
                     <?php endif; ?>
                     <?php if($l->review_status != 'rejected'): ?>
                     <button type="button" class="btn btn-sm btn-white" onclick="rejectListing(<?= $l->id ?>)" title="Reject">
@@ -185,5 +195,42 @@
   function viewDetails(id) {
       window.open('<?= base_url('classes') ?>/' + id, '_blank');
   }
+
+  function toggleBlockRequest(id, currentStatus) {
+    const isBlocking = (currentStatus === 'active');
+    
+    $('#reviewId').val(id);
+    $('#reviewStatus').val('toggle-block'); // Internal flag for modal use
+    $('#modalTitle').text(isBlocking ? 'Block Listing' : 'Unblock Listing');
+    $('#reviewPrompt').html(isBlocking 
+        ? 'Are you sure you want to <strong>BLOCK</strong> this listing? It will be hidden from users immediately.'
+        : 'Are you sure you want to <strong>UNBLOCK</strong> this listing? It will go live again.'
+    );
+    
+    $('#confirmBtn').removeClass('btn-success btn-danger').addClass(isBlocking ? 'btn-danger' : 'btn-success').text(isBlocking ? 'Block Listing' : 'Unblock Now');
+    $('#remarks_label').text(isBlocking ? 'Reason for Blocking (Required)' : 'Unblocking Remarks (Optional)');
+    $('[name="remarks"]').prop('required', isBlocking).attr('placeholder', isBlocking ? 'Explain why you are blocking this listing...' : 'Additional notes (Optional)...');
+    
+    $('#reviewModal').modal('show');
+  }
+
+  $('#reviewForm').on('submit', function(e) {
+    e.preventDefault();
+    const btn = $('#confirmBtn');
+    const action = $('#reviewStatus').val();
+    const apiUrl = action === 'toggle-block' ? '<?= url('admin/api/listings/toggle-block') ?>' : '<?= url('admin/api/listings/review') ?>';
+
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+    $.post(apiUrl, $(this).serialize(), function(res) {
+      if(res.success) {
+        toastr.success(res.message);
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        toastr.error(res.message);
+        btn.prop('disabled', false).text('Confirm Action');
+      }
+    });
+  });
 </script>
 <?= $this->endSection() ?>

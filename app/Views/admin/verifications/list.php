@@ -75,11 +75,23 @@
                 <td class="text-center">
                     <?php 
                         $badge = 'secondary';
-                        if($p->provider_verification_status === 'approved') $badge = 'success';
-                        elseif($p->provider_verification_status === 'pending') $badge = 'warning';
-                        elseif($p->provider_verification_status === 'rejected') $badge = 'danger';
+                        $statusText = $p->provider_verification_status ?: 'Incomplete';
+                        
+                        if($p->provider_verification_status === 'approved') {
+                            $badge = 'success';
+                        } elseif($p->provider_verification_status === 'pending') {
+                            $badge = 'warning';
+                        } elseif($p->provider_verification_status === 'rejected') {
+                            $badge = 'danger';
+                        } elseif($p->provider_verification_status === 'revoked') {
+                            $badge = 'dark';
+                            $statusText = 'Revoked';
+                        } elseif(!$p->provider_verification_status && $p->doc_count > 0) {
+                            $badge = 'info';
+                            $statusText = 'Doc Uploaded';
+                        }
                     ?>
-                    <span class="badge badge-<?= $badge ?> px-3 py-2 text-uppercase"><?= $p->provider_verification_status ?></span>
+                    <span class="badge badge-<?= $badge ?> px-3 py-2 text-uppercase"><?= $statusText ?></span>
                 </td>
                 <td class="px-4 text-right">
                    <a href="<?= url('admin/provider/' . $p->id) ?>" class="btn btn-sm btn-primary rounded-pill px-3">

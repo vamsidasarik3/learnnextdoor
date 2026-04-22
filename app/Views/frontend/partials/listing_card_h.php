@@ -13,7 +13,8 @@ $id    = $listing['id']    ?? '#';
 $title = $listing['title'] ?? 'Class';
 $addr  = $listing['address']        ?? '';
 $img   = listing_img_url($listing['cover_image'] ?? '');
-$type  = ucfirst($listing['type']   ?? 'class');
+$type  = strtolower($listing['type'] ?? 'regular');
+$typeLabel = ucfirst($type);
 $price = $listing['price']          ?? 0;
 $avg   = (float)($listing['avg_rating'] ?? 0);
 $cnt   = (int)($listing['review_count'] ?? 0);
@@ -22,6 +23,13 @@ $cat   = $listing['category_name']  ?? '';
 $days  = isset($listing['availability_days']) && is_array($listing['availability_days'])
        ? $listing['availability_days']
        : [];
+
+/* Figma badge class per type */
+$badgeCls = match($type) {
+    'workshop' => 'cnd-badge-workshop',
+    'course'   => 'cnd-badge-course',
+    default    => 'cnd-badge-regular',
+};
 ?>
 <article class="cnd-lcard" role="listitem" aria-label="<?= esc($title) ?>">
 
@@ -30,7 +38,7 @@ $days  = isset($listing['availability_days']) && is_array($listing['availability
      class="cnd-lcard-img"
      tabindex="-1" aria-hidden="true">
     <img src="<?= $img ?>" alt="" loading="lazy" width="120" height="120">
-    <span class="cnd-badge-type-sm"><?= esc($type) ?></span>
+    <span class="cnd-badge-type-sm <?= $badgeCls ?>"><?= esc($typeLabel) ?></span>
   </a>
 
   <!-- Details -->

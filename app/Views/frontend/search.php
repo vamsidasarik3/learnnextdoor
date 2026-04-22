@@ -128,14 +128,14 @@ $loc_set     = $location_selected ?? false;
         transition: all 0.2s ease;
       }
       .cnd-cat-chip.active {
-        background: var(--cnd-pink);
+        background: var(--cnd-accent);
         color: #fff;
-        border-color: var(--cnd-pink);
-        box-shadow: 0 4px 12px rgba(255, 104, 180,0.3);
+        border-color: var(--cnd-accent);
+        box-shadow: 0 4px 12px rgba(249, 160, 94, 0.3);
       }
       .cnd-cat-chip:hover:not(.active) {
-        border-color: var(--cnd-pink);
-        color: var(--cnd-pink);
+        border-color: var(--cnd-accent);
+        color: var(--cnd-accent);
       }
     </style>
     <!-- Category pills (responsive centered row) -->
@@ -223,7 +223,7 @@ $loc_set     = $location_selected ?? false;
                 </h3>
                 <?php if (!empty($l['locality']) || !empty($l['city'])): ?>
                 <div class="cnd-card-address">
-                  <i class="bi bi-geo-alt-fill text-pink" aria-hidden="true"></i>
+                  <i class="bi bi-geo-alt-fill text-accent" aria-hidden="true"></i>
                   <span><?= esc(implode(', ', array_filter([$l['locality'] ?? '', $l['city'] ?? '']))) ?></span>
                 </div>
                 <?php elseif (!empty($l['address'])): ?>
@@ -235,7 +235,7 @@ $loc_set     = $location_selected ?? false;
                 <!-- Price + type pill row -->
                 <div class="cnd-card-meta d-flex align-items-center gap-2 flex-wrap mt-2">
                   <?php if (!empty($l['category_name'])): ?>
-                  <span class="badge rounded-pill" style="background:var(--cnd-pink-soft);color:var(--cnd-pink);font-weight:600;font-size:.68rem;">
+                  <span class="badge rounded-pill" style="background:var(--cnd-accent-soft);color:var(--cnd-accent);font-weight:600;font-size:.68rem;">
                     <?= esc($l['category_name']) ?>
                   </span>
                   <?php endif; ?>
@@ -419,7 +419,7 @@ $loc_set     = $location_selected ?? false;
         : BASE + 'assets/frontend/img/class-placeholder.jpg';
       
       var trial = l.free_trial ? '<span class="cnd-badge-trial">Free Trial</span>' : '';
-      var cat   = l.category_name ? '<span class="badge rounded-pill" style="background:var(--cnd-pink-soft);color:var(--cnd-pink);font-weight:600;font-size:.68rem;">' + esc(l.category_name) + '</span>' : '';
+      var cat   = l.category_name ? '<span class="badge rounded-pill" style="background:var(--cnd-accent-soft);color:var(--cnd-accent);font-weight:600;font-size:.68rem;">' + esc(l.category_name) + '</span>' : '';
       var subcat = l.subcategory_names ? '<span class="text-muted small border-start ps-2" style="font-size: 0.65rem;">' + esc(l.subcategory_names) + '</span>' : '';
       var rating = l.avg_rating ? '<span class="cnd-meta-rating"><span class="cnd-stars">' + stars + '</span> <span class="small fw-600">' + l.avg_rating + '</span> <span class="text-muted small">(' + (l.review_count||0) + ')</span></span>' : '';
       var verified = l.provider_verified == 1 ? ' <span class="ms-1 text-success" title="Verified Provider"><i class="bi bi-patch-check-fill"></i></span>' : '';
@@ -432,7 +432,7 @@ $loc_set     = $location_selected ?? false;
         + trial + '</a>'
         + '<div class="cnd-card-body">'
         + '<h3 class="cnd-card-title"><a href="' + BASE + 'classes/' + l.id + '" class="cnd-card-title-link">' + esc(l.title||'Untitled') + '</a>' + verified + '</h3>'
-        + ((l.locality || l.city) ? '<div class="cnd-card-address"><i class="bi bi-geo-alt-fill text-pink" aria-hidden="true"></i> <span>' + esc([l.locality, l.city].filter(Boolean).join(', ')) + '</span></div>' : (l.address ? '<div class="cnd-card-address"><i class="bi bi-geo-alt-fill text-danger" aria-hidden="true"></i> <span>' + esc((l.address||'').substring(0,50)) + '</span></div>' : ''))
+        + ((l.locality || l.city) ? '<div class="cnd-card-address"><i class="bi bi-geo-alt-fill text-accent" aria-hidden="true"></i> <span>' + esc([l.locality, l.city].filter(Boolean).join(', ')) + '</span></div>' : (l.address ? '<div class="cnd-card-address"><i class="bi bi-geo-alt-fill text-danger" aria-hidden="true"></i> <span>' + esc((l.address||'').substring(0,50)) + '</span></div>' : ''))
         + '<div class="cnd-card-meta d-flex align-items-center gap-2 flex-wrap mt-2">' + cat + subcat + rating + distBadge + '</div>'
         + '</div>'
         + '<div class="cnd-card-footer d-flex align-items-center justify-content-between">'

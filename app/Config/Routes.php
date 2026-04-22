@@ -114,6 +114,9 @@ $routes->post('api/feedback',           'Frontend::contactSubmit');    // AJAX F
 $routes->post('api/reviews/submit',     'Frontend::submitReview');     // AJAX Review submission
 $routes->post('submit-review',          'Frontend::submitReview');     // AJAX Review
 $routes->get('booking/certificate/(:num)', 'BookingController::downloadCertificate/$1'); 
+$routes->get('privacy', 'Frontend::privacyPolicy');
+$routes->get('data-deletion', 'Frontend::dataDeletion');
+$routes->get('terms', 'Frontend::terms');
 
 // ── AUTHENTICATION ──
 $routes->get('auth/login',               'Auth\Login::index');
@@ -135,20 +138,33 @@ $routes->get('my-bookings',              'Frontend::myBookings');
 $routes->get('auth/google',          'Auth\GoogleAuth::login');
 $routes->get('auth/google/callback', 'Auth\GoogleAuth::callback');
 
+// ── EMAIL VERIFICATION ──
+$routes->get('verify-email', 'Auth\EmailVerification::verify');
+$routes->get('profile/deleteAccount', 'Profile::deleteAccount', ['filter' => 'authentication']);
+
 // ── PROVIDER DASHBOARD (Requires authentication) ──
 $routes->group('provider', ['filter' => 'authentication'], function($routes) {
     $routes->get('dashboard',            'Provider::dashboard');    // Main Dashboard
+    $routes->get('support',              'Provider::support');      // Support & Help
     $routes->get('listings',             'Provider::listings');    // Subtask 2.1
     $routes->get('api/listings',         'Provider::apiListings'); // Subtask 2.1 API
     $routes->get('listings/create',      'Provider::create');      // Subtask 2.2
     $routes->post('listings/store',      'Provider::store');       // Subtask 2.2 Submit
+    $routes->get('availability',         'Provider::availability');
+    $routes->get('api/listing-details/(:num)', 'Provider::getListingDetails/$1');
+    $routes->get('api/cancellation-preview/(:num)', 'Provider::cancellationPreview/$1');
+    $routes->post('api/holiday-preview', 'Provider::holidayPreview');
+    $routes->post('availability/end-class', 'Provider::endClass');
+    $routes->post('availability/declare-holiday', 'Provider::declareHoliday');
     $routes->get('api/subcategories',    'Provider::getSubcategories');
     $routes->get('listings/edit/(:num)', 'Provider::edit/$1');     // Subtask 2.4
     $routes->post('listings/update/(:num)', 'Provider::update/$1'); // Subtask 2.4
-    $routes->get('bookings',             'Provider::bookings');    // New: Student Bookings
+    $routes->get('enrollments',          'Provider::enrollments'); // New: Student Enrollments
     $routes->get('payouts',              'Provider::payouts');     // New: Provider Payouts
     $routes->get('instructors',          'Provider::instructors');  // New: Instructor Management
     $routes->post('api/instructors/save', 'Provider::saveInstructor'); // New: Save/Update Instructor
+    $routes->post('api/instructors/delete', 'Provider::deleteInstructor'); // New: Delete Instructor
+    $routes->get('notifications',        'Provider::notifications'); // New: Notifications
     
     // ── Verification & KYC (Subtask 2.3) ──
     $routes->get('verification',         'Provider::verification');
@@ -156,14 +172,22 @@ $routes->group('provider', ['filter' => 'authentication'], function($routes) {
     $routes->post('api/verifyphone/mark-verified', 'Provider::markPhoneVerified');
     $routes->post('api/verify/phone/check', 'Provider::checkPhoneVerification');
     $routes->post('api/kyc/upload',      'Provider::uploadKyc');
+    $routes->post('api/kyc/delete/(:num)', 'Provider::deleteKyc/$1');
     $routes->post('api/payout/update',   'Provider::updatePayout');
     $routes->post('api/verify/submit',   'Provider::submitVerification');
+    $routes->post('api/verification/phone/update', 'Provider::updatePhone');
+    $routes->post('api/verification/phone/verify-otp', 'Provider::verifyPhoneOtp');
+    $routes->post('api/verification/email/update', 'Provider::updateEmail');
+    $routes->post('api/verification/email/verify-otp', 'Provider::verifyEmailOtp');
 
     // ── Management API (Subtask 2.4) ──
-    $routes->post('api/listings/disable-dates', 'Provider::disableDates');
+    $routes->post('api/listings/image/delete/(:num)', 'Provider::deleteListingImage/$1');
 
     // ── Mode Toggle ──
     $routes->get('toggle-mode',          'Provider::toggleMode');
+    $routes->post('api/concerns/raise',  'Provider::raiseConcern');
+    $routes->get('support/view/(:num)',  'Provider::viewTicket/$1');
+    $routes->post('support/reply',       'Provider::replyTicket');
 });
 
 // ── ADMIN DASHBOARD (requires authentication) ──
@@ -172,6 +196,10 @@ $routes->group('admin', ['filter' => 'authentication'], function($routes) {
     
     // ── Listing Review & Management (Subtask 3.2) ──
     $routes->get('listings',             'AdminController::index');
+    $routes->get('listings/edit/(:num)', 'AdminController::editListing/$1');
+    $routes->post('api/listings/review', 'AdminController::reviewListing');
+    $routes->post('api/listings/toggle-block', 'AdminController::toggleListingBlock');
+    $routes->post('api/listings/save',   'AdminController::saveListing');
     $routes->get('verifications',        'AdminController::verifications');
     $routes->get('provider-verifications', 'AdminController::verifications'); // Alias as requested
     $routes->get('provider/(:num)',      'AdminController::providerDetail/$1');
@@ -186,12 +214,29 @@ $routes->group('admin', ['filter' => 'authentication'], function($routes) {
     // ── Settlement Management (Subtask 3.4) ──
     $routes->get('settlements',          'AdminController::settlements');
     $routes->post('api/settlements/block', 'AdminController::toggleSettlementBlock');
+    $routes->post('api/settlements/complete', 'AdminController::completeSettlement');
+
+    // ── Refund Management ──
+    $routes->get('bookings',                 'AdminController::bookings');
+    $routes->get('refunds',                  'AdminController::refunds');
+    $routes->post('api/refunds/initiate',    'AdminController::initiateRefund');
+    $routes->post('api/refunds/process',     'AdminController::processRefund');
+
+    // ── Concern Management ──
+    $routes->get('concerns',                 'AdminController::concerns');
+    $routes->post('api/concerns/resolve',    'AdminController::resolveConcern');
 
     // ── Carousel Management (Subtask 3.5) ──
     $routes->get('carousel',             'AdminController::carousel');
     $routes->post('api/carousel/add',    'AdminController::addCarouselListing');
     $routes->post('api/carousel/remove', 'AdminController::removeCarouselListing');
     $routes->post('api/carousel/reorder','AdminController::reorderCarousel');
+
+    // ── Testimonials Management ──
+    $routes->get('testimonials',               'AdminController::testimonials');
+    $routes->post('testimonials/save',         'AdminController::saveTestimonial');
+    $routes->get('testimonials/delete/(:num)', 'AdminController::deleteTestimonial');
+    $routes->post('api/testimonials/reorder',  'AdminController::reorderTestimonials');
 
     // ── Category & Subcategory Management ──
     $routes->get('categories',           'AdminController::categories');
@@ -201,7 +246,39 @@ $routes->group('admin', ['filter' => 'authentication'], function($routes) {
     $routes->get('subcategories',        'AdminController::subcategories');
     $routes->post('subcategories/save',  'AdminController::saveSubcategory');
     $routes->get('subcategories/delete/(:num)', 'AdminController::deleteSubcategory');
+
+    // ── Support Tickets (Feedback) ──
+    $routes->get('feedback',             'Feedback::index');
+    $routes->get('feedback/view/(:num)',  'Feedback::view/$1');
+
+    // ── User Management ──
+    $routes->get('users',                  'Users::index');
+    $routes->post('users/change_status/(:num)', 'Users::change_status/$1');
+    $routes->get('users/delete/(:num)',    'Users::delete/$1');
+    $routes->get('users/edit/(:num)',      'Users::edit/$1');
+
+    // ── System Oversight & Settings ──
+    $routes->get('stats',                'AdminController::stats');
+    $routes->get('activity-log',         'AdminController::activityLog');
+    $routes->get('whatsapp-logs',         'AdminController::whatsappLogs');
+    $routes->get('settings',             'AdminController::settings');
+    $routes->post('api/settings/verify-auth',        'AdminController::verifyAuth');
+    $routes->post('api/settings/toggle-admin-status','AdminController::toggleAdminStatus');
+    $routes->post('api/settings/create-admin',       'AdminController::createAdmin');
+    $routes->post('users/update/(:num)',   'Users::update/$1');
+    $routes->get('users/add',              'Users::add');
+    $routes->post('users/save',            'Users::save');
+
+    // ── API for Dashboard Internal Use ──
+    $routes->get('api/stats',            'Dashboard::apiStats');
+    $routes->get('api/users/count',      'Dashboard::apiUserCount');
+    $routes->get('api/providers/count',  'Dashboard::apiProviderCount');
+    $routes->get('api/bookings/count',   'Dashboard::apiBookingCount');
+    $routes->get('api/revenue/total',    'Dashboard::apiRevenueTotal');
 });
+
+// ── Webhooks (Public access required for third-party services) ──
+$routes->match(['get', 'post'], 'webhooks/whatsapp', 'Webhooks\WhatsApp::index');
 
 $routes->get('dashboard', 'Dashboard::index');
 

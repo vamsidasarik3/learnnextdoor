@@ -1,71 +1,80 @@
 /*
- * Class Next Door — Frontend Design System (Theme v2)
+ * Learn Next Door — Frontend Design System (Theme v3 — Figma Aligned)
  * public/assets/frontend/css/app.css
  * ─────────────────────────────────────────────────────────────
- * Theme: Purple → Warm Yellow gradient, rounded cards,
- *        pink accent tabs, Poppins typography.
- * Base:  Bootstrap 5.3 (CDN, not overridden — extended here)
+ * Theme: Deep Purple #3F3590, Soft Lavender bg #f0effe,
+ *        Dark purple text #1A1640, rounded-xl cards, Poppins.
+ * Base:  Bootstrap 5.3 (CDN, extended here)
  * ─────────────────────────────────────────────────────────────
  */
 
-/* ── GOOGLE FONT: Poppins ──────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+/* ── GOOGLE FONT: Inter + Poppins ──────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ── CSS CUSTOM PROPERTIES ─────────────────────────────────── */
 :root {
-  /* Brand guide colors */
-  --cnd-primary: #3F3590;
-  --cnd-secondary: #7778F6;
-  --cnd-accent: #F9A05E;
-  --cnd-pink: #FF68B4;
+  /* ── Figma Brand Colors ── */
+  --cnd-primary:        #3F3590;   /* Deep purple — logo, CTA, active nav */
+  --cnd-primary-dark:   #2A2470;   /* Deeper on hover */
+  --cnd-primary-soft:   rgba(63, 53, 144, 0.10);
+  --cnd-secondary:      #7778F6;   /* Lighter purple accent */
 
-  /* Theme gradients */
-  --cnd-grad-start: #3F3590;
-  --cnd-grad-end: #7778F6;
-  --cnd-gradient: linear-gradient(135deg, #3F3590 0%, #7778F6 100%);
-  --cnd-gradient-soft: linear-gradient(135deg, rgba(63, 53, 144, 0.08) 0%, rgba(119, 120, 246, 0.06) 100%);
+  /* ── Figma Accent (Orange – kept for hero badges) ── */
+  --cnd-accent:         #F9A05E;   /* Orange — badges, stars */
+  --cnd-accent-soft:    rgba(249, 160, 94, 0.12);
+  --cnd-accent-dark:    #E6893A;
 
-  /* Neutrals */
-  --cnd-dark: #2F276B;
-  --cnd-text: #2D2240;
-  --cnd-muted: #7B6F8A;
-  --cnd-light: #F4F3FF;
-  --cnd-white: #FFFFFF;
+  /* ── Figma Legacy aliases ── */
+  --cnd-pink:           #3F3590;
+  --cnd-pink-soft:      rgba(63, 53, 144, 0.10);
+  --cnd-gold:           #3F3590;   /* CTA buttons now purple not gold */
+  --cnd-gold-dark:      #2A2470;
 
-  /* Compatibility & Accents */
-  --cnd-gold: #F9A05E; /* Accent for CTA */
-  --cnd-gold-dark: #E28C4B;
+  /* ── Figma Gradients ── */
+  --cnd-grad-start:     #3F3590;
+  --cnd-grad-end:       #7778F6;
+  --cnd-gradient:       linear-gradient(135deg, #3F3590 0%, #5B5AC8 100%);
+  --cnd-gradient-soft:  linear-gradient(135deg, rgba(63,53,144,0.08) 0%, rgba(119,120,246,0.06) 100%);
 
-  /* Card */
-  --cnd-card-bg: #FFFFFF;
-  --cnd-card-border: rgba(63, 53, 144, 0.10);
-  --cnd-card-shadow: 0 4px 18px rgba(47, 39, 107, 0.09);
-  --cnd-card-hover: 0 12px 36px rgba(63, 53, 144, 0.18);
+  /* ── Figma Neutrals ── */
+  --cnd-dark:           #1A1640;   /* Figma darkest text / headings */
+  --cnd-text:           #1A1640;   /* Primary text */
+  --cnd-muted:          #6B69A0;   /* Secondary text / icons */
+  --cnd-light:          #f0effe;   /* Figma page background — lavender */
+  --cnd-white:          #FFFFFF;
+  --cnd-surface:        #f0effe;   /* Card / input bg on colored sections */
 
-  /* Radius */
-  --cnd-radius: 20px;
-  --cnd-radius-sm: 14px;
-  --cnd-radius-xs: 8px;
-  --cnd-radius-pill: 100px;
+  /* ── Figma Card ── */
+  --cnd-card-bg:        #FFFFFF;
+  --cnd-card-border:    rgba(63, 53, 144, 0.08);
+  --cnd-card-shadow:    0 4px 20px rgba(63, 53, 144, 0.08);
+  --cnd-card-hover:     0 16px 40px rgba(63, 53, 144, 0.18);
 
-  /* Transition */
-  --cnd-transition: 0.22s ease;
+  /* ── Figma Radius — large & rounded ── */
+  --cnd-radius:         22px;
+  --cnd-radius-sm:      16px;
+  --cnd-radius-xs:      10px;
+  --cnd-radius-pill:    100px;
 
-  /* Navbar height */
-  --cnd-navbar-h: 75px;
+  /* ── Transitions ── */
+  --cnd-transition:     0.25s ease;
 
-  /* Bootstrap v5 overrides (to sync standard components) */
-  --bs-primary: #3F3590;
-  --bs-primary-rgb: 63, 53, 144;
-  --bs-secondary: #7778F6;
-  --bs-secondary-rgb: 119, 120, 246;
-  --bs-warning: #F9A05E;
-  --bs-warning-rgb: 249, 160, 94;
-  --bs-danger: #FF68B4; /* User specified pink for alerts/badges */
-  --bs-danger-rgb: 255, 104, 180;
-  --bs-success: #28a745;
-  --bs-body-bg: #F4F3FF;
-  --bs-body-color: #2D2240;
+  /* ── Navbar ── */
+  --cnd-navbar-h:       72px;
+
+  /* ── Bootstrap v5 sync ── */
+  --bs-primary:             #3F3590;
+  --bs-primary-rgb:         63, 53, 144;
+  --bs-secondary:           #7778F6;
+  --bs-secondary-rgb:       119, 120, 246;
+  --bs-warning:             #F9A05E;
+  --bs-warning-rgb:         249, 160, 94;
+  --bs-danger:              #E14D91;
+  --bs-danger-rgb:          225, 77, 145;
+  --bs-success:             #28a745;
+  --bs-body-bg:             #f0effe;
+  --bs-body-color:          #1A1640;
+  --bs-body-font-family:    'Inter', 'Poppins', 'Segoe UI', system-ui, sans-serif;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -82,11 +91,12 @@ html {
 }
 
 body.cnd-body {
-  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
-  background: var(--cnd-light);
-  color: var(--cnd-text);
+  font-family: 'Inter', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  background: var(--cnd-light); /* Figma: #f0effe lavender */
+  color: var(--cnd-text);       /* Figma: #1A1640 dark purple */
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  font-size: 15px;
 }
 
 /* Utility helpers */
@@ -123,7 +133,33 @@ body.cnd-body {
 }
 
 .text-pink {
-  color: var(--cnd-pink);
+  color: var(--cnd-accent) !important;
+}
+
+.bg-soft-pink {
+  background: var(--cnd-accent-soft) !important;
+}
+
+.text-accent {
+  color: var(--cnd-accent) !important;
+}
+
+.btn-pink {
+  background: var(--cnd-accent) !important;
+  color: #fff !important;
+  border-radius: var(--cnd-radius-pill) !important;
+  border: none !important;
+  transition: all var(--cnd-transition) !important;
+}
+
+.btn-pink:hover {
+  background: var(--cnd-accent-dark) !important;
+  color: #fff !important;
+  transform: translateY(-2px) !important;
+}
+
+.border-pink {
+  border-color: var(--cnd-accent) !important;
 }
 
 .text-purple {
@@ -147,18 +183,18 @@ body.cnd-body {
 /* ══════════════════════════════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════════════════════════════ */
-/* Primary — pink pill */
+/* Primary — deep purple pill (Figma) */
 .cnd-btn-primary {
-  background: var(--cnd-pink);
+  background: var(--cnd-primary);
   color: #fff;
   border: none;
   border-radius: var(--cnd-radius-pill);
-  padding: .6rem 1.5rem;
-  font-family: 'Poppins', sans-serif;
+  padding: .62rem 1.5rem;
+  font-family: 'Inter', 'Poppins', sans-serif;
   font-weight: 600;
   font-size: .9rem;
   transition: all var(--cnd-transition);
-  box-shadow: 0 4px 14px rgba(255, 104, 180, .38);
+  box-shadow: 0 4px 14px rgba(63, 53, 144, .3);
   display: inline-flex;
   align-items: center;
   gap: .4rem;
@@ -168,9 +204,9 @@ body.cnd-body {
 
 .cnd-btn-primary:hover,
 .cnd-btn-primary:focus-visible {
-  background: var(--cnd-pink-dark);
+  background: var(--cnd-primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(255, 104, 180, .48);
+  box-shadow: 0 8px 22px rgba(63, 53, 144, .4);
   color: #fff;
 }
 
@@ -179,18 +215,18 @@ body.cnd-body {
   font-size: .82rem;
 }
 
-/* Gold pill — Publish / CTA */
+/* Gold/CTA pill — now deep purple per Figma */
 .cnd-btn-gold {
-  background: var(--cnd-gold);
-  color: var(--cnd-dark);
+  background: var(--cnd-primary);
+  color: #fff;
   border: none;
   border-radius: var(--cnd-radius-pill);
-  padding: .5rem 1.4rem;
+  padding: .55rem 1.4rem;
   font-weight: 700;
   font-size: .88rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', 'Poppins', sans-serif;
   transition: all var(--cnd-transition);
-  box-shadow: 0 4px 14px rgba(249, 160, 94, .45);
+  box-shadow: 0 4px 14px rgba(63, 53, 144, .35);
   display: inline-flex;
   align-items: center;
   gap: .4rem;
@@ -199,9 +235,9 @@ body.cnd-body {
 }
 
 .cnd-btn-gold:hover {
-  background: var(--cnd-gold-dark);
+  background: var(--cnd-primary-dark);
   transform: translateY(-2px);
-  color: var(--cnd-dark);
+  color: #fff;
 }
 
 /* Gradient pill button */
@@ -229,20 +265,22 @@ body.cnd-body {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   NAVBAR — gradient bar
+   NAVBAR — White bg, dark text, purple accents (Figma-aligned)
 ══════════════════════════════════════════════════════════════ */
 .cnd-navbar {
-  background: var(--cnd-gradient);
-  min-height: var(--cnd-navbar-h);
+  background: #ffffff;
+  border-bottom: 1px solid #eeedf8;
+  min-height: 64px;
   position: sticky;
   top: 0;
   z-index: 1030;
   transition: box-shadow var(--cnd-transition);
+  box-shadow: 0 2px 12px rgba(63,53,144,0.06);
   padding: 0;
 }
 
 .cnd-navbar.scrolled {
-  box-shadow: 0 6px 28px rgba(63, 53, 144, .28);
+  box-shadow: 0 4px 20px rgba(63, 53, 144, .10);
 }
 
 /* Brand */
@@ -253,79 +291,79 @@ body.cnd-body {
   text-decoration: none;
 }
 
-.cnd-brand-icon {
-  flex-shrink: 0;
-}
+.cnd-brand-icon { flex-shrink: 0; }
 
 .cnd-brand-text {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #fff;
-  letter-spacing: -.3px;
+  color: #1A1640;
+  letter-spacing: -.4px;
   line-height: 1;
+  font-family: 'Inter', 'Poppins', sans-serif;
 }
 
-.cnd-brand-dot {
-  color: var(--cnd-gold);
-}
+.cnd-brand-dot { color: #F9A05E; }
 
-/* Nav links on gradient */
+/* Nav links */
 .cnd-nav-link {
-  color: rgba(255, 255, 255, .85) !important;
+  color: var(--cnd-muted) !important;
   font-weight: 500;
-  font-size: .88rem;
-  padding: .45rem .85rem !important;
+  font-size: .9rem;
+  padding: .4rem .85rem !important;
   border-radius: var(--cnd-radius-pill);
   display: flex;
   align-items: center;
   gap: .35rem;
   transition: all var(--cnd-transition);
+  font-family: 'Inter', 'Poppins', sans-serif;
+  text-decoration: none;
 }
 
 .cnd-nav-link:hover,
 .cnd-nav-link:focus-visible {
-  color: #fff !important;
-  background: rgba(255, 255, 255, .18);
+  color: #3F3590 !important;
+  background: rgba(63, 53, 144, .07);
 }
 
 .cnd-nav-link.active {
-  color: var(--cnd-dark) !important;
-  background: rgba(255, 255, 255, .95);
-  font-weight: 600;
+  color: #1A1640 !important;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  background: transparent;
 }
 
-/* Hamburger on dark bg */
+/* Hamburger */
 .cnd-navbar .navbar-toggler {
-  border: 1.5px solid rgba(255, 255, 255, .45);
+  border: 1.5px solid #e2e0f7;
   border-radius: var(--cnd-radius-xs);
   padding: .3rem .55rem;
 }
 
 .cnd-navbar .navbar-toggler-icon {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
-/* Location pill in navbar */
+/* Location pill — Figma: #EBEBFF bg, dark muted text */
 .cnd-location-pill {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
-  background: rgba(255, 255, 255, .2);
-  border: 1.5px solid rgba(255, 255, 255, .45);
+  background: #EBEBFF;
+  border: none;
   border-radius: var(--cnd-radius-pill);
-  padding: .3rem .85rem;
+  padding: .35rem .9rem;
   font-size: .8rem;
   font-weight: 600;
-  color: #fff;
-  max-width: 150px;
+  color: var(--cnd-primary);
+  max-width: 160px;
   cursor: pointer;
   transition: all var(--cnd-transition);
 }
 
 .cnd-location-pill:hover {
-  background: rgba(255, 255, 255, .3);
-  color: #fff;
-  border-color: rgba(255, 255, 255, .7);
+  background: rgba(63, 53, 144, .15);
+  color: var(--cnd-primary);
 }
 
 .cnd-location-pill-text {
@@ -334,46 +372,61 @@ body.cnd-body {
   white-space: nowrap;
 }
 
-/* Desktop location button */
+/* Desktop location button — Figma same as pill */
 .cnd-location-btn {
   display: inline-flex;
   align-items: center;
   gap: .4rem;
-  background: rgba(255, 255, 255, .2);
-  border: 1.5px solid rgba(255, 255, 255, .45);
+  background: #EBEBFF;
+  border: none;
   border-radius: var(--cnd-radius-pill);
-  padding: .35rem 1rem;
-  font-size: .85rem;
+  padding: .38rem 1rem;
+  font-size: .84rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--cnd-primary);
   transition: all var(--cnd-transition);
   white-space: nowrap;
 }
 
 .cnd-location-btn:hover {
-  background: rgba(255, 255, 255, .3);
-  border-color: rgba(255, 255, 255, .7);
-  color: #fff;
+  background: rgba(63, 53, 144, .15);
+  color: var(--cnd-primary);
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LOCATION BAR (below navbar)
+   NAVBAR SEARCH BAR (Figma: center search, #EBEBFF bg)
+══════════════════════════════════════════════════════════════ */
+.cnd-navbar-search .input-group {
+  transition: box-shadow var(--cnd-transition);
+}
+
+.cnd-navbar-search .input-group:focus-within {
+  box-shadow: 0 0 0 3px rgba(63, 53, 144, .18);
+}
+
+.cnd-navbar-search .form-control::placeholder {
+  color: var(--cnd-muted);
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOCATION BAR (below navbar) — Figma: white, #e8e6f5 border
 ══════════════════════════════════════════════════════════════ */
 .cnd-location-bar {
-  background: rgba(255, 255, 255, .97);
-  border-bottom: 1px solid var(--cnd-card-border);
+  background: #fff;
+  border-bottom: 1px solid #e8e6f5;
   padding: .5rem 0;
   font-size: .875rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', 'Poppins', sans-serif;
 }
 
 .cnd-location-label {
   font-weight: 600;
-  color: var(--cnd-text);
+  color: var(--cnd-dark);
 }
 
 .cnd-change-location {
-  color: var(--cnd-grad-start);
+  color: var(--cnd-primary);
   font-weight: 500;
   font-size: .82rem;
 }
@@ -505,12 +558,12 @@ body.cnd-body {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CLASS TYPE TOGGLE TABS — pink pill tabs
+   CLASS TYPE TOGGLE TABS — Figma: purple active, white inactive
 ══════════════════════════════════════════════════════════════ */
 .cnd-type-section {
-  padding: 1.5rem 0;
-  background: var(--cnd-white);
-  border-bottom: 1px solid var(--cnd-card-border);
+  padding: 1rem 0;
+  background: #fff;
+  border-bottom: 1px solid #e8e6f5;
   overflow-x: auto;
 }
 
@@ -521,47 +574,49 @@ body.cnd-body {
 
 .cnd-type-tab {
   border-radius: var(--cnd-radius-pill) !important;
-  color: var(--cnd-muted) !important;
-  font-family: 'Poppins', sans-serif !important;
+  color: var(--cnd-muted) !important;     /* #6B69A0 inactive */
+  font-family: 'Inter', 'Poppins', sans-serif !important;
   font-weight: 600 !important;
-  font-size: .88rem !important;
-  padding: .5rem 1.3rem !important;
-  border: 1.5px solid var(--cnd-card-border) !important;
-  background: transparent !important;
+  font-size: .875rem !important;
+  padding: .45rem 1.25rem !important;
+  border: 1.5px solid #e8e6f5 !important;
+  background: #fff !important;
   transition: all var(--cnd-transition) !important;
   white-space: nowrap;
 }
 
 .cnd-type-tab:hover {
-  color: var(--cnd-pink) !important;
-  border-color: var(--cnd-pink) !important;
-  background: var(--cnd-pink-soft) !important;
+  color: var(--cnd-primary) !important;   /* #3F3590 on hover */
+  border-color: rgba(63, 53,144, .3) !important;
+  background: rgba(63,53,144,.05) !important;
 }
 
+/* Figma: active = solid purple fill */
 .cnd-type-tab.active {
   color: #fff !important;
-  background: var(--cnd-pink) !important;
-  border-color: var(--cnd-pink) !important;
-  box-shadow: 0 4px 14px rgba(255, 104, 180, .35) !important;
+  background: var(--cnd-primary) !important;     /* #3F3590 */
+  border-color: var(--cnd-primary) !important;
+  box-shadow: 0 4px 14px rgba(63, 53, 144, .28) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SECTION TITLES
+   SECTION TITLES — Figma: Inter 800, #1A1640
 ══════════════════════════════════════════════════════════════ */
 .cnd-section-title {
-  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  font-size: clamp(1.1rem, 2.5vw, 1.45rem);
   font-weight: 800;
   letter-spacing: -.4px;
-  color: var(--cnd-dark);
+  color: var(--cnd-dark);   /* Figma: #1A1640 */
   margin-bottom: 0;
+  font-family: 'Inter', 'Poppins', sans-serif;
 }
 
 .cnd-count-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--cnd-pink-soft);
-  color: var(--cnd-pink);
+  background: var(--cnd-primary-soft);   /* Figma: purple soft */
+  color: var(--cnd-primary);
   font-size: .75rem;
   font-weight: 700;
   padding: .1rem .55rem;
@@ -573,7 +628,7 @@ body.cnd-body {
 .cnd-view-all-link {
   font-size: .875rem;
   font-weight: 600;
-  color: var(--cnd-pink);
+  color: var(--cnd-primary);    /* Figma: purple */
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -583,7 +638,7 @@ body.cnd-body {
 
 .cnd-view-all-link:hover {
   text-decoration: underline;
-  color: var(--cnd-pink-dark);
+  color: var(--cnd-primary-dark);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -734,17 +789,17 @@ body.cnd-body {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CATEGORY ICON ROW
+   CATEGORY ICON ROW — Figma: lavender bg, large circles
 ══════════════════════════════════════════════════════════════ */
 .cnd-cats-section {
-  padding: 1.5rem 0;
-  background: var(--cnd-white);
+  padding: 2rem 0;
+  background: var(--cnd-light);
   overflow-x: auto;
 }
 
 .cnd-cats-row {
   display: flex;
-  gap: .75rem;
+  gap: 1.25rem;
   align-items: center;
   min-width: max-content;
   padding-bottom: .25rem;
@@ -754,10 +809,10 @@ body.cnd-body {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: .3rem;
+  gap: .5rem;
   text-decoration: none;
-  color: var(--cnd-text);
-  font-size: .7rem;
+  color: var(--cnd-dark);
+  font-size: .72rem;
   font-weight: 600;
   min-width: 64px;
   transition: transform var(--cnd-transition);
@@ -769,19 +824,20 @@ body.cnd-body {
 }
 
 .cnd-cat-icon-bubble {
-  width: 52px;
-  height: 52px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-  transition: box-shadow var(--cnd-transition);
+  font-size: 1.6rem;
+  box-shadow: 0 6px 16px rgba(63, 53, 144, .12);
+  transition: box-shadow var(--cnd-transition), transform var(--cnd-transition);
 }
 
 .cnd-cat-icon-pill:hover .cnd-cat-icon-bubble {
-  box-shadow: 0 8px 20px rgba(63, 53, 144, .22);
+  box-shadow: 0 12px 28px rgba(63, 53, 144, .24);
+  transform: translateY(-4px) scale(1.05);
 }
 
 /* Bubble gradient colours per category */
@@ -860,7 +916,7 @@ body.cnd-body {
 ══════════════════════════════════════════════════════════════ */
 .cnd-listing-card {
   background: var(--cnd-card-bg);
-  border-radius: var(--cnd-radius);
+  border-radius: var(--cnd-radius); /* Figma: 22px */
   border: 1px solid var(--cnd-card-border);
   overflow: hidden;
   box-shadow: var(--cnd-card-shadow);
@@ -870,7 +926,7 @@ body.cnd-body {
 }
 
 .cnd-listing-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
   box-shadow: var(--cnd-card-hover);
 }
 
@@ -2622,4 +2678,91 @@ body.cnd-body {
 .pac-container:after {
   display: none !important;
   content: '' !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIGMA FOOTER OVERRIDES (Theme v3)
+   Dark purple #1A1640 footer, white semi-transparent links
+══════════════════════════════════════════════════════════════ */
+.cnd-footer .cnd-footer-links a,
+.cnd-footer .cnd-footer-contact a,
+.cnd-footer-links a,
+.cnd-footer-contact a {
+  color: rgba(255, 255, 255, .7) !important;
+  text-decoration: none;
+  font-size: .875rem;
+  transition: color var(--cnd-transition);
+  display: block;
+  margin-bottom: .5rem;
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+.cnd-footer .cnd-footer-links a:hover,
+.cnd-footer .cnd-footer-contact a:hover,
+.cnd-footer-links a:hover,
+.cnd-footer-contact a:hover {
+  color: #fff !important;
+}
+
+.cnd-footer address,
+.cnd-footer p {
+  color: rgba(255, 255, 255, .65);
+  font-size: .88rem;
+}
+
+.cnd-footer-tagline {
+  color: rgba(255, 255, 255, .55);
+  font-size: .875rem;
+  line-height: 1.7;
+}
+
+.cnd-social-btn {
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, .7);
+  font-size: 1rem;
+  transition: all var(--cnd-transition);
+  text-decoration: none;
+}
+
+.cnd-social-btn:hover {
+  background: var(--cnd-primary);
+  border-color: var(--cnd-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.cnd-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  padding: 1.25rem 0;
+  color: rgba(255, 255, 255, .45);
+  font-size: .82rem;
+}
+
+.cnd-footer-bottom p {
+  color: rgba(255, 255, 255, .45) !important;
+  font-size: .82rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIGMA — Global Typography Refinements (Inter font)
+══════════════════════════════════════════════════════════════ */
+h1, h2, h3, h4, h5, h6,
+.cnd-page-title,
+.cnd-section-title,
+.cnd-hero-title,
+.cnd-swiper-title {
+  font-family: 'Inter', 'Poppins', 'Segoe UI', sans-serif;
+}
+
+/* Ensure all inputs are borderless / lavender bg styled in key components */
+.cnd-hero-location-btn,
+.cnd-location-input-group .form-control {
+  font-family: 'Inter', 'Poppins', sans-serif;
 }

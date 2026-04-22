@@ -138,8 +138,61 @@ class Frontend extends BaseController
                 $listings_total += count($rows);
             }
         }
+        
+        // ── Top Rated Unified List ──
+        $top_rated = [];
+        foreach ($listings as $type => $rows) $top_rated = array_merge($top_rated, $rows);
+
+        // Fallback: If workshops/courses are still empty (e.g. no location), fetch global ones for the section
+        if (empty($listings['workshop'])) {
+            $globalWorkshops = $listingModel->getByLocation('workshop', null, null, 1000, 'rating', 4);
+            $listings['workshop'] = array_map(function($r){
+                $item = (array)$r;
+                if (empty($item['cover_image'])) {
+                   $db = \Config\Database::connect();
+                   $img = $db->table('listing_images')->where('listing_id', $item['id'])->orderBy('position', 'ASC')->get()->getRow();
+                   $item['cover_image'] = $img ? $img->image_path : null;
+                }
+                return $item;
+            }, $globalWorkshops);
+        }
+        if (empty($listings['course'])) {
+            $globalCourses = $listingModel->getByLocation('course', null, null, 1000, 'rating', 4);
+            $listings['course'] = array_map(function($r){
+                $item = (array)$r;
+                if (empty($item['cover_image'])) {
+                   $db = \Config\Database::connect();
+                   $img = $db->table('listing_images')->where('listing_id', $item['id'])->orderBy('position', 'ASC')->get()->getRow();
+                   $item['cover_image'] = $img ? $img->image_path : null;
+                }
+                return $item;
+            }, $globalCourses);
+        }
+        
+        // If empty (no location set or no results), fetch global top rated
+        if (empty($top_rated)) {
+            $globalRes = $listingModel->getByLocation('regular', null, null, 1000, 'rating', 8);
+            foreach ($globalRes as $gr) {
+                $item = (array)$gr;
+                if (empty($item['cover_image'])) {
+                   $db = \Config\Database::connect();
+                   $img = $db->table('listing_images')->where('listing_id', $item['id'])->orderBy('position', 'ASC')->get()->getRow();
+                   $item['cover_image'] = $img ? $img->image_path : null;
+                }
+                $top_rated[] = $item;
+            }
+        }
+        
+        usort($top_rated, function($a, $b) {
+            $rA = (float)($a['avg_rating'] ?? 0);
+            $rB = (float)($b['avg_rating'] ?? 0);
+            if ($rA != $rB) return $rB <=> $rA;
+            return (int)($b['total_students'] ?? 0) <=> (int)($a['total_students'] ?? 0);
+        });
+        $top_rated = array_slice($top_rated, 0, 8);
 
         $categories = (new \App\Models\CategoryModel())->orderBy('name', 'ASC')->findAll();
+        $testimonials = (new \App\Models\TestimonialModel())->getForPage('home', 3);
 
         return view('frontend/home', [
             'page_title'        => 'Find Classes Near You | Class Next Door',
@@ -149,9 +202,21 @@ class Frontend extends BaseController
             'location_selected' => $loc['set'],
             'featured_listings' => $featured_listings,
             'listings'          => $listings,
+            'top_rated'         => $top_rated,
             'listings_total'    => $listings_total,
             'location_state'    => $loc['state'],
             'categories'        => $categories,
+            'testimonials'      => $testimonials,
+        ]);
+    }
+
+    public function about(): string
+    {
+        $testimonials = (new \App\Models\TestimonialModel())->getForPage('about', 7);
+        return view('frontend/about', [
+            'page_title'        => 'About Us | Class Next Door',
+            'testimonials'      => $testimonials,
+            'show_location_bar' => false,
         ]);
     }
 
@@ -254,7 +319,7 @@ class Frontend extends BaseController
             $subcategories = (new \App\Models\SubcategoryModel())
                             ->where('category_id', $categoryId)
                             ->where('status', 'active')
-                            ->orderBy('name', 'ASC')
+                            ->orderBy('id', 'ASC')
                             ->findAll();
         }
 
@@ -647,7 +712,7 @@ class Frontend extends BaseController
             $subcategories = (new \App\Models\SubcategoryModel())
                             ->where('category_id', $categoryId)
                             ->where('status', 'active')
-                            ->orderBy('name', 'ASC')
+                            ->orderBy('id', 'ASC')
                             ->findAll();
         }
 
@@ -689,6 +754,25 @@ class Frontend extends BaseController
             $loc['lng']
         );
 
+        // If not found normally, allow preview for owner or admin
+        if (!$data) {
+            $user = session()->get('cnd_user');
+            $isAdmin = (function_exists('hasPermissions') && hasPermissions('listings_view'));
+
+            if ($user || $isAdmin) {
+                $previewData = $model->getDetail($id, $loc['lat'], $loc['lng'], true);
+                if ($previewData) {
+                    $ownerId = (int)$previewData['listing']['provider_id'];
+                    $currentUserId = (int)($user['id'] ?? 0);
+                    
+                    if ($isAdmin || ($currentUserId > 0 && $ownerId === $currentUserId)) {
+                         $data = $previewData;
+                         $data['is_preview'] = true;
+                    }
+                }
+            }
+        }
+
         if (!$data) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException(
                 "Listing #{$id} not found or not yet published."
@@ -722,7 +806,10 @@ class Frontend extends BaseController
             'email_verified'    => session()->get('cnd_email_verified') === true,
             'is_enrolled'       => !empty($enrolment),
             'has_reviewed'      => $hasReviewed,
-            'enrolment_data'    => $enrolment
+            'enrolment_data'    => $enrolment,
+            'is_preview'        => $data['is_preview'] ?? false,
+            'listing_status'    => $l['status'] ?? 'active',
+            'review_status'     => $l['review_status'] ?? 'approved'
         ]);
     }
 
@@ -739,6 +826,34 @@ class Frontend extends BaseController
 
         $model = new ListingModel();
         $data  = $model->getDetail($id, $lat, $lng);
+
+        if (!$data) {
+            $user = session()->get('cnd_user');
+            $canBypass = false;
+
+            if ($user && isset($user['id'])) {
+                // Option A: Logged-in provider is the owner
+                $canBypass = true; 
+            } elseif (function_exists('hasPermissions') && hasPermissions('listings_view')) {
+                // Option B: User is an Admin with listing view permissions
+                $canBypass = true;
+            }
+
+            if ($canBypass) {
+                $previewData = $model->getDetail($id, $lat, $lng, true);
+                if ($previewData) {
+                    // If not an admin, verify ownership
+                    if (!function_exists('hasPermissions') || !hasPermissions('listings_view')) {
+                        if ($previewData['listing']['provider_id'] == ($user['id'] ?? 0)) {
+                            $data = $previewData;
+                        }
+                    } else {
+                        // Admin can see any listing
+                        $data = $previewData;
+                    }
+                }
+            }
+        }
 
         if (!$data) {
             return $this->response->setStatusCode(404)->setJSON([
@@ -983,5 +1098,22 @@ class Frontend extends BaseController
 
         return $this->response->setJSON(['success' => true, 'data' => $subs]);
     }
+
+    public function privacyPolicy(): string
+    {
+        return view('frontend/privacy_policy');
+    }
+
+    public function dataDeletion(): string
+    {
+        return view('frontend/data_deletion');
+    }
+
+    public function terms(): string
+    {
+        return view('frontend/terms');
+    }
 }
+
+
 

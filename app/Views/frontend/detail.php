@@ -7,7 +7,7 @@
 .cnd-detail-hero-gradient{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,20,.95) 0%,rgba(10,10,20,.55) 55%,rgba(10,10,20,.15) 100%);}
 .cnd-detail-hero-content{position:relative;z-index:2;padding:2.2rem 1.5rem 2rem;}
 @media(min-width:992px){.cnd-detail-hero{min-height:420px;}.cnd-detail-hero-content{padding:3rem 3rem 2.5rem;}}
-.cnd-detail-type-badge{display:inline-flex;align-items:center;gap:.35rem;background:var(--cnd-pink);color:#fff;border-radius:var(--cnd-radius-pill);font-size:.72rem;font-weight:700;padding:.28rem .85rem;letter-spacing:.04em;margin-bottom:.9rem;text-transform:uppercase;}
+.cnd-detail-type-badge{display:inline-flex;align-items:center;gap:.35rem;background:var(--cnd-accent);color:#fff;border-radius:var(--cnd-radius-pill);font-size:.72rem;font-weight:700;padding:.28rem .85rem;letter-spacing:.04em;margin-bottom:.9rem;text-transform:uppercase;}
 .cnd-detail-type-badge.workshop{background:linear-gradient(135deg,#f7971e,#ffd200);}
 .cnd-detail-type-badge.course{background:linear-gradient(135deg,#7C4DFF,#c776ff);}
 .cnd-detail-title{font-size:clamp(1.45rem,4vw,2.4rem);font-weight:900;color:#fff;line-height:1.2;letter-spacing:-.5px;margin-bottom:.7rem;}
@@ -16,7 +16,7 @@
 .cnd-detail-stars-inline{color:var(--cnd-gold);letter-spacing:.06em;font-size:.88rem;}
 /* Breadcrumb */
 .cnd-breadcrumb{font-size:.78rem;padding:.7rem 0;color:var(--cnd-muted);}
-.cnd-breadcrumb a{color:var(--cnd-pink);text-decoration:none;}
+.cnd-breadcrumb a{color:var(--cnd-accent);text-decoration:none;}
 .cnd-breadcrumb a:hover{text-decoration:underline;}
 /* Layout */
 .cnd-detail-layout{display:flex;gap:1.8rem;align-items:flex-start;}
@@ -27,19 +27,19 @@
 .cnd-thumb-strip{display:flex;gap:.6rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.3rem;margin-bottom:1.5rem;}
 .cnd-thumb-strip::-webkit-scrollbar{display:none;}
 .cnd-thumb{width:80px;height:60px;object-fit:cover;border-radius:var(--cnd-radius-xs);cursor:pointer;opacity:.65;transition:opacity .2s,transform .2s;border:2.5px solid transparent;flex-shrink:0;}
-.cnd-thumb.active,.cnd-thumb:hover{opacity:1;border-color:var(--cnd-pink);transform:scale(1.05);}
+.cnd-thumb.active,.cnd-thumb:hover{opacity:1;border-color:var(--cnd-accent);transform:scale(1.05);}
 /* Tab nav */
 .cnd-detail-tabs{border-bottom:2px solid var(--cnd-card-border);margin-bottom:1.5rem;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
 .cnd-detail-tabs::-webkit-scrollbar{display:none;}
 .cnd-detail-tab{padding:.65rem 1.1rem;font-size:.84rem;font-weight:700;color:var(--cnd-muted);border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color var(--cnd-transition),border-color var(--cnd-transition);}
-.cnd-detail-tab.active,.cnd-detail-tab:hover{color:var(--cnd-pink);border-bottom-color:var(--cnd-pink);}
+.cnd-detail-tab.active,.cnd-detail-tab:hover{color:var(--cnd-accent);border-bottom-color:var(--cnd-accent);}
 .cnd-detail-panel{display:none;}.cnd-detail-panel.active{display:block;}
 /* Description */
 .cnd-detail-desc{font-size:.93rem;line-height:1.75;color:var(--cnd-dark);}
 /* Schedule grid */
 .cnd-slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.65rem;}
 .cnd-slot-card{background:#fff;border:1.5px solid var(--cnd-card-border);border-radius:var(--cnd-radius-xs);padding:.7rem .9rem;transition:border-color var(--cnd-transition),box-shadow var(--cnd-transition);cursor:default;}
-.cnd-slot-card:hover{border-color:var(--cnd-pink);box-shadow:0 2px 10px rgba(255, 104, 180,.15);}
+.cnd-slot-card:hover{border-color:var(--cnd-accent);box-shadow:0 2px 10px rgba(249, 160, 94,.15);}
 .cnd-slot-date{font-size:.76rem;font-weight:700;color:var(--cnd-grad-start);text-transform:uppercase;letter-spacing:.06em;}
 .cnd-slot-time{font-size:.88rem;font-weight:600;color:var(--cnd-dark);margin-top:.15rem;}
 /* Reviews */
@@ -64,12 +64,12 @@
 .cnd-sidebar-price-label{font-size:.78rem;color:var(--cnd-muted);margin-top:.2rem;}
 .cnd-sidebar-divider{height:1px;background:var(--cnd-card-border);margin:1rem 0;}
 .cnd-sidebar-meta-item{display:flex;align-items:flex-start;gap:.55rem;font-size:.83rem;color:var(--cnd-dark);margin-bottom:.7rem;}
-.cnd-sidebar-meta-item i{color:var(--cnd-pink);font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+.cnd-sidebar-meta-item i{color:var(--cnd-accent);font-size:1rem;flex-shrink:0;margin-top:.05rem;}
 .cnd-sidebar-meta-label{font-size:.72rem;color:var(--cnd-muted);display:block;}
 .cnd-btn-book{display:block;width:100%;padding:.85rem;font-weight:800;font-size:1rem;background:var(--cnd-gradient);border:none;color:#fff;border-radius:var(--cnd-radius-pill);text-align:center;cursor:pointer;text-decoration:none;transition:opacity .2s,transform .2s;margin-bottom:.7rem;}
 .cnd-btn-book:hover{opacity:.9;transform:translateY(-2px);color:#fff;}
-.cnd-btn-trial{display:block;width:100%;padding:.7rem;font-weight:700;font-size:.88rem;background:transparent;border:2px solid var(--cnd-pink);color:var(--cnd-pink);border-radius:var(--cnd-radius-pill);text-align:center;cursor:pointer;text-decoration:none;transition:all .2s;}
-.cnd-btn-trial:hover{background:var(--cnd-pink);color:#fff;}
+.cnd-btn-trial{display:block;width:100%;padding:.7rem;font-weight:700;font-size:.88rem;background:transparent;border:2px solid var(--cnd-accent);color:var(--cnd-accent);border-radius:var(--cnd-radius-pill);text-align:center;cursor:pointer;text-decoration:none;transition:all .2s;}
+.cnd-btn-trial:hover{background:var(--cnd-accent);color:#fff;}
 /* Early bird */
 .cnd-early-bird{background:linear-gradient(135deg,#fff8e1,#fff3cd);border:1.5px solid #ffd200;border-radius:var(--cnd-radius-xs);padding:.8rem 1rem;margin-bottom:1rem;font-size:.82rem;}
 .cnd-early-bird-badge{font-size:.72rem;font-weight:800;background:#ffd200;color:#333;border-radius:var(--cnd-radius-pill);padding:.15rem .6rem;margin-right:.4rem;}
@@ -82,11 +82,11 @@
 /* Share buttons group */
 .cnd-share-group{display:flex;gap:.5rem;margin-top:1.2rem;justify-content:center;flex-wrap:wrap;}
 .cnd-share-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#fff;border:1.5px solid var(--cnd-card-border);color:var(--cnd-muted);transition:all .2s;font-size:1.1rem;}
-.cnd-share-btn:hover{background:var(--cnd-light);color:var(--cnd-pink);border-color:var(--cnd-pink);transform:translateY(-2px);}
+.cnd-share-btn:hover{background:var(--cnd-light);color:var(--cnd-accent);border-color:var(--cnd-accent);transform:translateY(-2px);}
 .cnd-share-btn.whatsapp:hover{color:#25D366;border-color:#25D366;}
 /* Provider contact reveal */
-.cnd-reveal-box{background:rgba(255, 104, 180,0.05);border:1px dashed var(--cnd-pink);border-radius:var(--cnd-radius-xs);padding:.8rem;text-align:center;margin-top:.8rem;}
-.cnd-reveal-btn{background:none;border:none;color:var(--cnd-pink);font-weight:700;font-size:.82rem;text-decoration:underline;cursor:pointer;padding:0;}
+.cnd-reveal-box{background:rgba(249, 160, 94,0.05);border:1px dashed var(--cnd-accent);border-radius:var(--cnd-radius-xs);padding:.8rem;text-align:center;margin-top:.8rem;}
+.cnd-reveal-btn{background:none;border:none;color:var(--cnd-accent);font-weight:700;font-size:.82rem;text-decoration:underline;cursor:pointer;padding:0;}
 .cnd-verified-badge{display:inline-flex;align-items:center;gap:.3rem;background:#d4f8e8;color:#1a7a4a;font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:var(--cnd-radius-pill);margin-top:.3rem;}
 </style>
 <?= $this->endSection() ?>
@@ -141,6 +141,13 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
 <section class="py-4" style="background:var(--cnd-light);">
   <div class="container-fluid px-3 px-lg-5">
 
+    <?php if ($is_preview ?? false): ?>
+    <div class="cnd-preview-alert" style="background:#ffd200;color:#000;padding:.8rem 1.2rem;border-radius:var(--cnd-radius-sm);margin-bottom:1.5rem;font-weight:700;display:flex;align-items:center;gap:.6rem;border:2px solid #e6bd00;">
+      <i class="bi bi-eye-fill fs-5"></i>
+      <span>PREVIEW MODE: This class is currently <?= strtoupper($listing_status) ?> and <?= strtoupper($review_status) ?>. It is NOT visible to the public.</span>
+    </div>
+    <?php endif; ?>
+    
     <!-- Breadcrumb -->
     <nav class="cnd-breadcrumb" aria-label="breadcrumb">
       <a href="<?= base_url() ?>">Home</a> &rsaquo;
@@ -180,7 +187,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
           <button class="cnd-detail-tab"         data-tab="reviews"  role="tab" aria-selected="false" id="tab-reviews">
             Reviews
             <?php if($rCount > 0): ?>
-            <span class="badge rounded-pill ms-1" style="background:var(--cnd-pink);font-size:.65rem;"><?= $rCount ?></span>
+            <span class="badge rounded-pill ms-1" style="background:var(--cnd-accent);font-size:.65rem;"><?= $rCount ?></span>
             <?php endif; ?>
           </button>
         </div>
@@ -198,10 +205,10 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
           <!-- Instructor Details -->
           <div class="mb-4 p-3 bg-white border rounded-4 shadow-sm">
              <h5 class="fw-bold mb-3 d-flex align-items-center">
-                <i class="bi bi-person-workspace text-pink me-2"></i> Instructor Info
+                <i class="bi bi-person-workspace text-accent me-2"></i> Instructor Info
              </h5>
              <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="bg-soft-pink text-pink rounded-circle p-2" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <div class="bg-soft-accent text-accent rounded-circle p-2" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
                    <i class="bi bi-person-fill fs-4"></i>
                 </div>
                 <div>
@@ -212,7 +219,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                       <?php endif; ?>
                    </div>
                    <?php if(!empty($l['social_links']) || !empty($l['linkedin_url'])): ?>
-                      <a href="<?= esc($l['social_links'] ?: $l['linkedin_url']) ?>" target="_blank" class="small text-pink text-decoration-none">
+                      <a href="<?= esc($l['social_links'] ?: $l['linkedin_url']) ?>" target="_blank" class="small text-accent text-decoration-none">
                          <i class="bi bi-link-45deg"></i> Social / Portfolio Link
                       </a>
                    <?php endif; ?>
@@ -248,16 +255,16 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                 <div class="row g-3">
                    <?php foreach($batches as $idx => $batch): ?>
                    <div class="col-md-6">
-                      <div class="card border-0 shadow-sm rounded-4 p-3 border-start border-4 border-pink">
+                      <div class="card border-0 shadow-sm rounded-4 p-3 border-start border-4 border-accent">
                          <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="fw-bold mb-0"><?= esc($batch['name'] ?? 'Batch') ?></h6>
-                            <span class="badge bg-pink text-white">₹<?= number_format($batch['price'] ?? 0) ?> / <?= ($batch['price_type'] ?? "monthly") === "quarterly" ? "Quarter" : "Month" ?></span>
+                            <span class="badge bg-accent text-white">₹<?= number_format($batch['price'] ?? 0) ?> / <?= ($batch['price_type'] ?? "monthly") === "quarterly" ? "Quarter" : "Month" ?></span>
                          </div>
                          <div class="small text-muted mb-2">
                             <i class="bi bi-calendar3 me-1"></i> <?= esc(is_array($batch['days'] ?? null) ? implode(', ', $batch['days']) : ($batch['days'] ?? 'Check schedule')) ?>
                          </div>
                          <div class="small text-dark fw-bold mb-2">
-                            <i class="bi bi-clock me-1 text-pink"></i> 
+                            <i class="bi bi-clock me-1 text-accent"></i> 
                             <?= !empty($batch['from_time']) ? date('g:i A', strtotime($batch['from_time'])) : 'N/A' ?>
                             <?= !empty($batch['to_time']) ? ' - ' . date('g:i A', strtotime($batch['to_time'])) : '' ?>
                          </div>
@@ -270,7 +277,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                             <?php endif; ?>
                          </div>
                          <div class="mt-3 d-flex gap-2">
-                            <button type="button" onclick="openBookingModal('regular', <?= $idx ?>)" class="btn btn-pink btn-sm flex-grow-1 rounded-pill fw-bold shadow-sm">Book Now</button>
+                            <button type="button" onclick="openBookingModal('regular', <?= $idx ?>)" class="btn btn-accent btn-sm flex-grow-1 rounded-pill fw-bold shadow-sm">Book Now</button>
                             <?php if(!empty($batch['free_trial'])): ?>
                                <button type="button" onclick="openBookingModal('trial', <?= $idx ?>)" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill fw-bold">Free Trial</button>
                             <?php endif; ?>
@@ -347,7 +354,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                       <form id="reviewForm" class="mt-3">
                          <div class="mb-3">
                             <label class="form-label small fw-bold text-uppercase">Your Rating</label>
-                            <div class="cnd-rating-input fs-3 text-pink cursor-pointer" id="starInput">
+                            <div class="cnd-rating-input fs-3 text-accent cursor-pointer" id="starInput">
                                <i class="bi bi-star" data-value="1"></i>
                                <i class="bi bi-star" data-value="2"></i>
                                <i class="bi bi-star" data-value="3"></i>
@@ -360,11 +367,11 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                             <label class="form-label small fw-bold text-uppercase">Your Review</label>
                             <textarea name="review_text" class="form-control rounded-3 border-2" rows="3" placeholder="What did you like the most?"></textarea>
                          </div>
-                         <button type="submit" class="btn btn-pink rounded-pill px-4 fw-bold">Post Review & Complete Class</button>
+                         <button type="submit" class="btn btn-accent rounded-pill px-4 fw-bold">Post Review & Complete Class</button>
                       </form>
                    <?php else: ?>
                       <p class="small text-muted mb-3">To leave a review for Workshops or Courses, please head to your history page.</p>
-                      <a href="<?= base_url('my-bookings') ?>" class="btn btn-pink rounded-pill px-4 fw-bold shadow-sm">
+                      <a href="<?= base_url('my-bookings') ?>" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">
                          Click here to post review <i class="bi bi-arrow-right ms-1"></i>
                       </a>
                    <?php endif; ?>
@@ -618,7 +625,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                       </iframe>
                    </div>
                    <div class="mt-2 small text-muted">
-                      <i class="bi bi-geo-alt-fill text-pink"></i> <?= esc($l['address'] ?: ($l['locality'] . ', ' . $l['city'])) ?>
+                      <i class="bi bi-geo-alt-fill text-accent"></i> <?= esc($l['address'] ?: ($l['locality'] . ', ' . $l['city'])) ?>
                    </div>
                 <?php else: ?>
                    <div class="bg-light p-3 rounded-3 text-center small text-muted">
@@ -627,10 +634,10 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
                    </div>
                 <?php endif; ?>
              <?php else: ?>
-                <div class="bg-soft-pink text-pink p-4 rounded-3 text-center">
+                <div class="bg-soft-accent text-accent p-4 rounded-3 text-center">
                    <i class="bi bi-lock-fill fs-2 d-block mb-2"></i>
                    <p class="small fw-bold mb-3">Login to see the exact location</p>
-                   <a href="<?= base_url('login') ?>" class="btn btn-pink btn-sm rounded-pill px-4">Login Now</a>
+                   <a href="<?= base_url('login') ?>" class="btn btn-accent btn-sm rounded-pill px-4">Login Now</a>
                 </div>
              <?php endif; ?>
           </div>
@@ -692,7 +699,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
         <!-- Step 1: Enter Email -->
         <div id="vStep1">
           <div class="text-center mb-4">
-             <div class="bg-soft-pink text-pink rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+             <div class="bg-soft-accent text-accent rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
                 <i class="bi bi-person-lines-fill fs-2"></i>
              </div>
              <p class="text-muted px-3">To see the instructor's phone number, please verify your email address.</p>
@@ -702,7 +709,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
             <label class="form-label small fw-bold text-uppercase letter-spacing-sm">Your Email Address</label>
             <input type="email" id="vEmail" class="form-control form-control-lg rounded-3 border-2" placeholder="e.g. parent@example.com">
           </div>
-          <button id="vSendBtn" class="btn btn-pink w-100 py-3 rounded-pill fw-bold shadow-sm" style="background:var(--cnd-pink); border:none; color:#fff;">
+          <button id="vSendBtn" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow-sm" style="background:var(--cnd-accent); border:none; color:#fff;">
             <span id="vSendSpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
             Send Verification Code
           </button>
@@ -722,13 +729,13 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
             <input type="text" id="vOtp" class="form-control form-control-lg text-center fw-bold fs-3 rounded-3" maxlength="6" placeholder="------" style="letter-spacing: .5rem;">
           </div>
 
-          <button id="vVerifyBtn" class="btn btn-pink w-100 py-3 rounded-pill fw-bold mb-3 shadow-sm" style="background:var(--cnd-pink); border:none; color:#fff;">
+          <button id="vVerifyBtn" class="btn btn-accent w-100 py-3 rounded-pill fw-bold mb-3 shadow-sm" style="background:var(--cnd-accent); border:none; color:#fff;">
              <span id="vVerifySpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
              Verify & Unlock
           </button>
           
           <div class="d-flex justify-content-between px-2">
-            <button class="btn btn-link btn-sm text-pink text-decoration-none px-0" id="vResendBtn" style="color:var(--cnd-pink);">Resend Code</button>
+            <button class="btn btn-link btn-sm text-accent text-decoration-none px-0" id="vResendBtn" style="color:var(--cnd-accent);">Resend Code</button>
             <button class="btn btn-link btn-sm text-muted text-decoration-none px-0" id="vBackBtn">Change Email</button>
           </div>
         </div>
@@ -739,8 +746,8 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
 </div>
 
 <style>
-.bg-soft-pink { background: rgba(255, 104, 180, 0.08); }
-.text-pink { color: var(--cnd-pink); }
+.bg-soft-accent { background: rgba(249, 160, 94, 0.08); }
+.text-accent { color: var(--cnd-accent); }
 </style>
 
 <!-- ══ BOOKING MODAL ══════════════════════════════════════════ -->
@@ -863,10 +870,10 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
 <style>
 /* Booking modal step dots */
 .cnd-step-dot{width:26px;height:26px;border-radius:50%;background:#e0d4f7;color:#7C4DFF;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s,color .3s;}
-.cnd-step-item.active .cnd-step-dot{background:var(--cnd-pink);color:#fff;}
+.cnd-step-item.active .cnd-step-dot{background:var(--cnd-accent);color:#fff;}
 .cnd-step-item.done .cnd-step-dot{background:#2ECC71;color:#fff;}
 .cnd-step-label{font-size:.73rem;font-weight:600;color:var(--cnd-muted);white-space:nowrap;}
-.cnd-step-item.active .cnd-step-label{color:var(--cnd-pink);}
+.cnd-step-item.active .cnd-step-label{color:var(--cnd-accent);}
 </style>
 <script>
 (function(){
@@ -1111,10 +1118,10 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
 
     document.getElementById('bConfirmDetails').innerHTML =
       '<div class="mb-2 text-dark"><strong>' + (b.listing_title || D.title) + '</strong></div>' +
-      '<div class="mb-1"><i class="bi bi-person-fill me-2 text-pink"></i>' + (b.student_name || '') + '</div>' +
-      '<div class="mb-1"><i class="bi bi-calendar-check-fill me-2 text-pink"></i>' + schedule + '</div>' +
-      (b.address ? '<div class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-pink"></i>' + b.address + '</div>' : '') +
-      '<div class="mb-1 font-weight-bold text-success"><i class="bi bi-credit-card-fill me-2 text-pink"></i>' + amt + '</div>' +
+      '<div class="mb-1"><i class="bi bi-person-fill me-2 text-accent"></i>' + (b.student_name || '') + '</div>' +
+      '<div class="mb-1"><i class="bi bi-calendar-check-fill me-2 text-accent"></i>' + schedule + '</div>' +
+      (b.address ? '<div class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-accent"></i>' + b.address + '</div>' : '') +
+      '<div class="mb-1 font-weight-bold text-success"><i class="bi bi-credit-card-fill me-2 text-accent"></i>' + amt + '</div>' +
       '<div class="mt-2 pt-2 border-top text-muted small">Booking Reference: ' + ref + '</div>';
   }
 
@@ -1164,7 +1171,7 @@ $typeIcon  = ['regular'=>'bi-calendar3','workshop'=>'bi-lightning-charge','cours
       star.addEventListener('mouseover', function(){
         var val = parseInt(this.dataset.value);
         stars.forEach(function(s, i){
-           if(i < val) s.style.color = 'var(--cnd-pink)';
+           if(i < val) s.style.color = 'var(--cnd-accent)';
            else s.style.color = '';
         });
       });

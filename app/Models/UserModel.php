@@ -18,11 +18,19 @@ class UserModel extends BaseModel
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
+    // KYC Status Constants
+    public const KYC_NOT_STARTED    = 'not_started';
+    public const KYC_IN_PROGRESS    = 'in_progress';
+    public const KYC_PENDING_REVIEW = 'pending';
+    public const KYC_APPROVED       = 'approved';
+    public const KYC_REJECTED       = 'rejected';
+    public const KYC_REVOKED        = 'revoked';
+
     protected $allowedFields = [
         'name', 'username', 'email', 'password', 'phone', 'address',
         'last_login', 'role', 'reset_token', 'status', 'img_type',
         'phone_verified', 'email_verified', 'email_verified_at',
-        'bank_name', 'bank_account_no', 'bank_ifsc', 'upi_id', 'status_remarks',
+        'bank_name', 'bank_account_no', 'bank_ifsc', 'upi_id', 'upi_verified', 'upi_verified_at', 'status_remarks',
         'razorpay_account_id', 'provider', 'provider_id', 'is_verified',
         'provider_verification_status', 'provider_verification_message', 'provider_submitted_at', 'provider_verified_at',
     ];

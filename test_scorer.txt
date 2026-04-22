@@ -1,0 +1,293 @@
+Here's a comprehensive verification prompt you can use directly with an AI assistant or your dev team:
+
+---
+
+**🏏 Cricket Platform — Scorer Flow Verification Prompt**
+
+---
+
+You are a senior QA engineer and cricket domain expert reviewing the ball-by-ball scoring system of a Cricket Live Scoring Platform built in Laravel. Your job is to perform a **complete end-to-end sequential verification** of the entire scorer flow — from pre-match setup through to final result declaration — and confirm that every step is correctly implemented, properly gated, and handles all edge cases.
+
+Work through the following verification checklist **in strict order**. For each step, verify the frontend behaviour, backend logic, database state change, and real-time broadcast. Flag any step that is missing, out of sequence, or incorrectly implemented.
+
+---
+
+**PHASE 1 — PRE-MATCH SETUP (gated sequence, each step must complete before next unlocks)**
+
+Step 1.1 — Captain Selection
+- Confirm captain selection UI loads with searchable dropdowns for both teams showing player name, jersey number, photo thumbnail, and role badge
+- Confirm both captains must be selected before "Next" is enabled — inline error shown if skipped
+- Verify POST /api/matches/{id}/captains stores captainForTeamA and captainForTeamB, sets is_captain = true in MatchSquad, and logs a 'captain_assigned' MatchEvent
+- Verify GET /matches/{id}/captains returns correct captain details for scorecard header
+
+Step 1.2 — Toss Recording
+- Confirm Lottie coin-flip animation plays on load
+- Confirm "Team A wins / Team B wins" buttons appear, followed by "Bat or Field" prompt after winner selection
+- Verify POST /api/matches/{id}/toss stores toss_winner_team_id, toss_decision, toss_timestamp; derives and stores batting_first and fielding_first team IDs
+- Verify toss immediately triggers async prediction resolution for all toss-type predictions
+- Verify all toss-type predictions are locked (status = 'locked') at this point — no further edits allowed
+- Verify Laravel Reverb broadcasts { type: 'toss_result', winner, decision } on the match public channel
+- Confirm animated toss result banner appears on the match page for all viewers
+
+Step 1.3 — Playing XI Entry
+- Confirm both teams' squad lists appear with role badges (BAT/BOWL/ALL/WK) and captain/VC indicators
+- Confirm live counter shows "X/11 selected" per team
+- Verify validation: exactly 11 players required, at least 1 wicket-keeper warned (soft validation, not hard block)
+- Verify POST /api/matches/{id}/squad stores MatchSquad records for all 22 players: match_id, player_id, team_id, is_playing_xi = true, batting_position = null
+- Confirm squad remains editable until match_status = 'live' and locks permanently after first ball
+
+Step 1.4 — Impact Player (conditional)
+- If match.is_impact_player_allowed = true: confirm Impact Player substitute selection UI appears for each team, populated only from non-playing XI bench players
+- Verify impact_player_substitute_id stored per team, status = pending
+- Confirm "Start Match" button only becomes active after all mandatory steps are complete
+
+---
+
+**PHASE 2 — INNINGS SETUP (runs at the start of each innings)**
+
+Step 2.1 — Opener Selection
+- Confirm opener selection modal appears before any ball can be entered
+- Confirm two dropdowns: Striker (facing first ball) and Non-Striker
+- Confirm dropdowns are populated from batting team's playing XI only, excluding dismissed players
+- Verify same player cannot be selected in both dropdowns — inline error shown
+- Verify POST /api/innings/{id}/openers creates two BatsmanInnings records: role = striker / non_striker, arrival_ball_number = 0, batting_position = 1 and 2
+- Confirm live scorecard immediately shows both batsmen: name, runs (0), balls (0), 4s (0), 6s (0), SR (0.00)
+
+Step 2.2 — Bowler Selection
+- Confirm bowler dropdown shows fielding team's XI with bowling style and overs quota remaining
+- Verify bowler who bowled the previous over is greyed out (no consecutive overs rule)
+- Verify bowler who has reached format quota (4 overs T20 / 10 overs ODI) is greyed out
+- Verify POST /api/innings/{id}/bowler creates BowlerInnings record with all fields initialised to zero
+- Confirm this same modal fires again at the start of every new over and mid-over bowler change is blocked
+
+---
+
+**PHASE 3 — BALL-BY-BALL SCORING (the core loop)**
+
+Step 3.1 — Scoring Panel Readiness
+- Confirm scorer panel is visible: run buttons (0/1/2/3/4/6), Extras section, Wicket button, Undo button, End Over, Strike Swap
+- Confirm active striker name is shown prominently above run buttons with bat icon
+- Confirm over progress shows correctly (e.g. "14.3" = over 14, ball 3)
+- Confirm recent balls ticker shows last 6 balls as coloured circles (dot=grey, run=green, 4=blue, 6=gold, W=red, wide=yellow, nb=orange)
+- Confirm 30-second countdown timer appears per ball entry
+
+Step 3.2 — Run Entry (for each valid delivery 0/1/2/3/4/6)
+- Verify pressing a run button submits POST /api/innings/{id}/ball with idempotency_key (UUID)
+- Verify duplicate idempotency_key within 10 seconds returns 409 — no duplicate ball created
+- Verify BallEvent record created with correct over_number, ball_number, striker_id, non_striker_id, bowler_id, runs_scored, is_extra = false
+- Verify BatsmanInnings updated: runs += scored, balls_faced += 1, fours/sixes incremented correctly, strike_rate recalculated
+- Verify BowlerInnings updated: runs_conceded += scored, balls_bowled += 1, economy recalculated as (runs_conceded / balls_bowled) * 6
+- Verify Innings totals updated: total_runs += scored, total_balls += 1, current_run_rate recalculated
+- Verify strike auto-rotates after odd runs (1 or 3): striker_id and non_striker_id swap in live match state
+- Verify 2nd innings RRR updates after every ball: RRR = (target - total_runs) / overs_remaining
+- Verify Laravel Reverb broadcasts { type: 'ball_scored', over, ball, striker, runs, total, wickets } on match public channel
+- Verify milestone check fires at 50, 100, 150, 200 runs for the batsman — MatchEvent logged and milestone broadcast sent
+
+Step 3.3 — End of Over
+- Verify over auto-ends after 6th valid delivery — ball counter does not advance past 6
+- Verify strike auto-rotates at over end
+- Verify BowlerInnings.overs_bowled increments correctly
+- Verify maiden over detection: if 0 runs scored in the over, BowlerInnings.maiden_overs increments
+- Verify scorer is prompted to select next bowler before ball 1 of the new over
+
+Step 3.4 — Extras Entry (test each type independently)
+
+WIDE:
+- Verify BallEvent created with is_wide = true
+- Verify ball counter does NOT advance (not a valid delivery)
+- Verify 1 extra (+ any additional wide runs) added to InningsExtras.wides
+- Verify bowler's runs_conceded incremented by wide runs
+- Verify bowler's over is extended by 1 ball (total valid deliveries in over remains at 6 required)
+
+NO BALL:
+- Verify ball counter does NOT advance
+- Verify 1 added to InningsExtras.no_balls and bowler's runs_conceded
+- Verify if batsman hits the no-ball for runs, those runs credited to BatsmanInnings separately
+- Verify Wicket button shows tooltip: "On No Ball, only Run Out dismissal is valid"
+
+LEG BYE:
+- Verify ball counter DOES advance (valid delivery)
+- Verify runs credited to InningsExtras.leg_byes only — NOT to batsman score, NOT to bowler runs_conceded
+
+BYE:
+- Verify ball counter DOES advance
+- Verify runs credited to InningsExtras.byes only
+
+PENALTY RUNS:
+- Verify 5 added to InningsExtras.penalty_runs; no ball bowled, counter unchanged
+- Verify MatchEvent type: 'penalty_awarded' logged
+
+OVERTHROWS:
+- Verify scorer is prompted: "Were overthrows off bat or off extras?"
+- Verify if off bat: credited to batsman; if off extras: credited to InningsExtras.byes
+- Verify InningsExtras.total_extras recomputed after every extras update
+- Confirm extras breakdown displayed on live scorecard: "Extras: 12 (W:4 NB:3 LB:3 B:2 Pen:0)"
+
+Step 3.5 — Wicket Entry (test each dismissal type)
+- Confirm Wicket button opens modal with dismissal type dropdown (all 10 types)
+- Confirm conditional fields appear correctly: Caught → fielder dropdown; Stumped → auto-populates keeper; Run Out → two fielder dropdowns
+- Verify Dismissal record created with correct dismissal_type, bowler_id, fielder_id, fielder2_id
+- Verify BatsmanInnings updated: innings_status = 'out', dismissed_by_bowler_id, dismissed_by_fielder_id; player excluded from all future dropdowns
+- Verify bowler wicket credited ONLY for: Bowled, Caught, Caught & Bowled, LBW, Stumped, Hit Wicket
+- Verify bowler wicket NOT credited for: Run Out, Obstructing the Field, Handled the Ball, Timed Out
+- Verify Innings.total_wickets increments
+- Verify FoW log updated and displayed: "FoW: 45/1 (6.2), 89/2 (13.4)"
+- Verify incoming batsman prompt appears immediately after wicket
+- Verify at 10th wicket: innings end is triggered automatically; "End Innings" prompt shown
+- Verify Momentum Meter spike event broadcast via Reverb on wicket
+
+---
+
+**PHASE 4 — MATCH INTERRUPTION & DLS**
+
+Step 4.1 — Delay Entry
+- Confirm "Interrupt Match" button triggers a modal with reason dropdown and optional note
+- Verify match_status set to 'delayed'; interruption_reason and interruption_start_timestamp stored; MatchEvent 'match_interrupted' logged
+- Verify all scoring buttons disabled and "Match Delayed" overlay shown on scorer panel
+- Verify Reverb broadcasts { type: 'match_delayed', reason, timestamp }; banner shown to all viewers
+- Verify scorer can update delay note mid-suspension without resuming
+- Verify on "Resume": interruption_end_timestamp stored, total_interruption_minutes calculated, match_status = 'live', Reverb broadcasts 'match_resumed'
+- Verify on "Abandon": match_status = 'abandoned', result = 'No Result', scoring locked permanently, prediction resolution triggered with No Result rule
+
+Step 4.2 — DLS Revision (2nd innings only)
+- Confirm "Reduce Overs" modal validates new overs >= overs already bowled — rejects lower values
+- Verify Innings.max_overs updated; remaining overs shown correctly on scoreboard in real time
+- Confirm "DLS Target Revision" modal shows two fields: revised target runs and revised overs
+- Verify dls_revised_target, dls_revised_overs, dls_resource_percentage stored; target_is_dls_revised = true
+- Verify live display shows "DLS Target: X in Y overs" prominently
+- Verify RRR now calculates using revised target and revised overs (not original target)
+- Verify Reverb broadcasts { type: 'dls_target_revised', newTarget, newOvers }
+- Verify win auto-detection works when 2nd innings team reaches DLS revised target
+- Verify all pre-match predictions affected by DLS are marked dls_match = true
+
+---
+
+**PHASE 5 — INNINGS END & SECOND INNINGS**
+
+Step 5.1 — Innings End Triggers
+- Verify auto-end fires on 10th wicket with confirmation prompt
+- Verify auto-end fires when over count equals max_overs with confirmation prompt
+- Verify manual "End Innings" button works for declarations and non-standard ends
+- On confirm: Innings.status = 'completed', end_time stored, MatchEvent 'innings_ended' logged, match_status = 'innings_break', Reverb broadcast sent
+
+Step 5.2 — Innings Break
+- Confirm innings break screen shows full 1st innings batting + bowling scorecard summary
+- Confirm break countdown timer is visible and configurable
+- Confirm scorer can make corrections to 1st innings during break
+- Confirm corrections are locked after the first ball of 2nd innings is entered
+- Confirm target displayed prominently: "Team B needs 187 runs to win from 20 overs"
+
+Step 5.3 — Second Innings Setup
+- Verify opener + bowler selection flow runs identically to 1st innings
+- Verify batting team is correctly swapped (previously fielding team now bats)
+- Verify new Innings record created: innings_number = 2, target = (1st innings total + 1), max_overs set correctly
+- Verify match_status = 'live' set when first ball of 2nd innings is entered
+- Verify MatchEvent 'second_innings_started' logged
+
+Step 5.4 — Undo Last Ball
+- Confirm Undo button is available for the last 3 balls within the current over only
+- Confirm confirmation dialog appears before executing undo
+- Verify undo reverses: BallEvent deleted, BatsmanInnings stats reversed, BowlerInnings stats reversed, Innings totals reversed, ball counter reversed
+- Verify if undone ball was a wicket: Dismissal deleted, BatsmanInnings restored to 'not_out', incoming batsman's BatsmanInnings record removed, previous striker/non-striker state restored
+- Verify undo across over boundary is blocked without admin override
+- Verify undo logged as MatchEvent type = 'correction'
+
+---
+
+**PHASE 6 — MATCH RESULT & COMPLETION**
+
+Step 6.1 — Result Detection
+- Verify win by runs auto-detected when 2nd innings is all-out or overs complete below target; margin = 1st innings total minus 2nd innings total
+- Verify win by wickets auto-detected when target is chased; margin = 10 minus wickets lost
+- Verify win by DLS applies when DLS-revised target not reached
+- Verify tie detection triggers Super Over prompt
+- Verify No Result applied on abandonment
+- Verify result_description auto-generated correctly for each result type
+
+Step 6.2 — Result Confirmation & Post-Match
+- Confirm scorer sees result summary confirmation: "CSK wins by 45 runs. Confirm?"
+- On confirm: match_status = 'completed', completed_at stored, all scoring permanently locked
+- Verify PredictionResolutionJob dispatched to queue; processes all predictions: match winner, top scorer, top wicket taker, total runs, powerplay total
+- Verify reputation deltas calculated and applied to each user
+- Verify leaderboard rankings updated; Reverb event emitted to refresh leaderboard for all viewers
+- Verify immutable final scorecard generated and persisted
+- Verify Player Stock Market recalculation triggered for all match participants
+- Verify post-match push notifications queued for correct predictors
+- Verify chat room archived; read-only mode activated
+
+---
+
+**PHASE 7 — SUPER OVER (if match is tied)**
+
+Step 7.1 — Super Over Setup
+- Confirm "Match Tied — Super Over Required" modal appears on tie detection
+- Verify SuperOver record created: match_id, super_over_number = 1, team batting order set per ICC rule (team that fielded in 2nd innings bats first)
+- Confirm squad selection modal limits each team to 2 batsmen and 1 bowler
+- Verify dismissed players cannot bat in Super Over; retired hurt players can
+- Verify SuperOver innings records created: max_overs = 1, max_wickets = 2
+- Confirm Super Over header displayed separately from main match scores
+
+Step 7.2 — Super Over Scoring
+- Verify same ball entry, extras, and wicket rules apply as main innings
+- Verify innings ends automatically at 2 wickets OR 6 valid deliveries — whichever is first
+- Verify after Team 1's over: their total is displayed and Team 2's opener + bowler selection is prompted
+- Verify Team 2 target chase auto-detects win before full 6 balls if target reached
+- Verify Super Over tie logic: if another Super Over is allowed per tournament config, prompt and loop with super_over_number++
+- Verify boundary count fallback: scorer can enter 4s and 6s per team if tournament uses this rule
+- Verify result stored: Matches.result_type = 'super_over', result_description correct
+- Verify Super Over tab displayed on match page alongside main scorecard
+- Verify Super Over pre-match predictions resolved separately from main match predictions
+
+---
+
+**PHASE 8 — REAL-TIME & SECURITY VERIFICATION**
+
+Reverb Event Chain — verify each event fires at the correct moment:
+- toss_result → after toss confirmed
+- ball_scored → after every valid delivery
+- wide_bowled / no_ball_bowled / leg_bye_scored / bye_scored → on respective extras
+- wicket_fallen → immediately on wicket confirmation
+- boundary_hit / six_hit → on 4 or 6
+- innings_break → on 1st innings end
+- innings_started / innings_ended → at correct transitions
+- match_delayed / match_resumed / match_abandoned → on interruption actions
+- dls_applied → on DLS revision
+- super_over_started → on Super Over initiation
+- match_completed → on final result confirmation
+- momentum_update → on wicket, boundary, maiden
+- batsman_fifty / batsman_century → on milestones
+- leaderboard_update → after prediction resolution
+
+Sequence Number Integrity:
+- Verify every Reverb event includes an incrementing seq number
+- Verify client reconnect re-subscribes to channels via Laravel Echo automatically
+- Verify client detects seq gap on reconnect and fetches catch-up payload via GET /api/matches/{id}/state?since_seq={N}
+
+Security:
+- Verify scoring endpoints return 403 if scorer's JWT scorer_match_id does not match the match being scored
+- Verify rate limit of 60 requests/minute enforced — 61st request returns 429
+- Verify duplicate idempotency_key within 10 seconds returns 409 with original response
+- Verify scorer session idle warning appears at 15 minutes and re-auth required at 30 minutes
+
+---
+
+**FINAL VERIFICATION CHECKLIST**
+
+After running through all phases above, confirm:
+
+1. Every phase is gated — no phase can begin without the previous completing
+2. No ball can be entered without opener + bowler confirmed for the current innings
+3. Ball counter never advances on Wide or No Ball
+4. Ball counter always advances on LB, Bye, and normal deliveries
+5. Bowler wicket credit rules are correct for all 10 dismissal types
+6. Strike rotation is correct after all odd-run scenarios and at over end
+7. DLS revised target replaces original target in all RRR calculations
+8. All extras types correctly update InningsExtras.total_extras
+9. Undo reverses all cascading state changes atomically
+10. Prediction resolution runs only after match_status = 'completed'
+11. Super Over stats and predictions are isolated from the main match entirely
+12. All Laravel Reverb events include correct type, match_id, timestamp, seq, and payload
+13. Admin corrections are logged in audit_logs with before/after values and reason
+14. Chat room is archived and read-only after match completion
+
+If any step fails, is missing, is out of sequence, or does not match the spec, list the issue clearly with: the failing step ID, the expected behaviour, the observed behaviour, and a recommended fix.

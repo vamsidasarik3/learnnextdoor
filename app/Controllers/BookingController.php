@@ -97,7 +97,7 @@ class BookingController extends BaseController
         if (empty($input['identity_only'])) {
             // Verify listing exists and is bookable
             $listing = $this->listingModel->getWithCategory($listingId);
-            if (!$listing || $listing->status !== 'active' || $listing->review_status !== 'approved') {
+            if (!$listing || $listing->status !== 'active' || $listing->review_status !== 'approved' || (!empty($listing->is_cancelled) && $listing->is_cancelled == 1)) {
                 return $this->response->setJSON([
                     'success' => false,
                     'message' => 'This listing is no longer available.',
@@ -416,6 +416,26 @@ class BookingController extends BaseController
 
         $this->bookingModel->confirmPayment($bookingId, $input['razorpay_payment_id']);
 
+        // Initialize enrollment_end_date
+        $listingModel = new \App\Models\ListingModel();
+        $listing = $listingModel->find((int)$pending['listing_id']);
+        $endDate = null;
+
+        if ($listing) {
+            if ($listing->type === 'course') {
+                $endDate = $listing->end_date;
+            } elseif ($listing->type === 'workshop') {
+                $endDate = $listing->start_date;
+            } else {
+                // Regular class: default to 1 month from start
+                $startDate = $pending['batch_start_date'] ?? date('Y-m-d');
+                $endDate = date('Y-m-d', strtotime('+1 month', strtotime($startDate)));
+            }
+            if ($endDate) {
+                $this->bookingModel->update($bookingId, ['enrollment_end_date' => $endDate]);
+            }
+        }
+
         // Record transaction (user_id = 0 for guest)
         $this->bookingModel->recordTransaction(
             $bookingId,
@@ -528,7 +548,9 @@ class BookingController extends BaseController
 
         // Fetch listing
         $listing = $this->listingModel->getWithCategory($listingId);
-        if (!$listing || $listing->status !== 'active' || $listing->review_status !== 'approved') {
+        $isOwner = ($listing && (int)$listing->provider_id === (int)($user['id'] ?? 0));
+
+        if (!$listing || (!$isOwner && ($listing->status !== 'active' || $listing->review_status !== 'approved'))) {
             return redirect()->to('classes')->with('error', 'This class is not available for booking.');
         }
 

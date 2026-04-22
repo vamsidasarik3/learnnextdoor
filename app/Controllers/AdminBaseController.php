@@ -22,9 +22,12 @@ use Psr\Log\LoggerInterface;
 class AdminBaseController extends Controller
 {
     /**
+     * @var \CodeIgniter\Session\Session
+     */
+    protected $session;
+
+    /**
      * Instance of the main Request object.
-     *
-     * @var CLIRequest|IncomingRequest
      */
     protected $request;
 

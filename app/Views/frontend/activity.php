@@ -5,7 +5,7 @@
 <!-- ══ HERO SECTION ══════════════════════════════════════════ -->
 <section class="cnd-hero-mini bg-light py-5">
   <div class="container text-center py-4">
-    <h1 class="display-5 fw-bold mb-2">My <span class="text-pink">Classes</span></h1>
+    <h1 class="display-5 fw-bold mb-2">My <span class="text-accent">Classes</span></h1>
     <p class="text-muted lead">Keep track of your learning journey & certificates.</p>
   </div>
 </section>
@@ -44,7 +44,7 @@
                 <div class="mb-3 text-muted" style="font-size: 3.5rem;"><i class="bi bi-calendar2-x"></i></div>
                 <h5 class="fw-bold">No upcoming classes found.</h5>
                 <p class="text-muted mb-4">Ready to learn something new today?</p>
-                <a href="<?= base_url('classes') ?>" class="btn btn-pink rounded-pill px-5 py-2 fw-bold">Browse Classes</a>
+                <a href="<?= base_url('classes') ?>" class="btn btn-accent rounded-pill px-5 py-2 fw-bold">Browse Classes</a>
               </div>
             <?php else: ?>
               <div class="row g-4">
@@ -53,7 +53,7 @@
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover">
                       <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                          <span class="badge bg-soft-pink text-pink rounded-pill px-3 py-2 small">Confirmed</span>
+                          <span class="badge bg-soft-accent text-accent rounded-pill px-3 py-2 small">Confirmed</span>
                           <span class="text-muted small">Ref: #<?= str_pad($b->id, 6, '0', STR_PAD_LEFT) ?></span>
                         </div>
                         <h5 class="fw-bold mb-2"><?= esc($b->listing_title) ?></h5>
@@ -67,7 +67,7 @@
                         ?>
                         <div class="d-flex flex-wrap gap-2 mb-4">
                           <div class="bg-light rounded-3 px-3 py-2 small border">
-                            <i class="bi bi-calendar3 me-2 text-pink"></i>
+                            <i class="bi bi-calendar3 me-2 text-accent"></i>
                             <?php if ($bkType === 'course' && $d2): ?>
                                <?= $d1 ?> to <?= $d2 ?>
                             <?php else: ?>
@@ -76,7 +76,7 @@
                           </div>
                           <?php if ($t1): ?>
                           <div class="bg-light rounded-3 px-3 py-2 small border">
-                            <i class="bi bi-clock me-2 text-pink"></i>
+                            <i class="bi bi-clock me-2 text-accent"></i>
                             <?= $t1 ?>
                           </div>
                           <?php endif; ?>
@@ -84,7 +84,7 @@
 
                         <?php if ($b->listing_address): ?>
                           <div class="d-flex text-muted small">
-                            <i class="bi bi-geo-alt-fill me-2 text-pink mt-1"></i>
+                            <i class="bi bi-geo-alt-fill me-2 text-accent mt-1"></i>
                             <span><?= esc($b->listing_address) ?></span>
                           </div>
                         <?php endif; ?>
@@ -136,7 +136,7 @@
                         
                         <div class="p-3 bg-light rounded-4 mb-4 border border-white shadow-inner">
                            <div class="d-flex align-items-center">
-                             <div class="bg-white rounded-circle p-2 me-3 text-pink shadow-sm">
+                             <div class="bg-white rounded-circle p-2 me-3 text-accent shadow-sm">
                                <i class="bi bi-patch-check-fill fs-5"></i>
                              </div>
                              <div>
@@ -147,7 +147,7 @@
                         </div>
 
                          <div class="d-grid gap-2">
-                             <button class="btn btn-pink rounded-pill py-2 btn-cert-download shadow-sm" 
+                             <button class="btn btn-accent rounded-pill py-2 btn-cert-download shadow-sm" 
                                      data-bid="<?= $b->id ?>"
                                      data-student="<?= esc($b->student_name) ?>"
                                      data-class="<?= esc($b->listing_title) ?>"
@@ -165,7 +165,7 @@
                              data-date="<?= date('d M Y', strtotime($b->created_at)) ?>"
                              data-class-date="<?= date('d M Y', strtotime($b->class_date ?: ($b->listing_start_date ?? ''))) ?>"
                              data-class-time="<?= !empty($b->class_time) ? date('g:i A', strtotime($b->class_time)) : (!empty($b->listing_class_time) ? date('g:i A', strtotime($b->listing_class_time)) : '') ?>">
-                             <i class="bi bi-file-earmark-pdf me-2 text-pink"></i>Download Invoice
+                             <i class="bi bi-file-earmark-pdf me-2 text-accent"></i>Download Invoice
                            </button>
                            
                            <?php if (!$b->has_reviewed): ?>
@@ -213,7 +213,7 @@
                     <tbody>
                        <?php foreach($payments as $tx): ?>
                        <tr>
-                          <td class="small fw-bold text-pink">#<?= esc(strtoupper(substr($tx->razorpay_id ?? '', -8))) ?></td>
+                          <td class="small fw-bold text-accent">#<?= esc(strtoupper(substr($tx->razorpay_id ?? '', -8))) ?></td>
                           <td class="small text-muted"><?= date('d M Y', strtotime($tx->created_at)) ?></td>
                           <td class="small">Booking #<?= str_pad($tx->booking_id, 6, '0', STR_PAD_LEFT) ?></td>
                           <td class="fw-bold">₹<?= number_format($tx->amount, 2) ?></td>
@@ -254,7 +254,7 @@
               <p class="opacity-90 mb-0">Join our growing community of teachers and coaches. List your own classes, workshops, or courses and reach thousands of parents.</p>
             </div>
             <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-              <a href="<?= base_url('provider/verification') ?>" class="btn btn-light rounded-pill px-4 py-3 fw-bold text-pink">
+              <a href="<?= base_url('provider/verification') ?>" class="btn btn-light rounded-pill px-4 py-3 fw-bold text-accent">
                 <i class="bi bi-rocket-takeoff-fill me-2"></i>Join as a Provider
               </a>
             </div>
@@ -276,7 +276,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4 text-center">
-        <h6 id="rClassTitle" class="fw-bold mb-3 text-pink"></h6>
+        <h6 id="rClassTitle" class="fw-bold mb-3 text-accent"></h6>
         <p class="text-muted small mb-4">Your feedback helps other parents choose the best classes for their children.</p>
 
         <!-- Star Rating -->
@@ -288,7 +288,7 @@
              <i class="bi bi-star fs-1 star-btn cursor-pointer text-muted" data-value="4"></i>
              <i class="bi bi-star fs-1 star-btn cursor-pointer text-muted" data-value="5"></i>
            </div>
-           <div id="ratingLabel" class="fw-bold text-pink small">SELECT A RATING</div>
+           <div id="ratingLabel" class="fw-bold text-accent small">SELECT A RATING</div>
         </div>
 
         <div class="mb-4">
@@ -296,7 +296,7 @@
         </div>
 
         <div class="d-grid gap-2">
-           <button id="submitReviewBtn" class="btn btn-pink py-3 rounded-pill fw-bold shadow-sm" disabled>
+           <button id="submitReviewBtn" class="btn btn-accent py-3 rounded-pill fw-bold shadow-sm" disabled>
               <span id="reviewSpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
               Submit Review
            </button>
@@ -310,16 +310,16 @@
 
 <style>
 :root { --cnd-pink: #FF68B4; --cnd-pink-dark: #FF1493; --cnd-muted: #6c757d; }
-.text-pink { color: var(--cnd-pink); }
-.btn-pink { background: var(--cnd-pink); color: #fff; border: none; }
-.btn-pink:hover { background: var(--cnd-pink-dark); color: #fff; transform: translateY(-1px); }
-.btn-outline-pink { border: 2px solid var(--cnd-pink); color: var(--cnd-pink); font-weight: 600; }
-.btn-outline-pink:hover { background: var(--cnd-pink); color: #fff; }
+.text-accent { color: var(--cnd-accent); }
+.btn-accent { background: var(--cnd-accent); color: #fff; border: none; }
+.btn-accent:hover { background: var(--cnd-pink-dark); color: #fff; transform: translateY(-1px); }
+.btn-outline-pink { border: 2px solid var(--cnd-accent); color: var(--cnd-accent); font-weight: 600; }
+.btn-outline-pink:hover { background: var(--cnd-accent); color: #fff; }
 .cnd-nav-pills .nav-link { border: 2px solid #f0f0f0; background: #fff; color: var(--cnd-muted); font-weight: 600; padding: 12px 25px; border-radius: 50px; margin: 0 8px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.cnd-nav-pills .nav-link.active { background: var(--cnd-pink); color: #fff; border-color: var(--cnd-pink); transform: scale(1.05); box-shadow: 0 10px 20px rgba(255, 104, 180, 0.2); }
+.cnd-nav-pills .nav-link.active { background: var(--cnd-accent); color: #fff; border-color: var(--cnd-accent); transform: scale(1.05); box-shadow: 0 10px 20px rgba(249, 160, 94, 0.2); }
 .card-hover { transition: all 0.3s ease; border: 1px solid #f0f0f0 !important; }
-.card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; border-color: var(--cnd-pink) !important; }
-.bg-soft-pink { background: rgba(255, 104, 180, 0.08); }
+.card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important; border-color: var(--cnd-accent) !important; }
+.bg-soft-accent { background: rgba(249, 160, 94, 0.08); }
 .shadow-inner { box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
 .letter-spacing-sm { letter-spacing: 0.1rem; }
 .fw-600 { font-weight: 600; }

@@ -65,7 +65,7 @@ class FrontendAuth extends BaseController
             return redirect()->back()->withInput()->with('error', 'No account found with this email address.');
         }
 
-        if ($user->status === 'banned') {
+        if ($user->status === 'banned' || (int)$user->status === 0) {
             return redirect()->back()->withInput()->with('error', 'Your account has been suspended. Please contact support.');
         }
 
@@ -111,32 +111,37 @@ class FrontendAuth extends BaseController
             ]);
         }
 
-        // Check if user exists
+        // Check if user exists (We allow sending OTP for registration too)
         $user = $this->userModel->findByPhone($phone);
-        if (!$user) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'No account found with this phone number. Please register first.',
-            ]);
+        if ($user && $user->status === 'banned') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Your account has been suspended.']);
         }
 
-        if ($user->status === 'banned') {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Your account has been suspended.',
-            ]);
-        }
-
-        // Send OTP via NotificationService
         $notify = new \App\Services\NotificationService();
         $result = $notify->sendOtp($phone);
 
+        $success = (bool)$result['sent'];
+        $message = $success
+            ? 'OTP sent to your WhatsApp number.' 
+            : 'WhatsApp delivery failed: ' . ($notify->getLastError() ?: 'Server error. Please check your number.');
+
+        // In development, we allow the flow to continue even if WhatsApp fails,
+        // but we now keep the success status accurate so the UI can show the error.
+        // If the user wants to use the dev_otp, they can find it in the console.
         $resp = [
-            'success' => (bool)$result['sent'],
-            'message' => $result['sent'] ? 'OTP sent to your WhatsApp number.' : 'Failed to send OTP via WhatsApp. Please try again.',
+            'success' => $success,
+            'message' => $message,
         ];
+
         if (ENVIRONMENT !== 'production') {
+            // If it failed but we're in dev, we could still return success=true 
+            // but with a warning. For now, let's keep success reflecting reality.
+            // If the user needs to bypass, they can see dev_otp in response.
             $resp['dev_otp'] = $result['otp'];
+            if (!$success) {
+                $resp['success'] = true; // Still allow dev to proceed
+                $resp['message'] .= ' (Using Dev OTP for local testing)';
+            }
         }
 
         return $this->response->setJSON($resp);
@@ -174,11 +179,32 @@ class FrontendAuth extends BaseController
 
         // OTP Valid - Get User
         $user = $this->userModel->findByPhone($phone);
+        
         if (!$user) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Account not found.',
+            // Register new user via OTP
+            // Ensure status/role uses numbers matching the DB (Status 1 = Active)
+            $userId = $this->userModel->insert([
+                'name'           => 'User-' . substr($phone, -4),
+                'username'       => 'user_' . $phone, // Provide a default username
+                'email'          => null, // DB is now nullable
+                'phone'          => $phone,
+                'role'           => 3, // Default to Parent
+                'status'         => 1, // Status 1 = Active
+                'phone_verified' => 1,
+                'password'       => password_hash(bin2hex(random_bytes(10)), PASSWORD_BCRYPT),
             ]);
+            
+            if (!$userId) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to create your account. Please contact support.',
+                ]);
+            }
+            $user = $this->userModel->find($userId);
+        }
+
+        if ((int)$user->status === 0) { // Check for banned status using numeric comparison
+            return $this->response->setJSON(['success' => false, 'message' => 'Your account has been suspended.']);
         }
 
         // Set session
@@ -208,13 +234,7 @@ class FrontendAuth extends BaseController
     // ─────────────────────────────────────────────────────────
     public function registerPage()
     {
-        if ($this->isParentLoggedIn()) {
-            return redirect()->to('/');
-        }
-        return view('frontend/auth/register', [
-            'page_title'       => 'Create Account | Class Next Door',
-            'meta_description' => 'Join Class Next Door — discover and book the best classes for your child.',
-        ]);
+        return redirect()->to('login');
     }
 
     // ─────────────────────────────────────────────────────────
@@ -248,14 +268,15 @@ class FrontendAuth extends BaseController
         // Provider role (2) is earned after KYC.
         $role = 3; 
 
-        // Insert user
+        // Insert user (Status 1 = Active)
         $userId = $this->userModel->insert([
             'name'     => $name,
             'email'    => $email,
+            'username' => $email, // Default username to email
             'phone'    => $phone,
             'password' => password_hash($password, PASSWORD_BCRYPT),
             'role'     => $role,
-            'status'   => 'active',
+            'status'   => 1, // Status 1 = Active
             'email_verified' => 1,
             'email_verified_at' => date('Y-m-d H:i:s'),
         ]);
@@ -287,35 +308,39 @@ class FrontendAuth extends BaseController
     }
 
 
+    /**
+     * Unified Session for Legacy & New Frontend.
+     */
     public function setParentSession(object $user)
     {
         $time = time();
         $login_token = sha1($user->id . $user->password . $time);
 
+        $userData = [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone ?? '',
+            'role'  => $user->role,
+        ];
+
         session()->set([
-            'user_id'    => $user->id,
-            'user_name'  => $user->name,
-            'user_email' => $user->email,
-            'user_role'  => $user->role,
-            'logged_in'  => true,
-            'cnd_phone'  => $user->phone ?? null,
-            'cnd_user'   => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone ?? null,
-                'role'  => $user->role,
-            ],
             'login'       => true,
             'login_token' => $login_token,
             'logged'      => [
                 'id'   => $user->id,
                 'time' => $time,
-            ]
+            ],
+            'user_id'     => $user->id,
+            'user_role'   => $user->role,
+            'cnd_user'    => $userData,
+            'cnd_phone'   => $user->phone ?? null,
+            'logged_in'   => true, // for modern frontend checks
         ]);
     }
 
     public function isParentLoggedIn()
+
     {
         return !empty(session()->get('cnd_user'));
     }

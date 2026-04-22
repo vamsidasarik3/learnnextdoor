@@ -10,7 +10,7 @@
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
           <div class="card-body p-5">
             <div class="text-center mb-4">
-               <div class="bg-soft-pink text-pink rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+               <div class="bg-soft-accent text-accent rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
                   <i class="bi bi-person-badge fs-1"></i>
                </div>
                <h2 class="fw-bold">Welcome Back</h2>
@@ -28,14 +28,14 @@
                   <div class="form-text small">We'll send a quick OTP to verify it's you.</div>
                </div>
 
-               <button type="submit" id="loginSubmitBtn" class="btn btn-pink w-100 py-3 rounded-pill fw-bold shadow-sm">
+               <button type="submit" id="loginSubmitBtn" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow-sm">
                   <span id="loginSpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
                   Start Learning
                </button>
             </form>
 
             <div class="mt-5 text-center">
-               <p class="text-muted small">New to Class Next Door? <br><a href="<?= base_url('classes') ?>" class="text-pink fw-bold text-decoration-none">Explore Nearby Classes</a></p>
+               <p class="text-muted small">New to Class Next Door? <br><a href="<?= base_url('classes') ?>" class="text-accent fw-bold text-decoration-none">Explore Nearby Classes</a></p>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@
     <div class="modal-content border-0 shadow-lg rounded-4">
       <div class="modal-body p-5 text-center">
         <div class="mb-4">
-           <div class="bg-soft-pink text-pink rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+           <div class="bg-soft-accent text-accent rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
               <i class="bi bi-shield-lock fs-2"></i>
            </div>
            <h4 class="fw-bold">Verification Code</h4>
@@ -62,10 +62,10 @@
 
         <div class="mb-4">
            <input type="text" id="loginOtp" class="form-control form-control-lg text-center fw-bold fs-2 rounded-3" maxlength="6" placeholder="000000">
-           <div id="otpHelp" class="mt-2 text-pink small fw-600 d-none">Dev Hint: OTP is <span id="hintVal"></span></div>
+           <div id="otpHelp" class="mt-2 text-accent small fw-600 d-none">Dev Hint: OTP is <span id="hintVal"></span></div>
         </div>
 
-        <button id="verifyLoginBtn" class="btn btn-pink w-100 py-3 rounded-pill fw-bold shadow-sm mb-3">
+        <button id="verifyLoginBtn" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow-sm mb-3">
            Verify & Continue
         </button>
         <button class="btn btn-link btn-sm text-muted text-decoration-none" id="resendLoginOtp">Resend Code</button>
@@ -75,11 +75,11 @@
 </div>
 
 <style>
-.bg-soft-pink { background: rgba(255, 104, 180, 0.08); }
-.text-pink { color: #FF68B4; }
-.btn-pink { background: #FF68B4; color: #fff; border: none; }
-.btn-pink:hover { background: #FF1493; color: #fff; }
-.form-control:focus { border-color: #FF68B4; box-shadow: 0 0 0 0.25rem rgba(255, 104, 180, 0.1); }
+.bg-soft-accent { background: rgba(249, 160, 94, 0.08); }
+.text-accent { color: #FF68B4; }
+.btn-accent { background: #FF68B4; color: #fff; border: none; }
+.btn-accent:hover { background: #FF1493; color: #fff; }
+.form-control:focus { border-color: #FF68B4; box-shadow: 0 0 0 0.25rem rgba(249, 160, 94, 0.1); }
 .letter-spacing-sm { letter-spacing: 0.1rem; }
 .fw-600 { font-weight: 600; }
 </style>

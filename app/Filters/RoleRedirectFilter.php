@@ -12,13 +12,22 @@ class RoleRedirectFilter implements FilterInterface
     {
         $session = session();
         $user = $session->get('cnd_user');
-        $isProviderMode = $session->get('cnd_provider_mode') ?? true;
         
+        // If user is logged in as a Provider (Role 2)
         if ($user && isset($user['role']) && $user['role'] == 2) {
+            $isProviderMode = $session->get('cnd_provider_mode') ?? true;
             $path = ltrim($request->getUri()->getPath(), '/');
 
+            // 1. If hitting a provider page, force Provider Mode = true
+            if (str_starts_with($path, 'provider/')) {
+                if (!$isProviderMode) {
+                    $session->set('cnd_provider_mode', true);
+                }
+                return null; // Allow access
+            }
+
+            // 2. If in Provider Mode, restrict access to public-facing pages
             if ($isProviderMode) {
-                // Provider Mode: Block public-facing pages
                 $blockedPaths = [
                     '',
                     'classes',
@@ -44,12 +53,8 @@ class RoleRedirectFilter implements FilterInterface
                 if ($isBlocked) {
                     return redirect()->to('/provider/dashboard');
                 }
-            } else {
-                // User Mode: Block provider-management pages (except toggle-mode)
-                if (str_starts_with($path, 'provider/') && !str_starts_with($path, 'provider/toggle-mode')) {
-                    return redirect()->to('/');
-                }
             }
+            // 3. If in User Mode, they are allowed to browse public pages (handled by the 'provider/' check above)
         }
     }
 

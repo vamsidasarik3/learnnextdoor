@@ -43,6 +43,13 @@ class Login extends BaseController
                 'password' => 'Invalid Password'
             ]);
         }
+
+        // Check user status (1 = active, 0 = suspended)
+        if ((int)$user->status === 0) {
+            return redirect()->back()->withInput()->with('errors', [
+                'username' => 'Your account has been suspended. Please contact support.'
+            ]);
+        }
         
         // set session
         $time = time();

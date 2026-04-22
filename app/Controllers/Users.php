@@ -159,11 +159,40 @@ class Users extends AdminBaseController
 		echo $exists ? 'false' : 'true';
 	}
 
-	public function change_status($id)
-	{
-		(new UserModel)->update($id, ['status' => get('status') == 'true' ? 1 : 0 ]);
-		echo 'done';
-	}
+    /**
+     * API: Toggle User Status (Suspend/Reinstate)
+     * POST /users/change_status/(:num)
+     */
+    public function change_status($id)
+    {
+        $this->permissionCheck('users_edit');
+        if($id == 1 || $id == logged('id')) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You cannot change your own status or the super-admin status.']);
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+        if (!$user) return $this->response->setJSON(['success' => false, 'message' => 'User not found.']);
+
+        $newStatus = $this->request->getPost('status') == 'true' || $this->request->getPost('status') == 1 ? 1 : 0;
+        $remarks   = $this->request->getPost('remarks');
+
+        if ($newStatus == 0 && empty(trim($remarks))) {
+            return $this->response->setJSON(['success' => false, 'message' => 'A reason is required to suspend a user.']);
+        }
+
+        $userModel->update($id, [
+            'status'         => $newStatus,
+            'status_remarks' => $remarks
+        ]);
+
+        // LOG IN AUDIT LOG
+        $action = ($newStatus == 1) ? 'REINSTATED' : 'SUSPENDED';
+        $logMsg = "User #{$id} ({$user->name}) was {$action} by Admin: " . logged('name') . ". Reason: " . ($remarks ?: 'N/A');
+        model('App\Models\ActivityLogModel')->add($logMsg, logged('id'));
+
+        return $this->response->setJSON(['success' => true, 'message' => "User status updated to {$action}."]);
+    }
 
 	public function delete($id)
 	{

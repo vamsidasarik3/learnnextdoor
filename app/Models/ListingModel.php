@@ -34,7 +34,8 @@ class ListingModel extends BaseModel
         'class_time',  // Regular & Course: daily scheduled time (e.g. 09:00:00)
         'class_end_time',
         'status', 'review_status', 'payment', 'admin_remarks', 'total_students', 'batch_size', 'batches',
-        'course_duration', 'course_duration_type', 'instructor_id', 'instructor_name', 'instructor_kyc_status', 'instructor_kyc_doc', 'institute_name', 'manual_address'
+        'course_duration', 'course_duration_type', 'instructor_id', 'instructor_name', 'instructor_kyc_status', 'instructor_kyc_doc', 'institute_name', 'manual_address',
+        'holidays', 'is_cancelled', 'cancellation_date'
     ];
 
     // ── Scoped Queries ──────────────────────────────────────────
@@ -52,9 +53,11 @@ class ListingModel extends BaseModel
     {
         return $this->db->table('listings l')
             ->select('l.*, c.name AS category_name, 
-                      (SELECT GROUP_CONCAT(sc.name SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
-                      (SELECT COUNT(b.id) FROM bookings b WHERE b.listing_id = l.id AND b.payment_status = "paid") AS student_count')
+                      (SELECT GROUP_CONCAT(sc.name ORDER BY sc.id SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
+                      (SELECT COUNT(b.id) FROM bookings b WHERE b.listing_id = l.id AND b.payment_status = "paid") AS student_count,
+                      li.image_path AS cover_image')
             ->join('categories c', 'c.id = l.category_id', 'left')
+            ->join('listing_images li', 'li.listing_id = l.id AND li.position = 0', 'left')
             ->where('l.provider_id', $providerId)
             ->orderBy('l.created_at', 'DESC')
             ->get()
@@ -65,8 +68,8 @@ class ListingModel extends BaseModel
     {
         $row = $this->db->table('listings l')
             ->select('l.*, c.name AS category_name, 
-                      (SELECT GROUP_CONCAT(sc.name SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
-                      (SELECT GROUP_CONCAT(lsc.subcategory_id) FROM listing_subcategories lsc WHERE lsc.listing_id = l.id) AS subcategory_ids')
+                      (SELECT GROUP_CONCAT(sc.name ORDER BY sc.id SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
+                      (SELECT GROUP_CONCAT(lsc.subcategory_id ORDER BY lsc.subcategory_id) FROM listing_subcategories lsc WHERE lsc.listing_id = l.id) AS subcategory_ids')
             ->join('categories c', 'c.id = l.category_id', 'left')
             ->where('l.id', $id)
             ->get()
@@ -86,7 +89,7 @@ class ListingModel extends BaseModel
                     'from_time'        => $row->class_time ?? null,
                     'to_time'          => $row->class_end_time ?? null,
                     'price'            => (float)($row->price ?? 0),
-                    'max_students'     => (int)($row->max_students ?? 0),
+                    'batch_size'       => (int)($row->batch_size ?? 0),
                     'batch_start_date' => $row->start_date ?? null
                 ]];
             }
@@ -122,17 +125,20 @@ class ListingModel extends BaseModel
     ): array {
         $builder = $this->db->table('listings l')
             ->select('l.*, c.name AS category_name, 
-                      (SELECT GROUP_CONCAT(sc.name SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
+                      (SELECT GROUP_CONCAT(sc.name ORDER BY sc.id SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
                       u.is_verified             AS provider_verified,
                       COALESCE(AVG(r.rating), 0) AS avg_rating,
                       COUNT(r.id)               AS review_count')
             ->join('categories c', 'c.id = l.category_id', 'left')
             ->join('users u',      'u.id = l.provider_id', 'left')
             ->join('reviews r',    'r.listing_id = l.id', 'left')
-            ->where('l.type',          $type)
             ->where('l.status',        'active')
             ->where('l.review_status', 'approved')
             ->where('l.payment',       'success')
+            ->groupStart()
+                ->where('l.is_cancelled', 0)
+                ->orWhere('l.cancellation_date >=', date('Y-m-d'))
+            ->groupEnd()
             ->groupBy('l.id');
 
         // Debug logging for missing records
@@ -207,10 +213,13 @@ class ListingModel extends BaseModel
     ): int {
         $builder = $this->db->table('listings l')
             ->select('l.id') // Ensure at least one column is selected to avoid syntax error
-            ->where('l.type',          $type)
             ->where('l.status',        'active')
             ->where('l.review_status', 'approved')
             ->where('l.payment',       'success')
+            ->groupStart()
+                ->where('l.is_cancelled', 0)
+                ->orWhere('l.cancellation_date >=', date('Y-m-d'))
+            ->groupEnd()
             ->groupBy('l.id'); // Group to avoid duplicate counts from joins
 
         if ($categoryId !== null) {
@@ -313,7 +322,7 @@ class ListingModel extends BaseModel
 
         $builder = $this->db->table('listings l')
             ->select('l.*, c.name AS category_name, 
-                      (SELECT GROUP_CONCAT(sc.name SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
+                      (SELECT GROUP_CONCAT(sc.name ORDER BY sc.id SEPARATOR ", ") FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
                       COALESCE(AVG(r.rating), 0) AS avg_rating,
                       COUNT(r.id)               AS review_count,
                       li.image_path             AS cover_image,
@@ -326,6 +335,10 @@ class ListingModel extends BaseModel
             ->where('l.status',        'active')
             ->where('l.review_status', 'approved')
             ->where('l.payment',       'success')
+            ->groupStart()
+                ->where('l.is_cancelled', 0)
+                ->orWhere('l.cancellation_date >=', date('Y-m-d'))
+            ->groupEnd()
             ->groupBy('l.id');
 
         // Keyword filter — must match at least one field
@@ -417,6 +430,10 @@ class ListingModel extends BaseModel
             ->where('l.status',        'active')
             ->where('l.review_status', 'approved')
             ->where('l.payment',       'success')
+            ->groupStart()
+                ->where('l.is_cancelled', 0)
+                ->orWhere('l.cancellation_date >=', date('Y-m-d'))
+            ->groupEnd()
             ->groupBy('l.id'); // Group to avoid duplicate counts from joins
 
         if ($query !== '') {
@@ -479,7 +496,7 @@ class ListingModel extends BaseModel
      * @param  float|null $lat  User latitude (for distance)
      * @param  float|null $lng  User longitude
      */
-    public function getDetail(int $id, ?float $lat = null, ?float $lng = null): ?array
+    public function getDetail(int $id, ?float $lat = null, ?float $lng = null, bool $bypassFilters = false): ?array
     {
         // ── Core listing row ──────────────────────────────────
         $distExpr = ($lat !== null && $lng !== null)
@@ -490,11 +507,11 @@ class ListingModel extends BaseModel
               )) AS distance_km"
             : "NULL AS distance_km";
 
-        $row = $this->db->table('listings l')
+        $builder = $this->db->table('listings l')
             ->select("
                 l.*,
                 c.name          AS category_name,
-                (SELECT GROUP_CONCAT(sc.name SEPARATOR ', ') FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
+                (SELECT GROUP_CONCAT(sc.name ORDER BY sc.id SEPARATOR ', ') FROM listing_subcategories lsc JOIN subcategories sc ON sc.id = lsc.subcategory_id WHERE lsc.listing_id = l.id) AS subcategory_names,
                 u.name          AS provider_name,
                 u.phone         AS provider_phone,
                 u.is_verified   AS provider_verified,
@@ -507,11 +524,15 @@ class ListingModel extends BaseModel
             ->join('users u',           'u.id = l.provider_id',                    'left')
             ->join('reviews r',         'r.listing_id = l.id',                     'left')
             ->join('listing_images li', 'li.listing_id = l.id AND li.position = 0','left')
-            ->where('l.id',            $id)
-            ->where('l.status',        'active')
-            ->where('l.review_status', 'approved')
-            ->where('l.payment',       'success')
-            ->groupBy('l.id')
+            ->where('l.id',            $id);
+
+        if (!$bypassFilters) {
+            $builder->where('l.status',        'active')
+                    ->where('l.review_status', 'approved')
+                    ->where('l.payment',       'success');
+        }
+
+        $row = $builder->groupBy('l.id')
             ->get()
             ->getRowArray();
 
@@ -612,9 +633,23 @@ class ListingModel extends BaseModel
     /**
      * Internal diagnostic logging to debug why some listings might be hidden.
      */
-    protected function logActiveListingStats($type, $lat, $lng, $radius, $catId)
+    public function logActiveListingStats($lat = null, $lng = null, $type = null, $radius = 25, $catId = null)
     {
         $db = \Config\Database::connect();
+        
+        // Normalize args if called with different order
+        if (is_string($lat)) {
+             // Probably called as ($type, $lat, $lng, $radius, $catId)
+             $tmpType = $lat;
+             $tmpLat = $lng;
+             $tmpLng = $type;
+             $tmpRadius = $radius;
+             
+             $type = $tmpType;
+             $lat = $tmpLat;
+             $lng = $tmpLng;
+             $radius = $tmpRadius;
+        }
         
         // 1. Total records
         $total = $db->table('listings')->countAllResults();

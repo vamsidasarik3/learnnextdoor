@@ -66,11 +66,21 @@
                         </span>
                       </td>
                       <td>
-                        <?php if (logged('id')!==$row->id): ?>
-                          <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="status_<?= $row->id ?>" onchange="updateUserStatus('<?= $row->id ?>', $(this).is(':checked') )" <?= ($row->status) ? 'checked' : '' ?>>
-                            <label class="custom-control-label" for="status_<?= $row->id ?>"></label>
-                          </div>
+                        <?php if (logged('id')!==$row->id && $row->id != 1): ?>
+                          <?php if ($row->status == 1): ?>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="suspendUser(<?= $row->id ?>, '<?= esc($row->name) ?>')">
+                              <i class="fas fa-user-slash mr-1"></i> Suspend
+                            </button>
+                          <?php else: ?>
+                            <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="reinstateUser(<?= $row->id ?>, '<?= esc($row->name) ?>')">
+                              <i class="fas fa-user-check mr-1"></i> Reinstate
+                            </button>
+                            <?php if($row->status_remarks): ?>
+                              <div class="small text-muted mt-1 italic" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= esc($row->status_remarks) ?>">
+                                <i class="fas fa-info-circle mr-1"></i> <?= esc($row->status_remarks) ?>
+                              </div>
+                            <?php endif; ?>
+                          <?php endif; ?>
                         <?php else: ?>
                           <span class="badge badge-success px-3 py-2 rounded-pill"><?= lang('App.user_active') ?></span>
                         <?php endif ?>
@@ -108,6 +118,35 @@
   </div>
   <!-- /.container-fluid -->
 </section>
+
+<!-- ══ SUSPENSION MODAL ══════════════════════════════════════════ -->
+<div class="modal fade" id="suspendModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header bg-danger text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="fas fa-user-slash mr-2"></i> Suspend User</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="suspendForm">
+        <div class="modal-body p-4">
+          <input type="hidden" name="id" id="suspendUserId">
+          <input type="hidden" name="status" value="0">
+          <p class="mb-3">Are you sure you want to suspend <strong id="suspendUserName"></strong>? They will not be able to log in to the platform.</p>
+          <div class="form-group">
+            <label class="text-xs text-uppercase fw-900 opacity-50">Reason for Suspension (Required)</label>
+            <textarea name="remarks" class="form-control rounded-3" rows="3" placeholder="e.g. Policy violation, suspicious activity..." required minlength="5"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button type="button" class="btn btn-light rounded-pill px-4" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold" id="confirmSuspendBtn">Confirm Suspension</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
     <!-- /.content -->
 
 
@@ -116,16 +155,43 @@
 <?= $this->section('js') ?>
 
 <script>
-window.updateUserStatus = (id, status) => {
-  $.get( '<?php echo url('users/change_status') ?>/'+id, {
-    status: status
-  }, (data, status) => {
-    if (data=='done') {
-      // code
-    }else{
-      alert('<?php echo lang('App.user_unable_change_status') ?>');
-    }
-  })
+window.suspendUser = (id, name) => {
+  $('#suspendUserId').val(id);
+  $('#suspendUserName').text(name);
+  $('#suspendModal').modal('show');
 }
+
+window.reinstateUser = (id, name) => {
+  if (confirm(`Are you sure you want to REINSTATE user ${name}?`)) {
+    $.post('<?php echo url('admin/users/change_status') ?>/'+id, {
+      status: 'true',
+      remarks: ''
+    }, (res) => {
+      if (res.success) {
+        toastr.success(res.message);
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        toastr.error(res.message);
+      }
+    });
+  }
+}
+
+$('#suspendForm').on('submit', function(e) {
+  e.preventDefault();
+  const id = $('#suspendUserId').val();
+  const btn = $('#confirmSuspendBtn');
+  btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+  $.post('<?php echo url('admin/users/change_status') ?>/'+id, $(this).serialize(), function(res) {
+    if (res.success) {
+      toastr.success(res.message);
+      location.reload();
+    } else {
+      toastr.error(res.message);
+      btn.prop('disabled', false).text('Confirm Suspension');
+    }
+  });
+});
 </script>
 <?=  $this->endSection() ?>

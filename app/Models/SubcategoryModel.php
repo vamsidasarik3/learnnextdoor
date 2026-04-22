@@ -26,7 +26,7 @@ class SubcategoryModel extends BaseModel
     public function getByCategory(int $categoryId): array
     {
         return $this->where('category_id', $categoryId)
-                    ->orderBy('name', 'ASC')
+                    ->orderBy('id', 'ASC')
                     ->findAll();
     }
 }

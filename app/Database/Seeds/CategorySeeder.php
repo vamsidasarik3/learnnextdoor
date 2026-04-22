@@ -10,7 +10,7 @@ class CategorySeeder extends Seeder
     {
         $data = [
             [
-                'name' => 'Sports & Fitness',
+                'name' => 'Sports Lab',
                 'icon' => 'bi-trophy-fill',
                 'subcategories' => [
                     'Self Defence', 'Yoga', 'Karate Class', 'Martial Arts', 'Cricket', 'Swimming', 
@@ -19,7 +19,7 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Music & Performing Arts',
+                'name' => 'Performing Arts',
                 'icon' => 'bi-music-note-beamed',
                 'subcategories' => [
                     'Singing', 'Guitar', 'Piano', 'Ukulele', 'Drums', 'Western Dance', 
@@ -27,7 +27,7 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Academic Support',
+                'name' => 'Academics',
                 'icon' => 'bi-book-fill',
                 'subcategories' => [
                     'All Subjects', 'Maths', 'English', 'Hindi', 'Science', 'Physics', 'Chemistry', 
@@ -44,7 +44,7 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Art, Craft & Creativity',
+                'name' => 'Art & Craft',
                 'icon' => 'bi-palette-fill',
                 'subcategories' => [
                     'Drawing', 'Painting', 'Calligraphy', 'Resin Art', 'Quilting', 
@@ -52,7 +52,7 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Life Skills & Personality Development',
+                'name' => 'Personal Growth',
                 'icon' => 'bi-person-badge-fill',
                 'subcategories' => [
                     'Public Speaking', 'Language Classes', 'Personality Development', 'Debate', 
@@ -67,7 +67,7 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Technology & Coding',
+                'name' => 'Tech & Coding',
                 'icon' => 'bi-laptop',
                 'subcategories' => [
                     'Coding for Kids', 'Robotics', 'AI for Kids', 'Game Development', 

@@ -60,11 +60,17 @@ class Filters extends BaseConfig
                 'api/reviews/*',
                 'api/push/*',
                 'booking/*',
+                'privacy',
+                'data-deletion',
+                'terms',
                 'login',
+                'login/*',
                 'register',
+                'register/*',
                 'uploads/*',
                 'assets/*',
                 'v1/*',       // Subtask 4.1 — v1 API is self-guarded (returns 401 JSON)
+                'webhooks/*', // Third party Webhooks
             ]],
             'role_redirect'
         ],

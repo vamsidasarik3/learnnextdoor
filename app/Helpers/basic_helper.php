@@ -260,8 +260,8 @@ if (!function_exists('urlUpload')) {
         $logged = model('App\Models\UserModel')->getById( json_decode(get_cookie('logged'))->id );
       }
   
-        return (!$key)?$logged:$logged->{$key};
-  
+        if (!$logged) return null;
+        return (!$key) ? $logged : ($logged->{$key} ?? null);
     }
   
   

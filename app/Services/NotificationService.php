@@ -20,16 +20,55 @@ class NotificationService
     private string $waPhoneId;
     private string $waTemplate;
     private string $waTemplateOtp;
+    private string $waTemplateRefund;
 
     // OTP TTL in seconds (5 minutes)
     private const OTP_TTL = 300;
 
     public function __construct()
     {
+        helper('basic');
         $this->waToken       = env('WHATSAPP_TOKEN', '');
-        $this->waPhoneId     = env('WHATSAPP_PHONE_ID', '');
+        $this->waPhoneId     = env('WHATSAPP_PHONE_NUMBER_ID', '');
         $this->waTemplate    = env('WHATSAPP_TEMPLATE_BOOK', 'booking_confirmation');
         $this->waTemplateOtp = env('WHATSAPP_TEMPLATE_OTP', $this->waTemplate);
+        $this->waTemplateRefund = env('WHATSAPP_TEMPLATE_REFUND', 'refund_processed');
+    }
+
+    /**
+     * Send Refund Alert via WhatsApp
+     */
+    public function sendRefundAlert(string $phone, float $amount, string $listingTitle, string $txnId): bool
+    {
+        if (!$this->waToken || !$this->waPhoneId) return false;
+
+        $to = $this->normaliseMsisdn($phone);
+        $body = [
+            'messaging_product' => 'whatsapp',
+            'to'                => $to,
+            'type'              => 'template',
+            'template'          => [
+                'name'       => $this->waTemplateRefund,
+                'language'   => ['code' => 'en_US'],
+                'components' => [
+                    [
+                        'type'       => 'body',
+                        'parameters' => [
+                            ['type' => 'text', 'text' => "₹" . number_format($amount, 2)],
+                            ['type' => 'text', 'text' => $listingTitle],
+                            ['type' => 'text', 'text' => $txnId]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $resp = cnd_http_request('POST', "https://graph.facebook.com/v13.0/{$this->waPhoneId}/messages", $body, [
+            "Authorization: Bearer {$this->waToken}",
+            "Content-Type: application/json"
+        ]);
+
+        return ($resp->code >= 200 && $resp->code < 300);
     }
 
     // ── OTP ──────────────────────────────────────────────────────────────
@@ -58,6 +97,8 @@ class NotificationService
         $sent = false;
         if ($this->waToken && $this->waPhoneId) {
             $sent = $this->sendWhatsAppOtp($phone, $otp);
+        } else {
+            $this->lastError = "Configuration missing: WHATSAPP_TOKEN or WHATSAPP_PHONE_NUMBER_ID is not set in .env";
         }
 
         return ['otp' => $otp, 'sent' => $sent];
@@ -86,27 +127,28 @@ class NotificationService
         return false;
     }
 
-    // ── WhatsApp OTP (raw text message) ──────────────────────────────────
+    // ── WhatsApp OTP (plain text — works without a special OTP template) ─
 
     private function sendWhatsAppOtp(string $phone, string $otp): bool
     {
-        log_message('info', '[NotificationService] Sending OTP to ' . $phone . ' using template: ' . $this->waTemplateOtp);
+        $to = $this->normaliseMsisdn($phone);
         
+        // Using a Template is required for starting a conversation or if the 24h window is closed.
+        // Your template 'learnnextdoorv1' is an AUTHENTICATION template with 1 variable for OTP.
+        log_message('info', "[NotificationService] Sending OTP (template: {$this->waTemplateOtp}) to " . $to);
+
         $body = [
             'messaging_product' => 'whatsapp',
-            'to'                => $this->normaliseMsisdn($phone),
+            'to'                => $to,
             'type'              => 'template',
             'template'          => [
                 'name'     => $this->waTemplateOtp,
-                'language' => ['code' => 'en'],
+                'language' => ['code' => 'en'], // Your template is in 'en'
                 'components' => [
                     [
                         'type'       => 'body',
                         'parameters' => [
-                            [
-                                'type' => 'text',
-                                'text' => $otp
-                            ]
+                            ['type' => 'text', 'text' => $otp]
                         ]
                     ],
                     [
@@ -114,15 +156,13 @@ class NotificationService
                         'sub_type'   => 'url',
                         'index'      => '0',
                         'parameters' => [
-                            [
-                                'type' => 'text',
-                                'text' => $otp
-                            ]
+                            ['type' => 'text', 'text' => $otp]
                         ]
                     ]
                 ]
             ]
         ];
+
         return $this->postWhatsApp($body);
     }
 
@@ -357,23 +397,151 @@ class NotificationService
         return $this->postWhatsApp($body);
     }
 
+    /**
+     * Notify parent of class cancellation and refund.
+     */
+    public function sendCancellationMessage(int $bookingId, string $classTitle, float $refundAmount): bool
+    {
+        $db = \Config\Database::connect();
+        $booking = $db->table('bookings')->where('id', $bookingId)->get()->getRow();
+        if (!$booking) return false;
+
+        $msg = "📢 *Class Cancellation — Class Next Door*\n\n"
+             . "We regret to inform you that *'{$classTitle}'* has been cancelled.\n";
+        
+        if ($refundAmount > 0) {
+            $msg .= "💰 A pro-rata refund of *₹{$refundAmount}* has been initiated and will reach your account within 5-7 working days.\n";
+        }
+
+        $msg .= "\nWe apologize for the inconvenience. 🎒";
+
+        return $this->sendWhatsApp($booking->parent_phone, $msg);
+    }
+
     // ── Internal helpers ─────────────────────────────────────────────────
 
 
+    private string $lastError = '';
+
+    public function getLastError(): string
+    {
+        return $this->lastError;
+    }
+
+    /**
+     * Store WhatsApp API calls in a dedicated log file for monitoring.
+     */
+    private function logWhatsAppApi(string $url, string $request, int $code, string $response, string $curlErr = ''): void
+    {
+        $logDir = WRITEPATH . 'logs/';
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
+        }
+
+        $logFile = $logDir . 'whatsapp_api.log';
+        $timestamp = date('Y-m-d H:i:s');
+        
+        $entry = "[$timestamp] WhatsApp API Call\n";
+        $entry .= "URL: $url\n";
+        $entry .= "REQUEST: $request\n";
+        $entry .= "HTTP_CODE: $code\n";
+        if ($curlErr) $entry .= "CURL_ERROR: $curlErr\n";
+        $entry .= "RESPONSE: $response\n";
+        $entry .= str_repeat('-', 60) . "\n\n";
+        
+        @file_put_contents($logFile, $entry, FILE_APPEND);
+    }
+
     private function postWhatsApp(array $payload): bool
     {
-        $url = "https://graph.facebook.com/v19.0/{$this->waPhoneId}/messages";
+        $url = "https://graph.facebook.com/v25.0/{$this->waPhoneId}/messages";
+        $json = json_encode($payload);
 
-        $response = cnd_http_request('POST', $url, $payload, [
-            'Authorization: Bearer ' . $this->waToken,
-            'Content-Type: application/json',
-        ]);
+        // Use a direct cURL call to ensure SSL settings and error visibility
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => $json,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 20,
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_HTTPHEADER     => [
+                    'Authorization: Bearer ' . $this->waToken,
+                    'Content-Type: application/json',
+                ],
+            ]);
+            $body  = curl_exec($ch);
+            $code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlErr = curl_error($ch);
+            curl_close($ch);
+        } else {
+            // Fallback to stream context
+            $context = stream_context_create([
+                'http' => [
+                    'method'  => 'POST',
+                    'header'  => "Authorization: Bearer {$this->waToken}\r\nContent-Type: application/json\r\nContent-Length: " . strlen($json),
+                    'content' => $json,
+                    'timeout' => 20,
+                    'ignore_errors' => true,
+                ],
+                'ssl' => ['verify_peer' => false, 'verify_peer_name' => false],
+            ]);
+            $body    = @file_get_contents($url, false, $context);
+            $curlErr = '';
+            if ($body === false) {
+                $curlErr = 'Failed to connect to WhatsApp API via stream.';
+            }
+            $code    = 200;
+            if (isset($http_response_header) && preg_match('{HTTP/\S+\s+(\d+)}', $http_response_header[0], $m)) {
+                $code = (int)$m[1];
+            }
+        }
 
-        if ($response->code < 200 || $response->code >= 300) {
-            log_message('error', '[NotificationService] WA API HTTP ' . $response->code . ': ' . $response->body);
+        if ($curlErr) {
+            $this->lastError = $curlErr;
+            log_message('error', '[NotificationService] WA request failed: ' . $curlErr);
+            $this->logWhatsAppApi($url, $json, 0, 'No response', $curlErr);
             return false;
         }
 
+        // Log the complete transaction for monitoring
+        $this->logWhatsAppApi($url, $json, $code, $body);
+
+        if ($code < 200 || $code >= 300) {
+            $this->lastError = "WhatsApp API error (HTTP $code)";
+            $err = json_decode($body, true);
+            if (isset($err['error']['message'])) {
+                $this->lastError = $err['error']['message'];
+            } else {
+                $this->lastError .= " | Response: " . substr($body, 0, 100);
+            }
+            log_message('error', '[NotificationService] WA API Error: ' . $this->lastError);
+            return false;
+        }
+
+        // Extract message ID to track status later via Webhook
+        $respData = json_decode($body, true);
+        $wamid    = $respData['messages'][0]['id'] ?? null;
+        
+        if ($wamid) {
+            try {
+                $logModel = new \App\Models\WhatsappLogModel();
+                $logModel->insert([
+                    'wa_message_id' => $wamid,
+                    'recipient_id'  => $payload['to'] ?? null,
+                    'status'        => 'accepted',
+                    'raw_payload'   => $body
+                ]);
+            } catch (\Exception $e) {
+                log_message('error', '[NotificationService] Failed to insert log to DB: ' . $e->getMessage());
+                // We do NOT return false here because the message was already sent successfully to Meta
+            }
+        }
+
+        log_message('info', '[NotificationService] WA message accepted. HTTP ' . $code . ' | wamid: ' . ($wamid ?? 'unknown'));
         return true;
     }
 

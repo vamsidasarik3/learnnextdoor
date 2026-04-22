@@ -207,8 +207,8 @@
     </a>
 
     <!-- Title -->
-    <h1 class="cnd-auth-title" id="login-heading">Welcome back</h1>
-    <p class="cnd-auth-subtitle">Login to manage your bookings &amp; discover classes</p>
+    <h1 class="cnd-auth-title" id="login-heading">Get Started</h1>
+    <p class="cnd-auth-subtitle">Login or create an account with a single click</p>
 
     <!-- Flash messages -->
     <?php if (session()->getFlashdata('error')): ?>
@@ -225,114 +225,86 @@
     </div>
     <?php endif; ?>
 
-    <!-- Email Form -->
-    <div id="emailLoginForm">
-      <form action="<?= base_url('login') ?>" method="post" id="loginForm" novalidate>
-        <?= csrf_field() ?>
-
-        <!-- Email -->
-        <div class="cnd-auth-input-wrap">
-          <label for="loginEmail" class="cnd-auth-label">Email Address</label>
-          <div style="position:relative;">
-            <i class="bi bi-envelope-fill cnd-auth-input-icon"></i>
-            <input
-              type="email"
-              id="loginEmail"
-              name="email"
-              class="cnd-auth-input <?= !empty($errors['email']) ? 'is-invalid' : '' ?>"
-              placeholder="you@example.com"
-              value="<?= old('email') ?>"
-              autocomplete="email"
-              required
-              aria-describedby="emailError">
+    <!-- Login Forms Container -->
+    <div class="auth-forms-wrapper">
+      <!-- WhatsApp OTP Form -->
+      <div id="otpLoginForm">
+        <div id="phoneStep">
+          <div class="cnd-auth-input-wrap">
+            <label for="loginPhone" class="cnd-auth-label">WhatsApp Number</label>
+            <div style="position:relative;">
+              <span class="cnd-auth-input-icon" style="left:1rem; color:var(--cnd-dark); font-weight:600;">+91</span>
+              <input
+                type="tel"
+                id="loginPhone"
+                class="cnd-auth-input"
+                placeholder="9876543210"
+                maxlength="10"
+                style="padding-left:3.2rem;"
+                aria-label="Phone number">
+            </div>
+            <p class="cnd-field-error" id="phoneError" style="display:none;"></p>
           </div>
-          <?php if (!empty($errors['email'])): ?>
-          <p class="cnd-field-error" id="emailError"><?= esc($errors['email']) ?></p>
-          <?php endif; ?>
+          <button type="button" class="cnd-auth-btn" id="sendOtpBtn">
+            <i class="bi bi-whatsapp me-2"></i>Send OTP via WhatsApp
+          </button>
         </div>
 
-        <!-- Password -->
-        <div class="cnd-auth-input-wrap">
-          <label for="loginPassword" class="cnd-auth-label">Password</label>
-          <div style="position:relative;">
-            <i class="bi bi-lock-fill cnd-auth-input-icon"></i>
-            <input
-              type="password"
-              id="loginPassword"
-              name="password"
-              class="cnd-auth-input <?= !empty($errors['password']) ? 'is-invalid' : '' ?>"
-              placeholder="Your password"
-              autocomplete="current-password"
-              required
-              aria-describedby="passError">
-            <button type="button" class="cnd-auth-toggle-pass" aria-label="Toggle password visibility" onclick="togglePass('loginPassword', this)">
-              <i class="bi bi-eye" aria-hidden="true"></i>
-            </button>
+        <div id="otpStep" style="display:none;">
+          <div class="cnd-auth-input-wrap">
+            <label for="loginOtp" class="cnd-auth-label">Enter 6-digit OTP</label>
+            <div style="position:relative;">
+              <i class="bi bi-shield-lock-fill cnd-auth-input-icon"></i>
+              <input
+                type="text"
+                id="loginOtp"
+                class="cnd-auth-input"
+                placeholder="000000"
+                maxlength="6"
+                inputmode="numeric"
+                aria-label="OTP">
+            </div>
+            <p class="cnd-field-error" id="otpError" style="display:none;"></p>
+            <p class="text-center mt-2" style="font-size:0.8rem; color:var(--cnd-muted);">
+              Didn't receive? <a href="javascript:void(0)" id="resendOtpBtn" class="text-primary font-weight-bold">Resend</a>
+            </p>
           </div>
-          <?php if (!empty($errors['password'])): ?>
-          <p class="cnd-field-error" id="passError"><?= esc($errors['password']) ?></p>
-          <?php endif; ?>
+          <button type="button" class="cnd-auth-btn" id="verifyOtpBtn">
+            Verify &amp; Continue
+          </button>
         </div>
-
-        <!-- Submit -->
-        <button type="submit" class="cnd-auth-btn" id="loginSubmitBtn">
-          <i class="bi bi-box-arrow-in-right me-2"></i>Login
-        </button>
-      </form>
-    </div>
-
-    <!-- WhatsApp OTP Form -->
-    <div id="otpLoginForm" style="display:none;">
-      <div id="phoneStep">
-        <div class="cnd-auth-input-wrap">
-          <label for="loginPhone" class="cnd-auth-label">WhatsApp Number</label>
-          <div style="position:relative;">
-            <span class="cnd-auth-input-icon" style="left:1rem; color:var(--cnd-dark); font-weight:600;">+91</span>
-            <input
-              type="tel"
-              id="loginPhone"
-              class="cnd-auth-input"
-              placeholder="9876543210"
-              maxlength="10"
-              style="padding-left:3.2rem;"
-              aria-label="Phone number">
-          </div>
-          <p class="cnd-field-error" id="phoneError" style="display:none;"></p>
-        </div>
-        <button type="button" class="cnd-auth-btn" id="sendOtpBtn">
-          <i class="bi bi-whatsapp me-2"></i>Send OTP via WhatsApp
-        </button>
       </div>
 
-      <div id="otpStep" style="display:none;">
-        <div class="cnd-auth-input-wrap">
-          <label for="loginOtp" class="cnd-auth-label">Enter 6-digit OTP</label>
-          <div style="position:relative;">
-            <i class="bi bi-shield-lock-fill cnd-auth-input-icon"></i>
-            <input
-              type="text"
-              id="loginOtp"
-              class="cnd-auth-input"
-              placeholder="000000"
-              maxlength="6"
-              inputmode="numeric"
-              aria-label="OTP">
+      <!-- Password Login Form (Temporary) -->
+      <div id="passwordLoginForm" style="display:none;">
+        <form action="<?= base_url('login') ?>" method="POST">
+          <?= csrf_field() ?>
+          <div class="cnd-auth-input-wrap">
+            <label for="email" class="cnd-auth-label">Email Address</label>
+            <div style="position:relative;">
+              <i class="bi bi-envelope-fill cnd-auth-input-icon"></i>
+              <input type="email" name="email" id="email" class="cnd-auth-input" placeholder="name@example.com" value="<?= old('email') ?>" required>
+            </div>
           </div>
-          <p class="cnd-field-error" id="otpError" style="display:none;"></p>
-          <p class="text-center mt-2" style="font-size:0.8rem; color:var(--cnd-muted);">
-            Didn't receive? <a href="javascript:void(0)" id="resendOtpBtn" class="text-primary font-weight-bold">Resend</a>
-          </p>
-        </div>
-        <button type="button" class="cnd-auth-btn" id="verifyOtpBtn">
-          Verify &amp; Login
-        </button>
+          <div class="cnd-auth-input-wrap">
+            <label for="password" class="cnd-auth-label">Password</label>
+            <div style="position:relative;">
+              <i class="bi bi-lock-fill cnd-auth-input-icon"></i>
+              <input type="password" name="password" id="password" class="cnd-auth-input" placeholder="••••••••" required>
+            </div>
+          </div>
+          <button type="submit" class="cnd-auth-btn">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Login with Password
+          </button>
+        </form>
       </div>
     </div>
-    
+
+    <!-- Form Toggle -->
     <div class="text-center mt-3">
-       <a href="javascript:void(0)" id="toggleAuthMode" class="text-muted" style="font-size:0.88rem; text-decoration:none;">
-         <span id="toggleText">Login with WhatsApp OTP instead</span>
-       </a>
+      <a href="javascript:void(0)" id="toggleAuthMethod" class="small fw-bold" style="color:var(--cnd-grad-start); text-decoration:none;">
+        <i class="bi bi-shield-lock me-1"></i>Login with Password instead
+      </a>
     </div>
     
     <div class="cnd-auth-divider">or</div>
@@ -348,47 +320,12 @@
       Continue with Google
     </a>
 
-    <div class="cnd-auth-switch">
-      Don't have an account?
-      <a href="<?= base_url('register') ?>">Create one free →</a>
-    </div>
-
   </div>
 </section>
 <?= $this->endSection() ?>
 
 <?= $this->section('js') ?>
 <script>
-function togglePass(fieldId, btn) {
-  const input = document.getElementById(fieldId);
-  const icon  = btn.querySelector('i');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.className = 'bi bi-eye-slash';
-  } else {
-    input.type = 'password';
-    icon.className = 'bi bi-eye';
-  }
-}
-
-// ── Toggle Modes ──
-const emailForm = document.getElementById('emailLoginForm');
-const otpForm   = document.getElementById('otpLoginForm');
-const toggleBtn = document.getElementById('toggleAuthMode');
-const toggleTxt = document.getElementById('toggleText');
-
-toggleBtn.addEventListener('click', () => {
-  if (emailForm.style.display === 'none') {
-    emailForm.style.display = 'block';
-    otpForm.style.display   = 'none';
-    toggleTxt.textContent   = 'Login with WhatsApp OTP instead';
-  } else {
-    emailForm.style.display = 'none';
-    otpForm.style.display   = 'block';
-    toggleTxt.textContent   = 'Login with Email & Password instead';
-  }
-});
-
 // ── WhatsApp OTP Logic ──
 const sendOtpBtn   = document.getElementById('sendOtpBtn');
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
@@ -419,6 +356,7 @@ async function handleSendOtp() {
 
     const response = await fetch('<?= base_url('login/otp/send') ?>', {
       method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
       body: formData
     });
     const data = await response.json();
@@ -428,7 +366,7 @@ async function handleSendOtp() {
       otpStep.style.display   = 'block';
       if (data.dev_otp) {
         console.log('Dev OTP:', data.dev_otp);
-        otpInput.value = data.dev_otp;
+        // otpInput.value = data.dev_otp; // Removed auto-fill
       }
     } else {
       phoneError.textContent = data.message;
@@ -468,6 +406,7 @@ verifyOtpBtn.addEventListener('click', async () => {
 
     const response = await fetch('<?= base_url('login/otp/verify') ?>', {
       method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
       body: formData
     });
     const data = await response.json();
@@ -483,14 +422,26 @@ verifyOtpBtn.addEventListener('click', async () => {
     otpError.style.display = 'block';
   } finally {
     verifyOtpBtn.disabled = false;
-    verifyOtpBtn.innerHTML = 'Verify & Login';
+    verifyOtpBtn.innerHTML = 'Verify & Continue';
   }
 });
 
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  const btn = document.getElementById('loginSubmitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in…';
+// ── Toggle Auth Method ──
+const toggleBtn = document.getElementById('toggleAuthMethod');
+const otpForm   = document.getElementById('otpLoginForm');
+const passForm  = document.getElementById('passwordLoginForm');
+
+toggleBtn.addEventListener('click', () => {
+  if (otpForm.style.display === 'none') {
+    otpForm.style.display = 'block';
+    passForm.style.display = 'none';
+    toggleBtn.innerHTML = '<i class="bi bi-shield-lock me-1"></i>Login with Password instead';
+  } else {
+    otpForm.style.display = 'none';
+    passForm.style.display = 'block';
+    toggleBtn.innerHTML = '<i class="bi bi-whatsapp me-1"></i>Login with WhatsApp OTP instead';
+  }
 });
 </script>
+
 <?= $this->endSection() ?>

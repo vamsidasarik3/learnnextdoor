@@ -6,7 +6,7 @@
   <div class="container py-lg-5">
     
     <div class="text-center mb-5">
-       <h1 class="display-4 fw-bold mb-3">Get in <span class="text-pink">Touch</span></h1>
+       <h1 class="display-4 fw-bold mb-3">Get in <span class="text-accent">Touch</span></h1>
        <p class="text-muted lead mx-auto" style="max-width: 600px;">Have questions about a class or need help with your booking? Our team is here to support you.</p>
     </div>
 
@@ -18,7 +18,7 @@
           
           <div class="card border-0 shadow-sm rounded-4 p-4 card-hover">
             <div class="d-flex align-items-center mb-3">
-              <div class="bg-soft-pink text-pink rounded-circle p-3 me-3">
+              <div class="bg-soft-accent text-accent rounded-circle p-3 me-3">
                 <i class="bi bi-envelope-at-fill fs-3"></i>
               </div>
               <div>
@@ -26,7 +26,7 @@
                 <p class="text-muted small mb-0">Best for detailed queries</p>
               </div>
             </div>
-            <a href="mailto:hello@classnextdoor.in" class="text-pink fw-bold text-decoration-none">hello@classnextdoor.in</a>
+            <a href="mailto:support@learnnextdoor.com" class="text-accent fw-bold text-decoration-none">support@learnnextdoor.com</a>
           </div>
 
           <div class="card border-0 shadow-sm rounded-4 p-4 card-hover">
@@ -89,7 +89,7 @@
                   <textarea name="message" class="form-control rounded-3 py-2 border-2" rows="5" placeholder="How can we help you today?" required minlength="10"></textarea>
                 </div>
                 <div class="col-md-12 mt-4">
-                  <button type="submit" id="feedbackSubmitBtn" class="btn btn-pink w-100 py-3 rounded-pill fw-bold shadow-sm">
+                  <button type="submit" id="feedbackSubmitBtn" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow-sm">
                     <span id="feedbackSpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
                     <i class="bi bi-send-fill me-2"></i>Send Message
                   </button>
@@ -109,11 +109,11 @@
 </section>
 
 <style>
-.bg-soft-pink { background: rgba(255, 104, 180, 0.08); }
-.text-pink { color: #FF68B4; }
-.btn-pink { background: #FF68B4; color: #fff; border: none; }
-.btn-pink:hover { background: #FF1493; color: #fff; }
-.form-control:focus, .form-select:focus { border-color: #FF68B4; box-shadow: 0 0 0 0.25rem rgba(255, 104, 180, 0.1); }
+.bg-soft-accent { background: rgba(249, 160, 94, 0.08); }
+.text-accent { color: #FF68B4; }
+.btn-accent { background: #FF68B4; color: #fff; border: none; }
+.btn-accent:hover { background: #FF1493; color: #fff; }
+.form-control:focus, .form-select:focus { border-color: #FF68B4; box-shadow: 0 0 0 0.25rem rgba(249, 160, 94, 0.1); }
 .card-hover { transition: transform 0.3s ease; }
 .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
 </style>

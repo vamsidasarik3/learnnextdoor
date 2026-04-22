@@ -1,4 +1,4 @@
-<?= $this->extend('frontend/layout/base') ?>
+<?= $this->extend('frontend/layout/provider_base') ?>
 
 <?= $this->section('css') ?>
 <style>
@@ -28,7 +28,7 @@
 .pb-card-body { padding: 1.2rem; }
 .pb-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
 .pb-meta-item { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; color: var(--cnd-dark); }
-.pb-meta-item i { color: var(--cnd-pink); margin-top: 2px; }
+.pb-meta-item i { color: var(--cnd-accent); margin-top: 2px; }
 .pb-meta-label { display: block; font-size: 0.72rem; color: var(--cnd-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
 .pb-status-badge {
   font-size: .72rem; font-weight: 700; padding: .3rem .8rem;
@@ -44,23 +44,12 @@
 
 <?= $this->section('content') ?>
 
-<div class="provider-bookings-hero">
-  <div class="container-fluid px-3 px-lg-5">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h1 class="fw-900 mb-1">Student Bookings</h1>
-        <p class="opacity-90">View and manage all enrollments for your classes.</p>
-      </div>
-      <div class="col-md-4 text-md-end">
-        <div class="bg-white bg-opacity-20 rounded-pill px-4 py-2 d-inline-block">
-          <span class="fw-bold"><?= count($bookings) ?> Total Bookings</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="mb-5">
+    <h1 class="dashboard-title">Student Bookings</h1>
+    <p class="dashboard-subtitle">View and manage all enrollments for your classes.</p>
 </div>
 
-<div class="container-fluid px-3 px-lg-5 py-5">
+<div class="container-fluid py-2">
 
   <?php if (empty($bookings)): ?>
     <div class="empty-state">
@@ -85,7 +74,7 @@
                   <span class="text-uppercase" style="font-size: 0.7rem;letter-spacing: 0.05em;"><?= esc($bk->listing_type) ?></span>
                   <?php if (!empty($bk->batch_name)): ?>
                     <span class="mx-2 text-opacity-25 opacity-25">|</span>
-                    <span class="badge bg-soft-pink text-pink fw-bold" style="font-size: 0.65rem;"><?= esc($bk->batch_name) ?></span>
+                    <span class="badge bg-soft-accent text-accent fw-bold" style="font-size: 0.65rem;"><?= esc($bk->batch_name) ?></span>
                   <?php endif; ?>
                 </div>
               </div>

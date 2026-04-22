@@ -20,7 +20,7 @@ class BookingModel extends BaseModel
 
     protected $allowedFields = [
         'listing_id', 'parent_id', 'parent_phone', 'student_name', 'student_age',
-        'booking_type', 'batch_name', 'batch_id', 'batch_price', 'batch_start_date', 'class_date', 'class_time',
+        'booking_type', 'batch_name', 'batch_id', 'batch_price', 'batch_start_date', 'enrollment_end_date', 'class_date', 'class_time',
         'payment_amount', 'payment_id', 'payment_status',
         'booking_status', 'reminder_sent', 'review_reminders', 'completed_at',
         'parent_email', 'email_verified'

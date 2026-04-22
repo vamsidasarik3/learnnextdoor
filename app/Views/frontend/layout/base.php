@@ -10,18 +10,18 @@
     screen sizes — mobile, tablet, and desktop.
   -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="<?= $meta_description ?? 'Class Next Door – Discover and book the best kids\' classes near you.' ?>">
+  <meta name="description" content="<?= $meta_description ?? 'Learn Next Door – Discover and book the best kids\' classes near you.' ?>">
   <meta name="theme-color" content="#3F3590">
   <!-- CSRF token — read by app.js for AJAX POST requests -->
   <meta name="csrf-token" content="<?= csrf_hash() ?>">
   <meta name="vapid-public-key" content="<?= esc(getenv('VAPID_PUBLIC_KEY') ?: '') ?>">
-  <title><?= $page_title ?? 'Class Next Door' ?></title>
+  <title><?= $page_title ?? 'Learn Next Door' ?></title>
 
   <!-- Canonical URL -->
   <link rel="canonical" href="<?= current_url() ?>">
 
   <!-- Open Graph (for WhatsApp / social sharing) -->
-  <meta property="og:title"       content="<?= $page_title ?? 'Class Next Door' ?>">
+  <meta property="og:title"       content="<?= $page_title ?? 'Learn Next Door' ?>">
   <meta property="og:description" content="<?= $meta_description ?? 'Find the best kids\' classes near you.' ?>">
   <meta property="og:image"       content="<?= base_url('assets/frontend/img/logo-full.png') ?>">
   <meta property="og:url"         content="<?= current_url() ?>">
@@ -30,12 +30,10 @@
   <!-- ============================================================
        FAVICONS
   ============================================================ -->
-  <link rel="icon" type="image/png" href="<?= base_url('assets/frontend/img/logo-icon.png') ?>">
+  <link rel="icon" type="image/png" href="<?= base_url('assets/frontend/img/logo-icon-new.png') ?>">
 
   <!-- ============================================================
-       BOOTSTRAP 5.3 CSS  (CDN – no local install needed)
-       Bootstrap 5 uses a mobile-first responsive grid system with
-       breakpoints: xs(<576) sm(≥576) md(≥768) lg(≥992) xl(≥1200)
+       BOOTSTRAP 5.3 CSS
   ============================================================ -->
   <link
     rel="stylesheet"
@@ -46,16 +44,19 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- Swiper.js 11 — touch carousel -->
+  <!-- Swiper.js 11 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
-  <!-- Google Fonts — Poppins (rounded, friendly — matches the theme) -->
+  <!-- Google Fonts — Outfit (Modern, Geometric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Custom Frontend Stylesheet -->
   <link rel="stylesheet" href="<?= base_url('assets/frontend/css/app.css') ?>">
+
+  <!-- Shared Component Design Tokens (hero, cards, categories, CTA) -->
+  <link rel="stylesheet" href="<?= base_url('assets/frontend/css/components.css') ?>">
 
   <!-- jQuery (Required by many child views and libraries) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -83,6 +84,12 @@
   </a>
 
   <!-- ============================================================
+       ANNOUNCEMENT BAR — optional slot (rendered above navbar)
+       Child views inject via: $this->section('announcement')
+  ============================================================ -->
+  <?= $this->renderSection('announcement') ?>
+
+  <!-- ============================================================
        NAVBAR — included as partial
   ============================================================ -->
   <?= $this->include('frontend/layout/navbar') ?>
@@ -100,7 +107,7 @@
   <div class="cnd-location-bar" id="cnd-location-bar" role="status" aria-live="polite">
     <div class="container-fluid">
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <i class="bi bi-geo-alt-fill" aria-hidden="true" style="color:var(--cnd-pink);"></i>
+        <i class="bi bi-geo-alt-fill" aria-hidden="true" style="color:var(--cnd-accent);"></i>
         <span class="cnd-location-label"><strong><?= esc($selected_location) ?></strong></span>
         <button
           class="btn btn-link btn-sm p-0 cnd-change-location"

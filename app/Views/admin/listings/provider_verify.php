@@ -57,14 +57,15 @@
               </li>
             </ul>
 
-            <?php if (in_array($provider->role, [2, 3]) && $provider->provider_verification_status !== 'approved'): ?>
-            <button class="btn btn-primary btn-block mb-2" onclick="openReviewModal()"><b>REVIEW APPLICATION</b></button>
-            <?php endif; ?>
-
-            <?php if ($provider->provider_verification_status === 'approved'): ?>
-            <div class="alert alert-success py-2 px-3 small text-center rounded-3">
-               <i class="fas fa-check-circle mr-1"></i> VERIFIED PROVIDER
-            </div>
+            <?php if (in_array($provider->role, [2, 3])): ?>
+                <?php if ($provider->provider_verification_status !== 'approved'): ?>
+                    <button class="btn btn-primary btn-block mb-2" onclick="openReviewModal()"><b>REVIEW APPLICATION</b></button>
+                <?php else: ?>
+                    <div class="alert alert-success py-2 px-3 small text-center rounded-3 mb-2">
+                        <i class="fas fa-check-circle mr-1"></i> VERIFIED PROVIDER
+                    </div>
+                    <button class="btn btn-warning btn-block mb-2" onclick="openReviewModal('revoked')"><b>REVOKE VERIFICATION</b></button>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if($provider->status !== 'banned'): ?>
@@ -177,9 +178,14 @@
           <div class="form-group">
             <label>Action</label>
             <select name="status" class="form-control" id="review_action" required onchange="updateReviewText()">
-                <option value="approved">Approve Provider</option>
-                <option value="rejected">Reject Application</option>
-                <option value="more_info">Request More Information</option>
+                <?php if ($provider->provider_verification_status !== 'approved'): ?>
+                    <option value="approved">Approve Provider</option>
+                    <option value="rejected">Reject Application</option>
+                    <option value="more_info">Request More Information</option>
+                <?php else: ?>
+                    <option value="revoked">Revoke Verification</option>
+                    <option value="more_info">Request New Documents</option>
+                <?php endif; ?>
             </select>
           </div>
           <div class="form-group">
@@ -280,11 +286,23 @@ function updateReviewText() {
         label.text('Rejection Reason (Required)');
         hint.text('Explain why the application was rejected.');
         $('[name="remarks"]').prop('required', true);
+    } else if (action === 'revoked') {
+        label.text('Revocation Reason (Required)');
+        hint.text('Explain why the verification is being revoked. Listings will be deactivated.');
+        $('[name="remarks"]').prop('required', true);
     } else {
         label.text('Required Documents/Info (Required)');
         hint.text('List the specific documents or information needed to proceed.');
         $('[name="remarks"]').prop('required', true);
     }
+}
+
+function openReviewModal(defaultAction = null) {
+    if (defaultAction) {
+        $('#review_action').val(defaultAction);
+    }
+    updateReviewText(); // Initialize required state
+    $('#reviewModal').modal('show');
 }
 
 $('#reviewForm').on('submit', function(e) {

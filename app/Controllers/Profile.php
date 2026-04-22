@@ -21,14 +21,28 @@ class Profile extends AdminBaseController
 
 		if (logged('role') == 1) {
 			return view('admin/account/profile', compact('user', 'activeTab'));
-		} else {
-			return view('frontend/profile', [
+		} 
+		
+		$docModel = new \App\Models\UserDocumentModel();
+
+		// Case 1: Provider Role (2)
+		if (logged('role') == 2) {
+			return view('frontend/provider/profile', [
 				'user'              => $user,
+				'documents'         => $docModel->getByUser(logged('id')),
 				'activeTab'         => $activeTab,
-				'page_title'        => 'My Account | Class Next Door',
+				'page_title'        => 'Provider Account | Class Next Door',
 				'show_location_bar' => false,
 			]);
-		}
+		} 
+		
+		// Case 2: Parent / General User Role (3)
+		return view('frontend/user_profile', [
+			'user'              => $user,
+			'activeTab'         => $activeTab,
+			'page_title'        => 'My Account | Class Next Door',
+			'show_location_bar' => true,
+		]);
 	}
 
 	public function updateProfile()
@@ -39,13 +53,19 @@ class Profile extends AdminBaseController
 		postAllowed();
 
 		$data = [
-			// 'role' => post('role'),
 			'name' => post('name'),
-			'username' => post('username'),
-			'email' => post('email'),
-			'phone' => post('contact'),
-			'address' => post('address'),
 		];
+
+		// Only update username/address if they are sent (prevent null-overwrites)
+		if (post('username') !== null) {
+			$data['username'] = post('username');
+		}
+		if (post('address') !== null) {
+			$data['address'] = post('address');
+		}
+		if (post('upi_id') !== null) {
+			$data['upi_id'] = post('upi_id');
+		}
 
 		$id = (new UserModel)->update($id, $data);
 
@@ -129,6 +149,33 @@ class Profile extends AdminBaseController
 
 		return redirect()->to('profile/index/change_pic')->with('notifyError', 'Server Error Occured while Uploading Image !');
 
+	}
+
+	public function deleteAccount()
+	{
+		$id = logged('id');
+		if (!$id) return redirect()->to('login');
+
+		$userModel = new UserModel();
+		
+		// 1. Audit Log before deletion
+		model('App\Models\ActivityLogModel')->add("User #$id requested PERMANENT ACCOUNT DELETION");
+
+		// 2. Perform deactivation
+		// We mark as status=0 and role=3 (standard parent)
+		$userModel->update($id, [
+			'status' => 0, // Inactive/Banned
+			'role' => 3,   // Back to parent/standard
+		]);
+
+		// 3. Deactivate all listings by this provider
+		$listingModel = new \App\Models\ListingModel();
+		$listingModel->where('provider_id', $id)->set(['status' => 'inactive'])->update();
+
+		// 4. Logout
+		session()->destroy();
+		
+		return redirect()->to('/')->with('notifySuccess', 'Your account and all your listings have been successfully deleted.');
 	}
 
 	public function change_language($code = '')

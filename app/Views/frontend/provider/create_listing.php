@@ -1,581 +1,400 @@
-<?= $this->extend('frontend/layout/base') ?>
+<?= $this->extend('frontend/layout/provider_base') ?>
 
 <?= $this->section('content') ?>
-<!-- ══ CREATE LISTING HEADER ════════════════════════════════════ -->
-<section class="cnd-provider-hero py-5" style="background: linear-gradient(135deg, #3F3590 0%, #FF68B4 100%);">
-  <div class="container py-4">
-    <div class="row align-items-center">
-      <div class="col-lg-8 text-white">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb cnd-breadcrumb">
-            <li class="breadcrumb-item"><a href="<?= base_url('provider/listings') ?>" class="text-white opacity-75">My Listings</a></li>
-            <li class="breadcrumb-item active text-white" aria-current="page">New Class</li>
-          </ol>
-        </nav>
-        <h1 class="display-5 fw-bold mb-2">List a New Class</h1>
-        <p class="lead opacity-90 mb-0">Fill in the details below to reach thousands of parents.</p>
-      </div>
+<div class="multi-step-card mt-4">
+    <div class="stepper-header">
+        <div class="stepper-info">
+            <span class="stepper-title" id="stepTitle">Create New Class</span>
+            <span class="stepper-count" id="stepCount">Step 1 of 4</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBar" style="width: 25%;"></div>
+        </div>
     </div>
-  </div>
-</section>
 
-<!-- ══ MULTI-STEP FORM ══════════════════════════════════════════ -->
-<section class="py-5 bg-light min-vh-100">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-10 col-xl-8">
+    <form id="createListingForm" class="create-listing-form" enctype="multipart/form-data" novalidate>
         
-        <!-- Step Progress Indicator -->
-        <div class="cnd-step-indicator mb-5 d-flex justify-content-between">
-           <div class="cnd-step-item active" data-step="1">
-              <div class="cnd-step-dot">1</div>
-              <div class="cnd-step-label">Type & Category</div>
-           </div>
-           <div class="cnd-step-item" data-step="2">
-              <div class="cnd-step-dot">2</div>
-              <div class="cnd-step-label">Institute Details</div>
-           </div>
-           <div class="cnd-step-item" data-step="3">
-              <div class="cnd-step-dot">3</div>
-              <div class="cnd-step-label">Class Details</div>
-           </div>
-           <div class="cnd-step-item" data-step="4">
-              <div class="cnd-step-dot">4</div>
-              <div class="cnd-step-label">Submit</div>
-           </div>
+        <!-- STEP 1: Class Type & Category -->
+        <div class="form-body step-content" id="step1">
+            <h3 class="form-section-title">Select Class Type</h3>
+            <div class="type-card-grid">
+                <div class="type-card active" data-type="regular">
+                    <div class="type-title">Regular Class</div>
+                    <div class="type-subtitle">Ongoing recurring batches</div>
+                    <input type="radio" name="type" value="regular" class="d-none" checked>
+                </div>
+                <div class="type-card" data-type="course">
+                    <div class="type-title">Course</div>
+                    <div class="type-subtitle">Fixed-duration program</div>
+                    <input type="radio" name="type" value="course" class="d-none">
+                </div>
+                <div class="type-card" data-type="workshop">
+                    <div class="type-title">Workshop</div>
+                    <div class="type-subtitle">One-time intensive event</div>
+                    <input type="radio" name="type" value="workshop" class="d-none">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Category <span>*</span></label>
+                <select name="category_id" id="categorySelect" class="form-select" required>
+                    <option value="">Select category</option>
+                    <?php foreach($categories as $id => $name): ?>
+                        <option value="<?= $id ?>"><?= esc($name) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subcategories <span>*</span></label>
+                <select name="subcategory_ids[]" id="subcategorySelect" class="form-select select2-multi" multiple required disabled>
+                </select>
+                <div class="form-text text-muted small mt-1">Select at least one relevant subcategory.</div>
+            </div>
         </div>
 
-        <!-- Form Container -->
-        <form id="createListingForm" class="bg-white rounded-4 shadow-sm p-4 p-md-5 overflow-hidden" enctype="multipart/form-data" novalidate>
-           
-           <!-- STEP 1: Class Type Selection -->
-           <div class="cnd-form-step active" id="step1">
-              <h4 class="fw-bold mb-4">Class Type & Category</h4>
-              
-              <div class="row g-4 mb-4">
-                 <div class="col-md-12">
-                    <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Class Type <span class="text-danger">*</span></label>
-                    <select name="type" id="classType" class="form-select form-select-lg rounded-3 border-2" required>
-                       <option value="regular">Regular Class (Recurring batches)</option>
-                       <option value="workshop">Workshop (One-time event)</option>
-                       <option value="course">Course (Fixed duration program)</option>
-                    </select>
-                 </div>
-                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Category <span class="text-danger">*</span></label>
-                    <select name="category_id" id="categorySelect" class="form-select form-select-lg rounded-3 border-2" required>
-                       <option value="">Choose a category...</option>
-                       <?php foreach($categories as $id => $name): ?>
-                          <option value="<?= $id ?>"><?= esc($name) ?></option>
-                       <?php endforeach; ?>
-                    </select>
-                 </div>
-                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Subcategories <span class="text-danger">*</span></label>
-                    <select name="subcategory_ids[]" id="subcategorySelect" class="form-select form-select-lg rounded-3 border-2 select2-multi" multiple required disabled data-placeholder="Choose subcategories...">
-                       <option value="">Select Category...</option>
-                    </select>
-                    <div class="form-text small">Select at least one relevant subcategory.</div>
-                 </div>
-              </div>
-
-              <div class="d-flex justify-content-end mt-5">
-                 <button type="button" class="btn btn-pink py-3 px-5 rounded-pill fw-bold next-step">Next Step <i class="bi bi-arrow-right ms-2"></i></button>
-              </div>
-           </div>
-
-           <!-- STEP 2: Institute Details -->
-           <div class="cnd-form-step" id="step2">
-              <h4 class="fw-bold mb-4" id="step2Header">Institute Details</h4>
-              <div class="mb-4">
-                 <label class="form-label fw-bold small text-uppercase letter-spacing-sm" id="labelInstituteName">Institute Name <span class="text-danger">*</span></label>
-                 <input type="text" name="institute_name" id="instituteName" class="form-control form-control-lg rounded-3 border-2" placeholder="e.g. Art & Soul Academy" required>
-                 <!-- Title is synced with institute name for search -->
-                 <input type="hidden" name="title" id="classTitle">
-              </div>
-
-              <div class="mb-4">
-                 <label class="form-label fw-bold small text-uppercase letter-spacing-sm" id="labelDescription">Description</label>
-                 <textarea name="description" id="description" class="form-control rounded-3 border-2" rows="5" placeholder="Tell us about your institute and the classes you offer."></textarea>
-              </div>
-
-              <div class="mb-4">
-                 <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Address (Manual Entry) <span class="text-danger">*</span></label>
-                 <input type="text" name="manual_address" class="form-control form-control-lg rounded-3 border-2" placeholder="Enter Full Address Manually" required>
-              </div>
-
-              <div class="mb-4">
-                 <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Map Location (Search) <span class="text-danger">*</span></label>
-                 <input type="text" id="locationInput" name="formatted_address" class="form-control form-control-lg rounded-3 border-2" placeholder="Search for your location to pin on map..." required autocomplete="off">
-                 <div class="form-text small">Select your location from the suggestions to store coordinates.</div>
-                 
-                 <!-- Hidden Location Data -->
-                 <input type="hidden" name="latitude" id="lat">
-                 <input type="hidden" name="longitude" id="lng">
-                 <input type="hidden" name="city" id="city">
-                 <input type="hidden" name="locality" id="locality">
-                 <input type="hidden" name="pincode" id="pincode">
-                 <input type="hidden" name="address" id="full_address">
-              </div>
-
-              <div class="d-flex justify-content-between mt-5">
-                 <button type="button" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold prev-step"><i class="bi bi-arrow-left me-2"></i> Back</button>
-                  <button type="button" class="btn btn-pink py-3 px-5 rounded-pill fw-bold next-step">Next Step <i class="bi bi-arrow-right ms-2"></i></button>
-               </div>
+        <!-- STEP 2: Institute Details -->
+        <div class="form-body step-content d-none" id="step2">
+            <h3 class="form-section-title">Institute Details</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Institute / Class Name <span>*</span></label>
+                <input type="text" name="institute_name" id="instituteName" class="form-control" placeholder="e.g. Art & Soul Academy" required>
+                <input type="hidden" name="title" id="classTitle">
             </div>
 
-            <!-- STEP 3: Class Details (Dynamic) — Subtask 3.1 -->
-            <div class="cnd-form-step" id="step3">
-               <h4 class="fw-bold mb-4">Class Specifics</h4>
-               
-               <!-- ── REGULAR CLASS SECTION ── -->
-               <div id="sectionRegular">
-                  <div class="mb-4">
-                     <h6 class="fw-bold text-uppercase letter-spacing-sm text-primary mb-0">
-                        <i class="bi bi-layers-fill me-2"></i> Class Batches
-                     </h6>
-                  </div>
+            <div class="form-group">
+                <label class="form-label">About / Description <span>*</span></label>
+                <textarea name="description" id="description" class="form-control" rows="5" placeholder="Tell us about your institute and the classes you offer." required minlength="50"></textarea>
+                <div class="form-text text-muted small mt-1">Minimum 50 characters required.</div>
+            </div>
 
-                  <div id="batchesContainer" class="d-grid gap-4">
-                     <!-- Default First Batch -->
-                     <div class="card border-0 shadow-sm rounded-4 batch-item border-start border-4 border-primary">
-                        <div class="card-body p-4">
-                           <div class="row g-3">
-                              <div class="col-md-6">
-                                 <label class="form-label small fw-bold">Batch Name <span class="text-danger">*</span></label>
-                                 <input type="text" name="batches[0][name]" class="form-control rounded-3" placeholder="e.g. Weekend Beginners" required>
-                              </div>
-                              <div class="col-md-6">
-                                 <label class="form-label small fw-bold">Days of Week <span class="text-danger">*</span></label>
-                                 <div class="d-flex flex-wrap gap-2 mt-1">
-                                    <?php $days = ['S','M','T','W','Th','F','Sa']; foreach($days as $d): ?>
-                                       <div class="day-check">
-                                          <input type="checkbox" name="batches[0][days][]" value="<?= $d ?>" id="day_0_<?= $d ?>" class="d-none">
-                                          <label for="day_0_<?= $d ?>" class="day-label"><?= $d ?></label>
-                                       </div>
-                                    <?php endforeach; ?>
-                                 </div>
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">Start Date <span class="text-danger">*</span></label>
-                                 <input type="date" name="batches[0][batch_start_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">From Time <span class="text-danger">*</span></label>
-                                 <input type="time" name="batches[0][from_time]" class="form-control rounded-3" required>
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">To Time <span class="text-danger">*</span></label>
-                                 <input type="time" name="batches[0][to_time]" class="form-control rounded-3" required>
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">Price (₹) <span class="text-danger">*</span></label>
-                                 <div class="input-group">
-                                    <input type="number" name="batches[0][price]" class="form-control rounded-start-3" placeholder="₹" required min="0">
-                                    <select name="batches[0][price_type]" class="form-select rounded-end-3" style="max-width: 130px;">
-                                       <option value="monthly">Monthly</option>
-                                       <option value="quarterly">Quarterly</option>
-                                    </select>
-                                 </div>
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">Batch Size <span class="text-danger">*</span></label>
-                                 <input type="number" name="batches[0][batch_size]" class="form-control rounded-3" placeholder="Number of Students" required min="1">
-                              </div>
-                              <div class="col-md-4">
-                                 <label class="form-label small fw-bold">Batch Image Upload</label>
-                                 <input type="file" name="batch_images[0]" class="form-control rounded-3" accept="image/*">
-                              </div>
-                              <div class="col-12 mt-2">
-                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="batches[0][free_trial]" value="1" id="freeTrial_0">
-                                    <label class="form-check-label small fw-bold" for="freeTrial_0">Free Trial Toggle</label>
-                                 </div>
-                              </div>
+            <div class="form-group">
+                <label class="form-label">Address (Manual Entry) <span>*</span></label>
+                <input type="text" name="manual_address" class="form-control" placeholder="Enter Full Address Manually" required>
+            </div>
 
-                              <!-- Instructor & KYC Section -->
-                              <div class="col-12 mt-3 pt-3 border-top">
-                                 <h6 class="fw-bold text-pink small text-uppercase mb-3">Instructor & KYC</h6>
-                                 <div class="row g-3">
-                                    <div class="col-md-12">
-                                       <label class="form-label small fw-bold">Select Instructor</label>
-                                       <select name="batches[0][instructor_option]" class="form-select rounded-3 instructor-select" onchange="handleInstructorSelect(this, 0)">
-                                          <option value="new">Add New Instructor</option>
-                                          <?php if(!empty($instructors)): ?>
-                                             <?php foreach($instructors as $vi): ?>
-                                                 <option value="<?= $vi->id ?>" 
-                                                         data-name="<?= esc($vi->name) ?>"
-                                                         data-exp="<?= esc($vi->experience) ?>" 
-                                                         data-social="<?= esc($vi->social_links) ?>"
-                                                         data-status="<?= $vi->kyc_status ?>">
-                                                    <?= esc($vi->name) ?> (<?= $vi->kyc_status === 'verified' ? '✅ Verified' : '⏳ Pending' ?>)
-                                                 </option>
-                                              <?php endforeach; ?>
-                                          <?php endif; ?>
-                                       </select>
-                                    </div>
-                                    <div class="col-md-6 instructor-name-box">
-                                       <label class="form-label small fw-bold">Instructor Name <span class="text-danger">*</span></label>
-                                       <input type="text" name="batches[0][instructor_name]" class="form-control rounded-3" required>
-                                    </div>
-                                    <div class="col-md-6 instructor-social-box">
-                                       <label class="form-label small fw-bold">Social Link</label>
-                                       <input type="url" name="batches[0][social_links]" class="form-control rounded-3" placeholder="https://...">
-                                    </div>
-                                    <div class="col-md-12 instructor-exp-box">
-                                       <label class="form-label small fw-bold">Instructor Experience <span class="text-danger">*</span></label>
-                                       <textarea name="batches[0][experience]" class="form-control rounded-3" rows="2" required></textarea>
-                                    </div>
-                                    <div class="col-md-12 instructor-kyc-box">
-                                       <div class="bg-light p-3 rounded-4 border border-dashed shadow-sm">
-                                          <label class="form-label small fw-bold d-block mb-1">Instructor KYC Document (Optional)</label>
-                                          <p class="small text-muted mb-2 fs-tiny">Optional proof of ID or certs. (Aadhaar/PAN/PortfolioPDF)</p>
-                                          <input type="file" name="batch_instructor_kyc[0]" class="form-control rounded-pill px-3" accept="image/*,.pdf">
-                                          <div class="mt-2 small italic text-muted">Status: <span class="badge bg-warning text-dark rounded-pill">Pending</span></div>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+            <div class="form-group">
+                <label class="form-label">Nearest Landmark (Search) <span>*</span></label>
+                <input type="text" id="locationInput" name="formatted_address" class="form-control" placeholder="Search for your location to pin on map..." required autocomplete="off">
+                
+                <!-- Hidden Location Data -->
+                <input type="hidden" name="latitude" id="lat">
+                <input type="hidden" name="longitude" id="lng">
+                <input type="hidden" name="city" id="city">
+                <input type="hidden" name="locality" id="locality">
+                <input type="hidden" name="pincode" id="pincode">
+                <input type="hidden" name="address" id="full_address">
+            </div>
+        </div>
 
-                  <!-- Add Batch Button (Now at bottom) -->
-                  <div class="mt-4">
-                     <button type="button" class="btn btn-outline-primary py-2 px-4 rounded-pill fw-bold" id="addBatchBtn">
-                        <i class="bi bi-plus-circle me-1"></i> Add Another Batch
-                     </button>
-                  </div>
-               </div>
-
-               <!-- ── WORKSHOP SECTION ── -->
-               <div id="sectionWorkshop" class="d-none">
-                  <h6 class="fw-bold mb-3 text-uppercase letter-spacing-sm text-warning"><i class="bi bi-lightning-fill me-1"></i>Workshop Details</h6>
-                  <div class="row g-3 mb-4">
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">Start Date <span class="text-danger">*</span></label>
-                        <input type="date" name="workshop[start_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">From Time <span class="text-danger">*</span></label>
-                        <input type="time" name="workshop[from_time]" class="form-control rounded-3" required>
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">To Time <span class="text-danger">*</span></label>
-                        <input type="time" name="workshop[to_time]" class="form-control rounded-3" required>
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">Price <span class="text-danger">*</span></label>
-                        <input type="number" name="workshop[price]" class="form-control rounded-3" required min="0">
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">Max Allowed Students <span class="text-danger">*</span></label>
-                        <input type="number" name="workshop[batch_size]" class="form-control rounded-3" required min="1">
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold">Registration End Date <span class="text-danger">*</span></label>
-                        <input type="date" name="workshop[registration_end_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                     </div>
-                  </div>
-
-                  <div class="bg-light p-4 rounded-4 mb-4 border-start border-4 border-warning shadow-sm">
-                     <h6 class="fw-bold mb-3 text-uppercase letter-spacing-sm">Early Bird Offer <small class="text-muted fw-normal">(Optional)</small></h6>
-                     <div class="row g-3">
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird End Date</label>
-                           <input type="date" name="workshop[early_bird_end_date]" class="form-control rounded-3">
-                        </div>
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird Count</label>
-                           <input type="number" name="workshop[early_bird_count]" class="form-control rounded-3" placeholder="Slots count">
-                        </div>
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird Price (₹)</label>
-                           <input type="number" name="workshop[early_bird_price]" class="form-control rounded-3" placeholder="₹">
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-               <!-- ── COURSE SECTION ── -->
-               <div id="sectionCourse" class="d-none">
-                  <h6 class="fw-bold mb-4 text-uppercase letter-spacing-sm text-info"><i class="bi bi-journal-bookmark-fill me-2"></i>Course Information</h6>
-                  
-                  <div class="row g-4 mb-4">
-                     <div class="col-md-6 border-bottom pb-4 mb-2">
-                        <label class="form-label fw-bold small text-uppercase">Course Duration <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                           <input type="number" name="course[duration_number]" class="form-control rounded-start-3" placeholder="e.g. 3" required min="1">
-                           <select name="course[duration_type]" class="form-select rounded-end-3" style="max-width: 140px;" required>
-                              <option value="weeks">Weeks</option>
-                              <option value="months">Months</option>
-                           </select>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div class="row g-4 mb-4">
-                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">From Date <span class="text-danger">*</span></label>
-                        <input type="date" name="course[start_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">To Date <span class="text-danger">*</span></label>
-                        <input type="date" name="course[end_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">From Time <span class="text-danger">*</span></label>
-                        <input type="time" name="course[from_time]" class="form-control rounded-3" required>
-                     </div>
-                     <div class="col-md-6">
-                        <label class="form-label small fw-bold">To Time <span class="text-danger">*</span></label>
-                        <input type="time" name="course[to_time]" class="form-control rounded-3" required>
-                     </div>
-                     <div class="col-md-12">
-                        <label class="form-label small fw-bold d-block mb-2">Days of Week <span class="text-danger">*</span></label>
-                        <div class="d-flex flex-wrap gap-2">
-                           <?php foreach($days as $d): ?>
-                              <div class="day-check">
-                                 <input type="checkbox" name="course[days][]" value="<?= $d ?>" id="cday_<?= $d ?>" class="d-none">
-                                 <label for="cday_<?= $d ?>" class="day-label"><?= $d ?></label>
-                              </div>
-                           <?php endforeach; ?>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div class="row g-3 mb-4 bg-light p-4 rounded-4 mx-0 border">
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-uppercase">Price (₹) <span class="text-danger">*</span></label>
-                        <input type="number" name="course[price]" class="form-control rounded-3" required min="0">
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-uppercase">Max Allowed Students <span class="text-danger">*</span></label>
-                        <input type="number" name="course[batch_size]" class="form-control rounded-3" required min="1">
-                     </div>
-                     <div class="col-md-4">
-                        <label class="form-label small fw-bold text-uppercase">Registration End Date <span class="text-danger">*</span></label>
-                        <input type="date" name="course[registration_end_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                     </div>
-                  </div>
-
-                  <div class="bg-white p-4 rounded-4 mb-4 border border-info shadow-sm">
-                     <h6 class="fw-bold mb-3 text-uppercase letter-spacing-sm text-info">Early Bird Offer <small class="text-muted fw-normal">(Optional)</small></h6>
-                     <div class="row g-3">
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird End Date</label>
-                           <input type="date" name="course[early_bird_end_date]" class="form-control rounded-3">
-                        </div>
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird Count</label>
-                           <input type="number" name="course[early_bird_count]" class="form-control rounded-3" placeholder="Remaining Slots">
-                        </div>
-                        <div class="col-md-4">
-                           <label class="form-label small fw-bold">Early Bird Price</label>
-                           <input type="number" name="course[early_bird_price]" class="form-control rounded-3" placeholder="Discounted Price">
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-               <!-- ── SHARED INSTRUCTOR SECTION (For Workshop/Course) ── -->
-               <div id="sharedInstructorSection" class="instructor-section mt-5 border-top pt-5 d-none">
-                  <div class="d-flex align-items-center mb-4">
-                     <div class="bg-soft-pink text-pink rounded-circle p-3 me-3">
-                        <i class="bi bi-person-badge-fill fs-4"></i>
-                     </div>
-                     <div>
-                        <h5 class="fw-bold mb-0">Instructor Details</h5>
-                        <p class="small text-muted mb-0">Provide info about the expert leading the class.</p>
-                     </div>
-                  </div>
-                  
-                  <div class="row g-4 bg-light p-4 rounded-4 border mx-0 shadow-sm">
-                     <div class="col-md-12">
-                         <label class="form-label small fw-bold">Select Verified Instructor or Add New</label>
-                         <select name="instructor_option" class="form-select rounded-3 instructor-select-shared" onchange="handleSharedInstructorSelect(this)">
-                            <option value="new">Add New Instructor</option>
-                             <?php if(!empty($instructors)): ?>
-                                <?php foreach($instructors as $vi): ?>
-                                   <option value="<?= $vi->id ?>" 
-                                           data-name="<?= esc($vi->name) ?>"
-                                           data-exp="<?= esc($vi->experience) ?>" 
-                                           data-social="<?= esc($vi->social_links) ?>"
-                                           data-status="<?= $vi->kyc_status ?>">
-                                      <?= esc($vi->name) ?> (<?= ($vi->kyc_status ?? '') === 'verified' ? '✅ Verified' : '⏳ Pending' ?>)
-                                   </option>
-                                <?php endforeach; ?>
-                             <?php endif; ?>
-                         </select>
-                     </div>
-                     <div class="col-md-6 instructor-name-box">
-                        <label class="form-label small fw-bold text-uppercase letter-spacing-sm">Instructor Name <span class="text-danger">*</span></label>
-                        <input type="text" name="instructor_name" class="form-control form-control-lg rounded-3 border-2" placeholder="e.g. Ms. Jane Doe" required>
-                     </div>
-                     <div class="col-md-6 instructor-social-box">
-                        <label class="form-label small fw-bold text-uppercase letter-spacing-sm">Social Link (LinkedIn/Portfolio)</label>
-                        <input type="url" name="social_links" class="form-control form-control-lg rounded-3 border-2" placeholder="https://linkedin.com/in/...">
-                     </div>
-                     <div class="col-md-12 instructor-exp-box">
-                        <label class="form-label small fw-bold text-uppercase letter-spacing-sm">Instructor Experience <span class="text-danger">*</span></label>
-                        <textarea name="experience" class="form-control rounded-3 border-2" rows="3" placeholder="Brief about instructor's background and achievements." required></textarea>
-                     </div>
-                     <div class="col-md-12 mt-4 instructor-kyc-box">
-                        <div class="bg-white p-4 rounded-4 border border-dashed text-center">
-                           <label class="form-label small fw-bold d-block mb-3 text-uppercase letter-spacing-sm text-pink">
-                              <i class="bi bi-file-earmark-lock-fill me-1"></i> Instructor KYC Document (Optional)
-                           </label>
-                           <p class="small text-muted mb-4 fs-tiny">Upload any ID proof or certifications (Aadhaar/PAN, Max 2MB).</p>
-                           <div class="d-flex justify-content-center">
-                              <input type="file" name="instructor_kyc_doc" class="form-control w-auto rounded-pill px-4" accept="image/*,.pdf">
-                           </div>
-                           <div class="mt-3 small text-muted italic">Status: <span class="badge bg-warning text-dark rounded-pill">Pending</span></div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-                <div class="d-flex justify-content-between mt-5">
-                   <button type="button" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold prev-step"><i class="bi bi-arrow-left me-2"></i> Back</button>
-                   <button type="button" class="btn btn-pink py-3 px-5 rounded-pill fw-bold next-step">Next Step <i class="bi bi-arrow-right ms-2"></i></button>
+        <!-- STEP 3: Create Batches -->
+        <div class="form-body step-content d-none" id="step3">
+            
+            <div id="sectionRegular">
+                <div id="batchesContainer">
+                    <!-- Dynamic Batches will be inserted here -->
                 </div>
-             </div>
-
-            <!-- STEP 4: Media & Submission -->
-            <div class="cnd-form-step" id="step4">
-               <h4 class="fw-bold mb-4">Final Submission</h4>
-               
-               <!-- Image Upload -->
-               <div class="mb-4">
-                  <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Class Photos (3-5 Photos) <span class="text-danger">*</span></label>
-                  <div class="cnd-upload-zone border-2 border-dashed rounded-4 p-5 text-center cursor-pointer" onclick="document.getElementById('imageInput').click()">
-                     <i class="bi bi-images display-4 text-muted opacity-50 mb-3 block"></i>
-                     <p class="mb-0 text-muted">Upload between 3 to 5 images (Max 2MB each)</p>
-                     <p class="small text-pink fw-600">The first image will be the primary cover.</p>
-                     <input type="file" name="images[]" id="imageInput" multiple accept="image/*" class="d-none">
-                  </div>
-                  <div id="imagePreview" class="d-flex flex-wrap gap-3 mt-3"></div>
-               </div>
-
-               <!-- Batch Images Sync (Requested) -->
-               <div id="batchImagesSection" class="mb-4 d-none">
-                  <label class="form-label fw-bold small text-uppercase letter-spacing-sm">Batch Photos (From Step 3)</label>
-                  <div id="batchImagesPreview" class="d-flex flex-wrap gap-3"></div>
-                  <div class="form-text small italic">These photos are linked to your specific batches.</div>
-               </div>
-
-               <!-- T&C Agreement -->
-               <div class="bg-light p-4 rounded-4 mb-4 border-start border-4 border-pink">
-                  <div class="form-check">
-                     <input class="form-check-input" type="checkbox" id="termsCheck" required>
-                     <label class="form-check-label small fw-bold" for="termsCheck">
-                        I agree to the <a href="<?= base_url('terms') ?>" target="_blank" class="text-pink">Terms and Conditions</a> and represent that all information provided is accurate.
-                     </label>
-                  </div>
-               </div>
-
-               <div class="d-flex justify-content-between mt-5">
-                  <button type="button" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold prev-step"><i class="bi bi-arrow-left me-2"></i> Back</button>
-                  <button type="submit" class="btn btn-pink py-3 px-5 rounded-pill fw-bold shadow-sm" id="submitBtn">
-                     <span id="submitSpinner" class="spinner-border spinner-border-sm d-none me-2"></span>
-                     Submit for Approval
-                  </button>
-               </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="button" class="btn btn-primary-provider rounded-pill px-4 shadow-sm" id="addBatchBtn">
+                        <i class="bi bi-plus-lg me-1"></i> Add Batch
+                    </button>
+                </div>
             </div>
 
-        </form>
+            <div id="sectionWorkshop" class="d-none pt-2">
+                <div class="workshop-details-wrap mb-5">
+                    <h5 class="fw-bold mb-3 text-dark bg-light p-2 rounded" style="display: inline-block;">Workshop Specifics</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Registration Deadline <span>*</span></label>
+                            <input type="text" name="workshop[registration_end_date]" class="form-control datepicker" placeholder="mm/dd/yyyy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Workshop Date <span>*</span></label>
+                            <input type="text" name="workshop[start_date]" class="form-control datepicker" placeholder="mm/dd/yyyy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Start Time <span>*</span></label>
+                            <input type="text" name="workshop[from_time]" class="form-control timepicker" placeholder="--:-- --">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">End Time <span>*</span></label>
+                            <input type="text" name="workshop[to_time]" class="form-control timepicker" placeholder="--:-- --">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Workshop Fee (₹) <span>*</span></label>
+                            <input type="number" name="workshop[price]" class="form-control" placeholder="5000">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Max Students <span>*</span></label>
+                            <input type="number" name="workshop[batch_size]" class="form-control" placeholder="50">
+                        </div>
+                        
+                        <!-- Instructor for Workshop -->
+                        <div class="col-12">
+                            <label class="form-label fw-600 mb-2">Instructor</label>
+                            <select name="instructor_option" class="form-select" onchange="toggleSharedInstructor(this, 'workshop')">
+                                <option value="" disabled selected>Select instructor</option>
+                                <option value="new">+ Add New Instructor</option>
+                                <?php foreach($instructors as $inst): ?>
+                                    <option value="<?= $inst->id ?>"><?= $inst->name ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-      </div>
-    </div>
-  </div>
-</section>
+                        <!-- Early Bird for Workshop -->
+                        <div class="col-12">
+                            <div class="form-check d-flex align-items-center gap-2 mb-3">
+                                <input class="form-check-input mt-0" type="checkbox" id="earlyBirdCheckW" onchange="toggleEarlyBird('W')">
+                                <label class="form-check-label fw-600" for="earlyBirdCheckW">Enable Early Bird Pricing</label>
+                            </div>
+                            <div id="earlyBirdFieldsW" class="d-none p-3 border rounded-3 bg-light">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Price (₹)</label>
+                                        <input type="number" name="workshop[early_bird_price]" class="form-control form-control-sm" placeholder="1200">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Ends</label>
+                                        <input type="text" name="workshop[early_bird_end_date]" class="form-control form-control-sm datepicker" placeholder="dd-mm-yyyy">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Slots</label>
+                                        <input type="number" name="workshop[early_bird_count]" class="form-control form-control-sm" placeholder="10">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<!-- ══ RULES MODAL ════════════════════════════════════════════ -->
-<div class="modal fade" id="rulesModal" tabindex="-1" aria-hidden="true">
-   <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-         <div class="modal-header bg-light border-0 py-3">
-            <h5 class="modal-title fw-bold">Listing Guidelines</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-         <div class="modal-body p-4 p-md-5">
-            <div class="row g-4">
-               <div class="col-md-6">
-                  <div class="d-flex gap-3 mb-4">
-                     <div class="bg-soft-pink text-pink rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
-                     <div>
-                        <h6 class="fw-bold mb-1">Accurate Information</h6>
-                        <p class="small text-muted mb-0">Ensure all class details, pricing, and dates are 100% accurate at the time of listing.</p>
-                     </div>
-                  </div>
-                  <div class="d-flex gap-3 mb-4">
-                     <div class="bg-soft-pink text-pink rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="bi bi-image"></i></div>
-                     <div>
-                        <h6 class="fw-bold mb-1">Quality Photos</h6>
-                        <p class="small text-muted mb-0">Use clear, bright photos of the actual class environment. No stock photos or watermarks.</p>
-                     </div>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="d-flex gap-3 mb-4">
-                     <div class="bg-soft-pink text-pink rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="bi bi-shield-check"></i></div>
-                     <div>
-                        <h6 class="fw-bold mb-1">Safety First</h6>
-                        <p class="small text-muted mb-0">Providers are responsible for the safety of children during the class. Mention safety measures.</p>
-                     </div>
-                  </div>
-                  <div class="d-flex gap-3 mb-0">
-                     <div class="bg-soft-pink text-pink rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="bi bi-chat-heart"></i></div>
-                     <div>
-                        <h6 class="fw-bold mb-1">Responsive Communication</h6>
-                        <p class="small text-muted mb-0">Respond to parent queries within 24 hours to maintain a high provider rating.</p>
-                     </div>
-                  </div>
-               </div>
+                <div id="workshopInstructorNew" class="d-none mb-4">
+                    <h6 class="fw-bold mb-3 text-muted">New Instructor Details</h6>
+                    <div class="row g-3 p-3 border rounded-3 bg-light">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Instructor Name *</label>
+                            <input type="text" name="instructor_name" class="form-control form-control-sm" placeholder="Enter Full Name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Experience (Years)</label>
+                            <input type="text" name="experience" class="form-control form-control-sm" placeholder="e.g. 5 Years">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold mb-1">KYC / Certification Document</label>
+                            <input type="file" name="instructor_kyc" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="text-center mt-4 pt-4 border-top">
-               <button type="button" class="btn btn-pink rounded-pill px-5" data-bs-dismiss="modal">I Understand</button>
+
+            <div id="sectionCourse" class="d-none pt-2">
+                <div class="course-details-wrap mb-5">
+                    <h5 class="fw-bold mb-3 text-dark bg-light p-2 rounded" style="display: inline-block;">Course Specifics</h5>
+                    
+                    <div class="row g-4">
+                        <!-- Duration & Registration -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Course Duration <span>*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="course[duration_number]" class="form-control" placeholder="10">
+                                <select name="course[duration_type]" class="form-select" style="max-width: 120px;">
+                                    <option value="weeks">Weeks</option>
+                                    <option value="months">Months</option>
+                                    <option value="days">Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Registration Deadline <span>*</span></label>
+                            <input type="text" name="course[registration_end_date]" class="form-control datepicker" placeholder="mm/dd/yyyy">
+                        </div>
+
+                        <!-- Start & End Date -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Course Start Date <span>*</span></label>
+                            <input type="text" name="course[start_date]" class="form-control datepicker" placeholder="mm/dd/yyyy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Course End Date <span>*</span></label>
+                            <input type="text" name="course[end_date]" class="form-control datepicker" placeholder="mm/dd/yyyy">
+                        </div>
+
+                        <!-- Fee & Max Students -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Course Fee (₹) <span>*</span></label>
+                            <input type="number" name="course[price]" class="form-control" placeholder="15000">
+                            <input type="hidden" name="course[price_type]" value="fixed">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Max Students <span>*</span></label>
+                            <input type="number" name="course[batch_size]" class="form-control" placeholder="30">
+                        </div>
+                        
+                        <!-- Instructor for Course -->
+                        <div class="col-12">
+                            <label class="form-label fw-600 mb-2">Instructor</label>
+                            <select name="course_instructor_option" class="form-select course-instructor-selector" onchange="toggleSharedInstructor(this, 'course')">
+                                <option value="" disabled selected>Select instructor</option>
+                                <option value="new">+ Add New Instructor</option>
+                                <?php foreach($instructors as $inst): ?>
+                                    <option value="<?= $inst->id ?>"><?= $inst->name ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Early Bird for Course -->
+                        <div class="col-12">
+                            <div class="form-check d-flex align-items-center gap-2 mb-3">
+                                <input class="form-check-input mt-0" type="checkbox" id="earlyBirdCheckC" onchange="toggleEarlyBird('C')">
+                                <label class="form-check-label fw-600" for="earlyBirdCheckC">
+                                    Enable Early Bird Pricing
+                                </label>
+                            </div>
+
+                            <div id="earlyBirdFieldsC" class="d-none p-3 border rounded-3 bg-light">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Price (₹)</label>
+                                        <input type="number" name="course[early_bird_price]" class="form-control form-control-sm" placeholder="12000">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Ends</label>
+                                        <input type="text" name="course[early_bird_end_date]" class="form-control form-control-sm datepicker" placeholder="dd-mm-yyyy">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold mb-1">Early Bird Slots</label>
+                                        <input type="number" name="course[early_bird_count]" class="form-control form-control-sm" placeholder="10">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daily Times for Course -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Daily Start Time <span>*</span></label>
+                            <input type="text" name="course[from_time]" class="form-control timepicker" placeholder="--:-- --">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600 mb-2">Daily End Time <span>*</span></label>
+                            <input type="text" name="course[to_time]" class="form-control timepicker" placeholder="--:-- --">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="courseInstructorNew" class="d-none mb-4">
+                    <h6 class="fw-bold mb-3 text-muted">New Instructor Details</h6>
+                    <div class="row g-3 p-3 border rounded-3 bg-light">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Instructor Name *</label>
+                            <input type="text" name="course_instructor_name" class="form-control form-control-sm" placeholder="Enter Full Name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold mb-1">Experience (Years)</label>
+                            <input type="text" name="course_experience" class="form-control form-control-sm" placeholder="e.g. 5 Years">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold mb-1">KYC / Certification Document</label>
+                            <input type="file" name="course_instructor_kyc" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
+
+            <!-- Shared Instructor Information (For Workshop/Course) -->
+            <div id="sharedInstructorSection" class="mt-4 pt-4 border-top d-none">
+                <h4 class="fw-bold mb-4">Instructor Information</h4>
+                <div class="instructor-details-wrap">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label fw-600 mb-2">Instructor</label>
+                            <select name="instructor_id" class="form-select" onchange="toggleSharedInstructor(this)">
+                                <option value="new" selected>+ Add New Instructor</option>
+                                <?php foreach($instructors as $inst): ?>
+                                    <option value="<?= $inst->id ?>"><?= $inst->name ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div id="newInstructorSection">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-600 mb-2">Instructor Name *</label>
+                                    <input type="text" name="instructor_name" class="form-control" placeholder="Enter Full Name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-600 mb-2">Experience (Years)</label>
+                                    <input type="text" name="experience" class="form-control" placeholder="e.g. 5 Years">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-600 mb-2">KYC / Certification Document</label>
+                                    <input type="file" name="instructor_kyc" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4: Media & Submit -->
+        <div class="form-body step-content d-none" id="step4">
+            <h3 class="form-section-title">Final Submission</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Class Photos (3-5 Photos) <span>*</span></label>
+                <div class="upload-area border-dashed rounded-lg p-5 text-center bg-light" id="dropZone" style="cursor: pointer; border: 2px dashed #D1D5DB; border-radius: 12px;" onclick="$('#imageInput').click()">
+                    <i class="bi bi-images fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                    <p class="mb-1 fw-bold text-dark">Upload class photos</p>
+                    <p class="small text-muted mb-0">Drag & drop or click to upload (3-5 required)</p>
+                    <input type="file" name="images[]" id="imageInput" multiple accept="image/*" class="d-none">
+                </div>
+                <div id="imagePreview" class="d-flex flex-wrap gap-3 mt-3"></div>
+            </div>
+
+            <div class="form-group mt-5 p-3 rounded-3" style="background: #F9FAFB;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                    <label class="form-check-label small fw-600" for="termsCheck" style="color: #4B5563;">
+                        I confirm the information is accurate and I agree to the Learn Next Door Provider Terms of Service and Refund Policy.
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-footer mt-4">
+            <button type="button" class="btn-back d-flex align-items-center gap-2" id="prevBtn" style="visibility: hidden;">
+                <i class="bi bi-chevron-left"></i>
+                Back
+            </button>
+            <div class="ms-auto d-flex gap-3">
+                <button type="button" class="btn btn-primary-provider px-4 py-2 d-flex align-items-center gap-2 shadow-sm" id="nextBtn">
+                    Next
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                <button type="submit" class="btn btn-primary-provider px-4 py-2 d-none align-items-center gap-2 shadow-sm" id="submitBtn">
+                    Submit Listing
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            </div>
+        </div>
+
+    </form>
 </div>
 
-<style>
-.cnd-step-indicator { position: relative; }
-.cnd-step-indicator::before { content: ""; position: absolute; top: 18px; left: 10%; right: 10%; height: 2px; background: #e0d4f7; z-index: 0; }
-.cnd-step-item { text-align: center; position: relative; z-index: 1; flex: 1; }
-.cnd-step-dot { width: 36px; height: 36px; border-radius: 50%; background: #e0d4f7; color: #7C4DFF; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 800; transition: all 0.3s; border: 4px solid #fff; }
-.cnd-step-label { font-size: 0.72rem; font-weight: 700; color: #a0a0a0; text-transform: uppercase; letter-spacing: 0.05rem; }
-.cnd-step-item.active .cnd-step-dot { background: var(--cnd-pink); color: #fff; transform: scale(1.1); }
-.cnd-step-item.active .cnd-step-label { color: var(--cnd-pink); }
-.cnd-step-item.done .cnd-step-dot { background: #2ECC71; color: #fff; }
-
-.cnd-form-step { display: none; }
-.cnd-form-step.active { display: block; animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-.cnd-upload-zone { background: #fafafa; transition: all 0.3s; border-style: dashed; }
-.cnd-upload-zone:hover { border-color: var(--cnd-pink); background: rgba(255, 104, 180,0.02); }
-.preview-img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.btn-outline-pink { border-color: var(--cnd-pink); color: var(--cnd-pink); }
-.btn-outline-pink:hover { background: var(--cnd-pink); color: #fff; }
-
-#createListingForm input:focus, #createListingForm textarea:focus, #createListingForm select:focus {
-   border-color: var(--cnd-pink); box-shadow: 0 0 0 0.25rem rgba(255, 104, 180,0.1);
-}
-
-.day-check { margin-bottom: 5px; }
-.day-label { 
-    width: 34px; height: 34px; border-radius: 50%; border: 2px solid #ddd; 
-    display: flex; align-items: center; justify-content: center; 
-    font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: 0.2s;
-}
-.day-check input:checked + .day-label { 
-    background: var(--cnd-pink); border-color: var(--cnd-pink); color: #fff; 
-}
-</style>
+<!-- Modal for Rules -->
+<div class="modal fade" id="rulesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-body p-5 text-center">
+                <i class="bi bi-info-circle text-primary display-4 mb-4 d-block"></i>
+                <h3 class="fw-bold mb-3">Listing Guidelines</h3>
+                <p class="text-muted mb-4">Please ensure all details are accurate. Misleading information may lead to account suspension.</p>
+                <button type="button" class="btn-next w-100" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?= $this->endSection() ?>
 
@@ -584,28 +403,195 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
 .select2-container--default .select2-selection--multiple {
-    border: 2px solid #dee2e6;
-    border-radius: 0.5rem;
-    min-height: 48px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    min-height: 44px;
+    padding: 2px;
 }
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border-color: var(--cnd-pink);
-    box-shadow: 0 0 0 0.25rem rgba(255, 104, 180,0.1);
+    border-color: var(--provider-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: var(--cnd-pink);
+    background-color: var(--provider-primary);
+    color: white;
     border: none;
-    color: #fff;
     border-radius: 4px;
-    padding: 2px 8px;
+    padding: 1px 8px;
+    font-size: 0.875rem;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-    color: #fff;
+    color: white;
     margin-right: 5px;
 }
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-    background: rgba(0,0,0,0.1);
-    color: #fff;
+.preview-thumb {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--provider-border);
+}
+.upload-area {
+    transition: all 0.2s;
+}
+.upload-area:hover {
+    background-color: #F3F4F6 !important;
+    border-color: var(--provider-primary) !important;
+}
+
+/* Batch Card Refinements */
+.batch-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.batch-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
+}
+.btn-batch-day {
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    color: #4B5563;
+    border-color: #E5E7EB;
+    background: white;
+}
+.btn-check:checked + .btn-batch-day {
+    background-color: #F3F4F6 !important;
+    border-color: #9CA3AF !important;
+    color: #111827 !important;
+    font-weight: 700;
+}
+.fw-600 { font-weight: 600 !important; }
+.fw-700 { font-weight: 700 !important; }
+
+.multi-step-card {
+    max-width: 100%;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 992px) {
+    .multi-step-card { max-width: 900px !important; }
+}
+
+.stepper-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+@media (max-width: 768px) {
+    .multi-step-card { border-radius: 0; border: none; box-shadow: none; }
+    .stepper-header { padding: 1rem; }
+    .form-body { padding: 1.5rem 1rem; }
+    .form-footer { padding: 1rem; }
+}
+
+.stepper-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.stepper-count {
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.form-body {
+    padding: 2rem;
+}
+
+.form-section-title {
+    font-size: 1.125rem;
+    color: #111827;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control, .form-select {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: #111827;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+    background-color: #FFFFFF;
+    transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #9CA3AF;
+}
+
+.course-card {
+    border: 1px solid #F3F4F6 !important;
+    border-radius: 12px !important;
+    background-color: #FFFFFF !important;
+}
+
+.btn-primary-provider {
+    background-color: #5548ea !important; /* Slightly more vibrant blue/purple from screenshot */
+    border: none !important;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    padding: 0.75rem 2.5rem;
+    border-radius: 5px; /* Tighter rounding as per latest request */
+    color: white !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary-provider:hover {
+    background-color: #4338CA !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.btn-primary-provider:active {
+    transform: translateY(0);
+}
+
+.btn-back {
+    font-size: 0.9375rem;
+    color: #4B5563;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    transition: color 0.15s;
+}
+
+.btn-back:hover {
+    color: #111827;
+}
+
+.form-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #F3F4F6;
+    margin-top: 1rem;
 }
 </style>
 <?= $this->endSection() ?>
@@ -613,799 +599,369 @@
 <?= $this->section('js') ?>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=<?= env('GOOGLE_MAP_API_KEY') ?>&libraries=places"></script>
 <script>
-(function(){
-  'use strict';
+$(function() {
+    let currentStep = 1;
+    const totalSteps = 4;
+    const titles = ["Create New Class", "Create New Class", "Create New Class", "Create New Class"];
 
-  // Initialize Flatpickr for existing date inputs
-  function initFlatpickr(container = document) {
-    container.querySelectorAll('input[type="date"]').forEach(el => {
-      // We convert native date inputs to text so flatpickr can take over with custom format
-      // Or we can just let flatpickr handle it. Flatpickr works better on text inputs.
-      if (el.type === 'date') {
-          el.type = 'text';
-      }
-      flatpickr(el, {
-        altInput: true,
-        altFormat: "d-m-Y",
-        dateFormat: "Y-m-d", // This keeps the actual value as Y-m-d for the server
-        minDate: el.min || "today",
-        allowInput: true
-      });
-    });
-  }
-  
-  initFlatpickr();
-  
-  // ── Google Places Autocomplete ────────────────────────────────
-  let autocomplete;
-  function initAutocomplete() {
-    const input = document.getElementById('locationInput');
-    autocomplete = new google.maps.places.Autocomplete(input, {
-      componentRestrictions: { country: "in" },
-      fields: ["address_components", "geometry", "formatted_address"],
-    });
+    function updateStepper() {
+        $('#stepTitle').text(titles[currentStep - 1]);
+        $('#stepCount').text(`Step ${currentStep} of ${totalSteps}`);
+        $('#progressBar').css('width', (currentStep / totalSteps) * 100 + '%');
 
-    autocomplete.addListener("place_changed", onPlaceSelected);
-    
-    // Prevent form submission on Enter in the location field
-    input.addEventListener('keydown', (e) => {
-       if (e.key === 'Enter') e.preventDefault();
-    });
-  }
+        $('.step-content').addClass('d-none');
+        $(`#step${currentStep}`).removeClass('d-none');
 
-  function onPlaceSelected() {
-    const place = autocomplete.getPlace();
-    if (!place.geometry) {
-      alert("Please select a location from the dropdown suggestions.");
-      document.getElementById('locationInput').value = "";
-      return;
+        if (currentStep === 1) {
+            $('#prevBtn').css('visibility', 'hidden');
+        } else {
+            $('#prevBtn').css('visibility', 'visible');
+        }
+
+        if (currentStep === totalSteps) {
+            $('#nextBtn').addClass('d-none');
+            $('#submitBtn').removeClass('d-none');
+        } else {
+            $('#nextBtn').removeClass('d-none');
+            $('#submitBtn').addClass('d-none');
+        }
     }
 
-    // Set Lat/Lng
-    document.getElementById('lat').value = place.geometry.location.lat();
-    document.getElementById('lng').value = place.geometry.location.lng();
-    document.getElementById('full_address').value = place.formatted_address;
+    $('#nextBtn').on('click', function() {
+        // Simple validation
+        const $current = $(`#step${currentStep}`);
+        const inputs = $current.find('input[required], select[required], textarea[required]');
+        let valid = true;
+        
+        inputs.each(function() {
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                valid = false;
+                return false;
+            }
+        });
 
-    // Parse Address Components
-    let city = '', locality = '', pincode = '';
-    place.address_components.forEach(component => {
-      const types = component.types;
-      if (types.includes('locality') || types.includes('administrative_area_level_3')) {
-        city = component.long_name;
-      }
-      if (types.includes('sublocality_level_1') || types.includes('neighborhood')) {
-        locality = component.long_name;
-      }
-      if (types.includes('postal_code')) {
-        pincode = component.long_name;
-      }
+        if (valid && currentStep < totalSteps) {
+            currentStep++;
+            updateStepper();
+            window.scrollTo(0, 0);
+        }
     });
 
-    document.getElementById('city').value = city;
-    document.getElementById('locality').value = locality;
-    document.getElementById('pincode').value = pincode;
-  }
+    $('#prevBtn').on('click', function() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepper();
+            window.scrollTo(0, 0);
+        }
+    });
 
-  initAutocomplete();
+    // Class Type Card Selection
+    $('.type-card').on('click', function() {
+        $('.type-card').removeClass('active');
+        $(this).addClass('active');
+        $(this).find('input').prop('checked', true);
+        
+        const type = $(this).data('type');
+        handleTypeChange(type);
+        updateStepper(); // Refresh total steps
+    });
 
-  const form = document.getElementById('createListingForm');
-  const steps = document.querySelectorAll('.cnd-form-step');
-  const stepIndicators = document.querySelectorAll('.cnd-step-item');
-  
-  const classTypeSelect = document.getElementById('classType');
-  const sectionRegular = document.getElementById('sectionRegular');
-  const sectionWorkshop = document.getElementById('sectionWorkshop');
-  const sectionCourse = document.getElementById('sectionCourse');
-  
-  const addBatchBtn = document.getElementById('addBatchBtn');
-  const batchesContainer = document.getElementById('batchesContainer');
-  
-  const imageInput = document.getElementById('imageInput');
-  const imagePreview = document.getElementById('imagePreview');
-  const submitBtn = document.getElementById('submitBtn');
-  const spinner = document.getElementById('submitSpinner');
-  
-  const instituteNameInput = document.getElementById('instituteName');
-  const classTitleHidden = document.getElementById('classTitle');
+    function handleTypeChange(type) {
+        $('#sectionRegular, #sectionWorkshop, #sectionCourse').addClass('d-none');
+        if (type === 'regular') {
+            $('#sectionRegular').removeClass('d-none');
+        } else if (type === 'workshop') {
+            $('#sectionWorkshop').removeClass('d-none');
+        } else if (type === 'course') {
+            $('#sectionCourse').removeClass('d-none');
+        }
+    }
 
-  // Sync title with Institute Name
-  if(instituteNameInput && classTitleHidden) {
-      instituteNameInput.addEventListener('input', () => {
-          classTitleHidden.value = instituteNameInput.value;
-      });
-  }
+    // Initialize Select2 for multi-select subcategories
+    const $subcategorySelect = $('#subcategorySelect').select2({
+        theme: 'default',
+        width: '100%',
+        placeholder: "Select subcategories"
+    });
 
-  // Subcategory Loader
-  const categorySelect = document.getElementById('categorySelect');
-  const subcategorySelect = document.getElementById('subcategorySelect');
-
-  if(categorySelect) {
-     $(document).ready(function() {
-         $('#subcategorySelect').select2({
-            theme: 'default',
-            placeholder: 'Choose subcategories...',
-            width: '100%',
-            allowClear: true
-         });
-     });
-
-     categorySelect.addEventListener('change', async function() {
+    // Category / Subcategory Logic
+    $('#categorySelect').on('change', async function() {
         const catId = this.value;
-        const $sc = $('#subcategorySelect');
-        $sc.html('<option value="">Loading...</option>').trigger('change');
-        $sc.prop('disabled', true);
-
-        if(!catId) {
-           $sc.empty().append('<option value="">Select Category...</option>').prop('disabled', true).trigger('change');
-           return;
+        if (!catId) {
+            $subcategorySelect.val(null).trigger('change').prop('disabled', true);
+            return;
         }
 
         try {
-           const res = await fetch(`<?= base_url('provider/api/subcategories') ?>?category_id=${catId}`);
-           const data = await res.json();
-           
-           if(data && data.length > 0) {
-              const select2Data = data.map(sub => ({ id: sub.id, text: sub.name }));
-              $sc.empty().select2({
-                 data: select2Data,
-                 theme: 'default',
-                 placeholder: 'Choose subcategories...',
-                 width: '100%',
-                 allowClear: true
-              });
-              $sc.prop('disabled', false).trigger('change');
-           } else {
-              $sc.empty().append('<option value="">No subcategories found</option>').trigger('change');
-           }
-        } catch(e) {
-           console.error("Error fetching subcategories:", e);
+            const res = await fetch(`<?= base_url('provider/api/subcategories') ?>?category_id=${catId}`);
+            if (!res.ok) throw new Error('API Error');
+            const data = await res.json();
+            
+            $subcategorySelect.empty().prop('disabled', false);
+            data.forEach(sub => {
+                $subcategorySelect.append(new Option(sub.name, sub.id));
+            });
+            $subcategorySelect.trigger('change');
+        } catch (e) {
+            console.error('Subcategory load error:', e);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load subcategories.' });
         }
-     });
-  }
-
-  let currentStep = 1;
-
-  // ── Step Navigation ───────────────────────────────────────────
-  function goToStep(n) {
-    if(n < 1 || n > 4) return;
-    
-    if(n > currentStep) {
-      const inputs = steps[currentStep-1].querySelectorAll('[required]');
-      let valid = true;
-      inputs.forEach(i => {
-         let isVisible = true;
-         let curr = i;
-         while(curr && curr !== form) {
-            if(curr.classList.contains('d-none') || curr.style.display === 'none') {
-               isVisible = false; break;
-            }
-            curr = curr.parentElement;
-         }
-
-         if(isVisible || i.classList.contains('flatpickr-input')) {
-            if(!i.value || (i.type === 'checkbox' && !i.checked)) {
-               // For checkboxes in day-check, we handle them differently
-               if(!i.closest('.day-check')) {
-                  // For flatpickr, we might want to highlight the alt input
-                  if(i._flatpickr && i._flatpickr.altInput) {
-                      i._flatpickr.altInput.classList.add('is-invalid');
-                  } else {
-                      i.classList.add('is-invalid');
-                  }
-                  valid = false;
-               }
-            } else {
-               i.classList.remove('is-invalid');
-               if(i._flatpickr && i._flatpickr.altInput) {
-                   i._flatpickr.altInput.classList.remove('is-invalid');
-               }
-            }
-         }
-      });
-
-      // Special check for Multi-select Category (Step 1)
-      if(currentStep === 1) {
-          const scValue = $('#subcategorySelect').val();
-          if(!scValue || scValue.length === 0) {
-              alert('Please select at least one subcategory.');
-              valid = false;
-          }
-      }
-
-      // Special check for Step 2: Map Location
-      if(currentStep === 2) {
-          const lat = document.getElementById('lat').value;
-          const lng = document.getElementById('lng').value;
-          if(!lat || !lng) {
-              alert('Please select a location from the dropdown suggestions to pin it on the map.');
-              valid = false;
-          }
-      }
-
-      // Special check for Step 3: Days selection for Regular/Course
-      if(currentStep === 3) {
-          if(classTypeSelect.value === 'regular') {
-              const batchItems = document.querySelectorAll('.batch-item');
-              for(let bi of batchItems) {
-                  const checked = bi.querySelectorAll('input[name*="[days]"]:checked');
-                  if(checked.length === 0) {
-                      alert('Please select at least one day for each batch.');
-                      valid = false;
-                      break;
-                  }
-                  
-                  // Batch timing check
-                  const fromTime = bi.querySelector('input[name*="[from_time]"]').value;
-                  const toTime = bi.querySelector('input[name*="[to_time]"]').value;
-                  if(fromTime && toTime && fromTime >= toTime) {
-                      alert('Start time must be before end time for batch details.');
-                      valid = false;
-                      break;
-                  }
-              }
-          } else if(classTypeSelect.value === 'course') {
-              const checked = sectionCourse.querySelectorAll('input[name*="[days]"]:checked');
-              if(checked.length === 0) {
-                  alert('Please select at least one day for the course.');
-                  valid = false;
-              }
-
-              const startDate = sectionCourse.querySelector('input[name="course[start_date]"]').value;
-              const endDate = sectionCourse.querySelector('input[name="course[end_date]"]').value;
-              const regEndDate = sectionCourse.querySelector('input[name="course[registration_end_date]"]').value;
-              const price = parseFloat(sectionCourse.querySelector('input[name="course[price]"]').value) || 0;
-              const ebPrice = parseFloat(sectionCourse.querySelector('input[name="course[early_bird_price]"]').value) || 0;
-              const ebEndDate = sectionCourse.querySelector('input[name="course[early_bird_end_date]"]').value;
-
-              if(startDate && endDate && startDate >= endDate) {
-                  alert('Course start date must be before the end date.');
-                  valid = false;
-              }
-              if(regEndDate && startDate && regEndDate > startDate) {
-                  alert('Registration must end on or before the course start date.');
-                  valid = false;
-              }
-              if(ebPrice > 0 && ebPrice >= price) {
-                  alert('Early bird price must be less than the regular course price.');
-                  valid = false;
-              }
-              if(ebEndDate && regEndDate && ebEndDate > regEndDate) {
-                  alert('Early bird offer must end on or before the registration deadline.');
-                  valid = false;
-              }
-
-          } else if(classTypeSelect.value === 'workshop') {
-              const startDate = sectionWorkshop.querySelector('input[name="workshop[start_date]"]').value;
-              const regEndDate = sectionWorkshop.querySelector('input[name="workshop[registration_end_date]"]').value;
-              const price = parseFloat(sectionWorkshop.querySelector('input[name="workshop[price]"]').value) || 0;
-              const ebPrice = parseFloat(sectionWorkshop.querySelector('input[name="workshop[early_bird_price]"]').value) || 0;
-              const ebEndDate = sectionWorkshop.querySelector('input[name="workshop[early_bird_end_date]"]').value;
-
-              if(regEndDate && startDate && regEndDate > startDate) {
-                  alert('Registration must end on or before the workshop start date.');
-                  valid = false;
-              }
-              if(ebPrice > 0 && ebPrice >= price) {
-                  alert('Early bird price must be less than the standard workshop price.');
-                  valid = false;
-              }
-              if(ebEndDate && regEndDate && ebEndDate > regEndDate) {
-                  alert('Early bird offer must end on or before the registration deadline.');
-                  valid = false;
-              }
-          }
-      }
-
-      if(!valid) {
-          const firstInvalid = steps[currentStep-1].querySelector('.is-invalid');
-          if(firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-      }
-    }
-
-    steps.forEach((s, idx) => s.classList.toggle('active', idx === n-1));
-    stepIndicators.forEach((ind, idx) => {
-      ind.classList.toggle('active', idx === n-1);
-      ind.classList.toggle('done', idx < n-1);
     });
-    currentStep = n;
-    window.scrollTo(0, 300);
-  }
 
-  document.querySelectorAll('.next-step').forEach(btn => btn.addEventListener('click', () => goToStep(currentStep + 1)));
-  document.querySelectorAll('.prev-step').forEach(btn => btn.addEventListener('click', () => goToStep(currentStep - 1)));
+    // Sync title with name
+    $('#instituteName').on('input', function() {
+        $('#classTitle').val(this.value);
+    });
 
-  // ── Class Type Switcher ────────────────────
-  function applyTypeUI(type) {
-    const s2Header = document.getElementById('step2Header');
-    const labelName = document.getElementById('labelInstituteName');
-    const inputName = document.getElementById('instituteName');
-    const labelDesc = document.getElementById('labelDescription');
-    const inputDesc = document.getElementById('description');
+    // Image Upload Preview Logic
+    $('#imageInput').on('change', function() {
+        const files = this.files;
+        $('#imagePreview').empty();
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                $('#imagePreview').append(`<img src="${e.target.result}" class="preview-thumb">`);
+            };
+            reader.readAsDataURL(files[i]);
+        }
+    });
 
-    if (type === 'workshop') {
-       if(s2Header) s2Header.innerText = 'Workshop Details';
-       if(labelName) labelName.innerHTML = 'Workshop Name <span class="text-danger">*</span>';
-       if(inputName) inputName.placeholder = 'e.g. Pottery Workshop for Kids';
-       if(labelDesc) labelDesc.innerText = 'Workshop Description';
-       if(inputDesc) inputDesc.placeholder = 'Tell us about your workshop.';
-    } else if (type === 'course') {
-       if(s2Header) s2Header.innerText = 'Course Details';
-       if(labelName) labelName.innerHTML = 'Course Name <span class="text-danger">*</span>';
-       if(inputName) inputName.placeholder = 'e.g. 3-Month Music Certificate Course';
-       if(labelDesc) labelDesc.innerText = 'Course Description';
-       if(inputDesc) inputDesc.placeholder = 'Tell us about your course.';
-    } else {
-       if(s2Header) s2Header.innerText = 'Institute Details';
-       if(labelName) labelName.innerHTML = 'Institute Name <span class="text-danger">*</span>';
-       if(inputName) inputName.placeholder = 'e.g. Art & Soul Academy';
-       if(labelDesc) labelDesc.innerText = 'Description';
-       if(inputDesc) inputDesc.placeholder = 'Tell us about your institute and the classes you offer.';
+    // Initialize map autocomplete
+    if (typeof google !== 'undefined') {
+        const input = document.getElementById('locationInput');
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                $('#lat').val(place.geometry.location.lat());
+                $('#lng').val(place.geometry.location.lng());
+                $('#full_address').val(place.formatted_address);
+            }
+        });
     }
 
-    sectionRegular.classList.toggle('d-none', type !== 'regular');
-    sectionWorkshop.classList.toggle('d-none', type !== 'workshop');
-    sectionCourse.classList.toggle('d-none', type !== 'course');
-    
-    // Instructor section is shared for workshop/course, but per-batch for regular
-    document.getElementById('sharedInstructorSection').classList.toggle('d-none', type === 'regular');
-
-    // Toggle required attributes for sectional fields
-    const sReg = sectionRegular.querySelectorAll('[required]');
-    const sWork = sectionWorkshop.querySelectorAll('[required]');
-    const sCour = sectionCourse.querySelectorAll('[required]');
-    const sSharedInst = document.getElementById('sharedInstructorSection').querySelectorAll('[required]');
-    
-    sReg.forEach(i => i.required = (type === 'regular'));
-    sWork.forEach(i => i.required = (type === 'workshop'));
-    sCour.forEach(i => i.required = (type === 'course'));
-    sSharedInst.forEach(i => i.required = (type !== 'regular'));
-  }
-
-  // Initial UI Setup
-  if(classTypeSelect) {
-      const initUI = () => {
-          console.log("Initializing UI for type:", classTypeSelect.value);
-          applyTypeUI(classTypeSelect.value);
-          if (typeof syncBatchPreviews === 'function') syncBatchPreviews();
-      };
-      classTypeSelect.addEventListener('change', (e) => {
-          applyTypeUI(e.target.value);
-          if (typeof syncBatchPreviews === 'function') syncBatchPreviews();
-      });
-      if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initUI);
-      } else {
-          initUI();
-      }
-  }
-
-  // Handle Instructor Selection within a Batch
-  window.handleInstructorSelect = function(select, index) {
-     const card = select.closest('.batch-item');
-     const opt = select.options[select.selectedIndex];
-     const nameBox = card.querySelector('.instructor-name-box');
-     const socialBox = card.querySelector('.instructor-social-box');
-     const expBox = card.querySelector('.instructor-exp-box');
-     const kycBox = card.querySelector('.instructor-kyc-box');
-     
-     const nameField = card.querySelector(`input[name="batches[${index}][instructor_name]"]`);
-     const socialField = card.querySelector(`input[name="batches[${index}][social_links]"]`);
-     const expField = card.querySelector(`textarea[name="batches[${index}][experience]"]`);
-     const kycInput = kycBox.querySelector('input[type="file"]');
-
-     if(select.value === 'new') {
-        nameBox.classList.remove('d-none');
-        socialBox.classList.remove('d-none');
-        expBox.classList.remove('d-none');
-        kycBox.classList.remove('d-none');
+    // Form Submit
+    $('#createListingForm').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const btn = $('#submitBtn');
         
-        nameField.required = true;
-        expField.required = true;
-        kycInput.required = false; // Optional
-     } else {
-        const status = opt.getAttribute('data-status');
-        nameBox.classList.add('d-none');
-        socialBox.classList.add('d-none');
-        expBox.classList.add('d-none');
-        
-        // Hide KYC box for existing instructors
-        kycBox.classList.add('d-none');
-        
-        nameField.value = opt.getAttribute('data-name');
-        socialField.value = opt.getAttribute('data-social') || '';
-        expField.value = opt.getAttribute('data-exp') || '';
-        
-        nameField.required = false;
-        expField.required = false;
-        kycInput.required = false; 
-        if(status === 'verified') kycInput.value = ''; 
-     }
-  }
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Submitting...');
 
-  // Handle Shared Instructor Selection (Workshop/Course)
-  window.handleSharedInstructorSelect = function(select) {
-     const container = select.closest('.instructor-section');
-     const opt = select.options[select.selectedIndex];
-     
-     const nameBox = container.querySelector('.instructor-name-box');
-     const socialBox = container.querySelector('.instructor-social-box');
-     const expBox = container.querySelector('.instructor-exp-box');
-     const kycBox = container.querySelector('.instructor-kyc-box');
-     
-     const nameField = container.querySelector('input[name="instructor_name"]');
-     const socialField = container.querySelector('input[name="social_links"]');
-     const expField = container.querySelector('textarea[name="experience"]');
-     const kycInput = kycBox.querySelector('input[type="file"]');
+        const formData = new FormData(this);
+        $.ajax({
+            url: '<?= base_url('provider/listings/store') ?>',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Your class has been submitted and is under review.',
+                        confirmButtonText: 'View My Listings'
+                    }).then(() => {
+                        window.location.href = '<?= base_url('provider/listings') ?>';
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Oops', text: res.message });
+                    btn.prop('disabled', false).text('Submit Listing');
+                }
+            },
+            error: function() {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
+                btn.prop('disabled', false).text('Submit Listing');
+            }
+        });
+    });
 
-     if(select.value === 'new') {
-        nameBox.classList.remove('d-none');
-        socialBox.classList.remove('d-none');
-        expBox.classList.remove('d-none');
-        kycBox.classList.remove('d-none');
-        
-        nameField.required = true;
-        expField.required = true;
-        kycInput.required = false; // Optional
-     } else {
-        const status = opt.getAttribute('data-status');
-        nameBox.classList.add('d-none');
-        socialBox.classList.add('d-none');
-        expBox.classList.add('d-none');
-        
-        // Hide KYC box for existing instructors
-        kycBox.classList.add('d-none');
-        
-        nameField.value = opt.getAttribute('data-name');
-        socialField.value = opt.getAttribute('data-social') || '';
-        expField.value = opt.getAttribute('data-exp') || '';
-        
-        nameField.required = false;
-        expField.required = false;
-        kycInput.required = false;
-        if(status === 'verified') kycInput.value = '';
-     }
-  }
+    // ── Batch Management ──────────────────────────────────────────
+    let batchCount = 0;
+    const instructorsConfig = <?= json_encode($instructors) ?>;
 
-  // ── Batch Management ──────────────────────────────────
-  let batchCount = 1;
-  if (addBatchBtn) {
-    addBatchBtn.addEventListener('click', () => {
-       const batchItemsCount = document.querySelectorAll('.batch-item').length;
-       if (batchItemsCount >= 5) {
-           alert('You can add a maximum of 5 batches.');
-           return;
-       }
-       
-       const prevBatch = document.querySelectorAll('.batch-item');
-       const lastBatch = prevBatch[prevBatch.length - 1];
-       
-       // Pre-populate instructor details from last batch
-       const lastInstOpt = lastBatch.querySelector('.instructor-select').value;
-       const lastInstName = lastBatch.querySelector('input[name*="[instructor_name]"]').value;
-       const lastInstSocial = lastBatch.querySelector('input[name*="[social_links]"]').value;
-       const lastInstExp = lastBatch.querySelector('textarea[name*="[experience]"]').value;
+    // Initialize global pickers
+    const initPickers = (container = 'body') => {
+        $(`${container} .timepicker`).flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            altInput: true,
+            altFormat: "h:i K"
+        });
+        $(`${container} .datepicker`).flatpickr({
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d-m-Y"
+        });
+    };
 
-       const batchRow = document.createElement('div');
-       batchRow.className = 'card border-0 shadow-sm rounded-4 batch-item border-start border-4 border-primary position-relative mb-4';
-       batchRow.innerHTML = `
-          <button type="button" class="btn btn-sm btn-link text-danger position-absolute top-0 end-0 m-3 remove-batch"><i class="bi bi-trash fs-5"></i></button>
-          <div class="card-body p-4">
-             <div class="row g-3">
-                <div class="col-md-6">
-                   <label class="form-label small fw-bold">Batch Name <span class="text-danger">*</span></label>
-                   <input type="text" name="batches[${batchCount}][name]" class="form-control rounded-3" placeholder="e.g. Evening Batch" required>
+    function addBatch() {
+        batchCount++;
+        const id = `batch_${batchCount}`;
+        const index = batchCount - 1;
+
+        let instructorOptions = '<option value="new" selected>+ Add New Instructor</option>';
+        instructorsConfig.forEach(inst => {
+            instructorOptions += `<option value="${inst.id}">${inst.name}</option>`;
+        });
+
+        const html = `
+            <div class="batch-card bg-white border border-light-subtle rounded-4 p-4 mb-4 shadow-sm position-relative" id="${id}">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.1rem;">Batch ${batchCount}</h5>
+                    ${batchCount > 1 ? `<button type="button" class="btn btn-link text-danger p-0 text-decoration-none shadow-none" onclick="removeBatch('${id}')"><i class="bi bi-trash me-1"></i> Remove</button>` : ''}
                 </div>
-                <div class="col-md-6">
-                   <label class="form-label small fw-bold">Days of Week <span class="text-danger">*</span></label>
-                   <div class="d-flex flex-wrap gap-2 mt-1">
-                      ${['S','M','T','W','Th','F','Sa'].map(d => `
-                         <div class="day-check">
-                            <input type="checkbox" name="batches[${batchCount}][days][]" value="${d}" id="day_${batchCount}_${d}" class="d-none">
-                            <label for="day_${batchCount}_${d}" class="day-label">${d}</label>
+                
+                <div class="row g-4">
+                    <!-- Batch Name & Days -->
+                    <div class="col-md-7">
+                        <label class="form-label fw-600 mb-2">Batch Name</label>
+                        <input type="text" name="batches[${index}][batch_name]" class="form-control" placeholder="E.g., Morning Beginners" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-600 mb-2">Days</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
+                                <input type="checkbox" class="btn-check" id="${id}_${day}" name="batches[${index}][days][]" value="${day === 'Thu' ? 'Th' : (day === 'Sat' ? 'Sa' : (day === 'Sun' ? 'S' : day[0]))}" autocomplete="off">
+                                <label class="btn btn-outline-secondary btn-batch-day px-2 py-1" for="${id}_${day}">${day}</label>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Start Date & Times -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-600 mb-2">Start Date</label>
+                        <input type="text" name="batches[${index}][batch_start_date]" class="form-control datepicker" placeholder="dd-mm-yyyy" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-600 mb-2">Start Time</label>
+                        <input type="text" name="batches[${index}][start_time]" class="form-control timepicker" placeholder="09:00 AM" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-600 mb-2">End Time</label>
+                        <input type="text" name="batches[${index}][end_time]" class="form-control timepicker" placeholder="10:30 AM" required>
+                    </div>
+
+                    <!-- Fee & Size -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-600 mb-2">Price/4 Weeks (₹)</label>
+                        <input type="number" name="batches[${index}][price]" class="form-control" placeholder="2000" required>
+                        <input type="hidden" name="batches[${index}][price_type]" value="monthly">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-600 mb-2">Max Students</label>
+                        <input type="number" name="batches[${index}][batch_size]" class="form-control" placeholder="20" required>
+                    </div>
+
+                    <!-- Instructor -->
+                    <div class="col-12">
+                        <label class="form-label fw-600 mb-2">Instructor</label>
+                        <select name="batches[${index}][instructor_option]" class="form-select instructor-selector" onchange="toggleBatchInstructor(this, '${id}')" required>
+                            ${instructorOptions}
+                        </select>
+                    </div>
+
+                    <!-- New Instructor Fields (Visible by default for 'new') -->
+                    <div class="col-12" id="${id}_new_instructor_wrap">
+                         <div class="row g-3 p-3 mt-1 rounded-3 bg-light border">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold mb-1">Instructor Name *</label>
+                                <input type="text" name="batches[${index}][instructor_name]" class="form-control form-control-sm" placeholder="Enter Full Name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold mb-1">Experience (Years)</label>
+                                <input type="text" name="batches[${index}][experience]" class="form-control form-control-sm" placeholder="e.g. 5 Years">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold mb-1">KYC / Certification Document</label>
+                                <input type="file" name="batch_instructor_kyc[${index}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png">
+                                <div class="form-text small opacity-75">Upload ID proof or certification for verification.</div>
+                            </div>
                          </div>
-                      `).join('')}
-                   </div>
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">Start Date <span class="text-danger">*</span></label>
-                   <input type="date" name="batches[${batchCount}][batch_start_date]" class="form-control rounded-3" required min="<?= date('Y-m-d') ?>">
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">From Time <span class="text-danger">*</span></label>
-                   <input type="time" name="batches[${batchCount}][from_time]" class="form-control rounded-3" required>
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">To Time <span class="text-danger">*</span></label>
-                   <input type="time" name="batches[${batchCount}][to_time]" class="form-control rounded-3" required>
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">Price (₹) <span class="text-danger">*</span></label>
-                   <div class="input-group">
-                      <input type="number" name="batches[${batchCount}][price]" class="form-control rounded-start-3" placeholder="₹" required min="0">
-                      <select name="batches[${batchCount}][price_type]" class="form-select rounded-end-3" style="max-width: 130px;">
-                         <option value="monthly">Monthly</option>
-                         <option value="quarterly">Quarterly</option>
-                      </select>
-                   </div>
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">Batch Size <span class="text-danger">*</span></label>
-                   <input type="number" name="batches[${batchCount}][batch_size]" class="form-control rounded-3" placeholder="e.g. 15" required min="1">
-                </div>
-                <div class="col-md-4">
-                   <label class="form-label small fw-bold">Batch Image</label>
-                   <input type="file" name="batch_images[${batchCount}]" class="form-control rounded-3" accept="image/*">
-                </div>
-                <div class="col-12 mt-2">
-                   <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" name="batches[${batchCount}][free_trial]" value="1" id="freeTrial_${batchCount}">
-                      <label class="form-check-label small fw-bold" for="freeTrial_${batchCount}">Offer Free Trial</label>
-                   </div>
-                </div>
+                    </div>
 
-                <!-- Instructor Section -->
-                <div class="col-12 mt-3 pt-3 border-top">
-                   <h6 class="fw-bold text-pink small text-uppercase mb-3"><i class="bi bi-person-badge me-2"></i>Instructor for this Batch</h6>
-                   <div class="row g-3">
-                      <div class="col-md-12">
-                         <label class="form-label small fw-bold">Select Verified Instructor or Add New</label>
-                         <select name="batches[${batchCount}][instructor_option]" class="form-select rounded-3 instructor-select" onchange="handleInstructorSelect(this, ${batchCount})">
-                            <option value="new">Add New Instructor</option>
-                             <?php if(!empty($instructors)): ?>
-                                <?php foreach($instructors as $vi): ?>
-                                   <option value="<?= $vi->id ?>" 
-                                           data-name="<?= esc($vi->name) ?>"
-                                           data-exp="<?= esc($vi->experience) ?>" 
-                                           data-social="<?= esc($vi->social_links) ?>"
-                                           data-status="<?= $vi->kyc_status ?>"
-                                           ${lastInstOpt == '<?= $vi->id ?>' ? 'selected' : ''}>
-                                      <?= esc($vi->name) ?> (<?= ($vi->kyc_status ?? '') === 'verified' ? '✅ Verified' : '⏳ Pending' ?>)
-                                   </option>
-                                <?php endforeach; ?>
-                             <?php endif; ?>
-                         </select>
-                      </div>
-                      <div class="col-md-12 instructor-kyc-box ${lastInstOpt !== 'new' ? 'd-none' : ''}">
-                         <div class="bg-light p-3 rounded-4 border border-dashed">
-                            <label class="form-label small fw-bold d-block mb-1">Instructor KYC Document (Optional)</label>
-                            <p class="small text-muted mb-2 fs-tiny">Optional proof of ID or certs. (Aadhaar/PAN/PDF).</p>
-                            <input type="file" name="batch_instructor_kyc[${batchCount}]" class="form-control rounded-pill px-3" accept="image/*,.pdf">
-                         </div>
-                      </div>
-                      <div class="col-md-6 instructor-name-box ${lastInstOpt !== 'new' ? 'd-none' : ''}">
-                         <label class="form-label small fw-bold">Instructor Name <span class="text-danger">*</span></label>
-                         <input type="text" name="batches[${batchCount}][instructor_name]" class="form-control rounded-3" value="${lastInstName}" ${lastInstOpt === 'new' ? 'required' : ''}>
-                      </div>
-                      <div class="col-md-6 instructor-social-box ${lastInstOpt !== 'new' ? 'd-none' : ''}">
-                         <label class="form-label small fw-bold">Social Link</label>
-                         <input type="url" name="batches[${batchCount}][social_links]" class="form-control rounded-3" value="${lastInstSocial}">
-                      </div>
-                      <div class="col-md-12 instructor-exp-box ${lastInstOpt !== 'new' ? 'd-none' : ''}">
-                         <label class="form-label small fw-bold">Experience / Bio <span class="text-danger">*</span></label>
-                         <textarea name="batches[${batchCount}][experience]" class="form-control rounded-3" rows="2" ${lastInstOpt === 'new' ? 'required' : ''}>${lastInstExp}</textarea>
-                      </div>
-                   </div>
+                    <!-- Free Trial -->
+                    <div class="col-12">
+                        <div class="form-check d-flex align-items-center gap-2 mb-2">
+                            <input class="form-check-input mt-0 free-trial-check" type="checkbox" name="batches[${index}][free_trial]" value="1" id="${id}_free_trial" onchange="toggleFreeTrial(this, '${id}')">
+                            <label class="form-check-label fw-600" for="${id}_free_trial" style="font-size: 0.95rem;">
+                                Offer Free Trial
+                            </label>
+                        </div>
+                        
+                        <!-- Free Trial Details (Hidden by default) -->
+                        <div class="mt-2 d-none" id="${id}_trial_details_wrap">
+                            <div class="p-3 rounded-3 border bg-light-subtle">
+                                <label class="form-label small fw-bold mb-1">Number of Trial Sessions *</label>
+                                <select name="batches[${index}][trial_sessions]" class="form-select form-select-sm">
+                                    <option value="1">1 Session</option>
+                                    <option value="2">2 Sessions</option>
+                                    <option value="3">3 Sessions</option>
+                                </select>
+                                <div class="form-text small">Select how many trial sessions are offered for free.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-             </div>
-          </div>
-       `;
-       batchesContainer.appendChild(batchRow);
-       initFlatpickr(batchRow); // Initialize Flatpickr for the new batch
-       batchCount++;
-    });
-  }
-
-  if (batchesContainer) {
-    batchesContainer.addEventListener('click', e => {
-      if(e.target.closest('.remove-batch')) {
-         if(document.querySelectorAll('.batch-item').length > 1) {
-            e.target.closest('.batch-item').remove();
-         } else {
-            alert('At least one batch is required.');
-         }
-      }
-    });
-  }
-  
-  function getBatchImageCount() {
-    const batchFiles = document.querySelectorAll('input[name^="batch_images"]');
-    let count = 0;
-    batchFiles.forEach(input => {
-      if (input.files && input.files[0]) count++;
-    });
-    return count;
-  }
-
-  function updateImageUploadInstructions() {
-    const batchCount = getBatchImageCount();
-    const minNeeded = Math.max(0, 3 - batchCount);
-    const maxAllowed = 5 - batchCount;
-    const msgEl = document.querySelector('.cnd-upload-zone p.text-muted');
-    
-    if (batchCount > 0) {
-      if (maxAllowed <= 0) {
-        msgEl.innerHTML = `You have already added ${batchCount} batch images (Max limit reached).`;
-        imageInput.disabled = true;
-      } else {
-        msgEl.innerHTML = `You added ${batchCount} batch images. Please upload <strong>${minNeeded} to ${maxAllowed} more</strong> images.`;
-        imageInput.disabled = false;
-      }
-    } else {
-      msgEl.innerHTML = `Upload between 3 to 5 images (Max 2MB each)`;
-      imageInput.disabled = false;
+            </div>
+        `;
+        $('#batchesContainer').append(html);
+        initPickers(`#${id}`);
     }
-  }
 
-  // Image Preview
-  imageInput.addEventListener('change', function() {
-    imagePreview.innerHTML = '';
-    const files = Array.from(this.files);
-    const batchCount = getBatchImageCount();
-    const total = files.length + batchCount;
+    window.removeBatch = function(id) {
+        $(`#${id}`).remove();
+    };
 
-    if(total < 3 || total > 5) {
-        let errMsg = '';
-        if (batchCount >= 5) {
-           errMsg = 'You already have 5 batch images. You cannot add more main images.';
-        } else if (batchCount > 0) {
-           errMsg = `With ${batchCount} batch images, you must upload <strong>between ${Math.max(0, 3-batchCount)} and ${5-batchCount} more</strong> images.`;
+    window.toggleBatchInstructor = function(select, batchId) {
+        const wrap = $(`#${batchId}_new_instructor_wrap`);
+        if (select.value === 'new') {
+            wrap.removeClass('d-none');
+            wrap.find('input[name*="instructor_name"]').prop('required', true);
         } else {
-           errMsg = 'Please upload <strong>between 3 and 5</strong> images.';
+            wrap.addClass('d-none');
+            wrap.find('input[name*="instructor_name"]').prop('required', false);
         }
-        
-        const msgEl = document.getElementById('imageUploadMsg');
-        if(msgEl) {
-           msgEl.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${errMsg}</span>`;
+    }
+
+    window.toggleFreeTrial = function(checkbox, batchId) {
+        const wrap = $(`#${batchId}_trial_details_wrap`);
+        if (checkbox.checked) {
+            wrap.removeClass('d-none');
+            wrap.find('select, input').prop('required', true);
         } else {
-           alert(errMsg);
-        }
-        // We will still show previews so they know what they selected
-    } else {
-        updateImageUploadInstructions();
-    }
-
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.className = 'preview-img';
-        imagePreview.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-
-  // ── Batch Image Sync Logic ────────────────────────────────────
-  function syncBatchPreviews() {
-      const batchPreviewContainer = document.getElementById('batchImagesPreview');
-      const batchSection = document.getElementById('batchImagesSection');
-      if(!batchPreviewContainer) return;
-
-      batchPreviewContainer.innerHTML = '';
-      const batchFiles = document.querySelectorAll('input[name^="batch_images"]');
-      let hasFiles = false;
-
-      batchFiles.forEach((input, index) => {
-          if (input.files && input.files[0]) {
-              hasFiles = true;
-              const reader = new FileReader();
-              reader.onload = e => {
-                  const wrap = document.createElement('div');
-                  wrap.className = 'position-relative';
-                  wrap.innerHTML = `
-                      <img src="${e.target.result}" class="preview-img" style="border: 2px solid var(--cnd-primary);">
-                      <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-primary" style="font-size:0.6rem;">Batch ${index + 1}</span>
-                  `;
-                  batchPreviewContainer.appendChild(wrap);
-              };
-              reader.readAsDataURL(input.files[0]);
-          }
-      });
-
-      if(batchSection) {
-          batchSection.classList.toggle('d-none', !hasFiles || classTypeSelect.value !== 'regular');
-      }
-      updateImageUploadInstructions();
-  }
-
-  // Listen for changes on any batch image input (Delegated)
-  document.addEventListener('change', e => {
-      if (e.target.matches('input[name^="batch_images"]')) {
-          syncBatchPreviews();
-      }
-  });
-
-  // Also sync when switching to Step 4
-  const nextBtnStep3 = steps[2].querySelector('.next-step');
-  if(nextBtnStep3) {
-      nextBtnStep3.addEventListener('click', syncBatchPreviews);
-  }
-
-  // Submit Handler
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    
-    // Check checkboxes for Regular Class batches
-    if(classTypeSelect.value === 'regular') {
-        const batchItems = document.querySelectorAll('.batch-item');
-        for(let bi of batchItems) {
-            const checked = bi.querySelectorAll('input[type="checkbox"]:checked');
-            if(checked.length === 0) {
-                alert('Please select at least one day for each batch.');
-                return;
-            }
-        }
-    }
-    // Check Course days
-    if(classTypeSelect.value === 'course') {
-        const checked = sectionCourse.querySelectorAll('input[type="checkbox"]:checked');
-        if(checked.length === 0) {
-            alert('Please select at least one day for the course.');
-            return;
+            wrap.addClass('d-none');
+            wrap.find('select, input').prop('required', false);
         }
     }
 
-    // Final Image Count Check
-    const batchCount = getBatchImageCount();
-    const mainCount = imageInput.files.length;
-    const totalCount = batchCount + mainCount;
+    window.toggleSharedInstructor = (select, context = 'workshop') => {
+        const target = (context === 'course') ? '#courseInstructorNew' : '#workshopInstructorNew';
+        $(target).toggleClass('d-none', select.value !== 'new');
+    };
 
-    if(totalCount < 3 || totalCount > 5) {
-       if (batchCount > 0) {
-           alert(`Total images (including batch images) must be between 3 and 5. You have ${batchCount} batch images and ${mainCount} main images.`);
-       } else {
-           alert('Please upload between 3 and 5 photos.');
-       }
-       goToStep(4);
-       return;
+    window.toggleEarlyBird = function(type) {
+        const check = $(`#earlyBirdCheck${type}`);
+        $(`#earlyBirdFields${type}`).toggleClass('d-none', !check.is(':checked'));
+    };
+
+    $('#addBatchBtn').on('click', () => addBatch());
+
+    // Initialize first batch and global pickers on load
+    addBatch();
+    initPickers();
+
+    // Show rules on load if first time
+    if (!localStorage.getItem('rules_seen')) {
+        $('#rulesModal').modal('show');
+        localStorage.setItem('rules_seen', 'true');
     }
-
-    // T&C Check
-    const termsChecked = document.getElementById('termsCheck').checked;
-    if(!termsChecked) {
-        alert('You must agree to the Terms and Conditions to proceed.');
-        return;
-    }
-
-    submitBtn.disabled = true;
-    spinner.classList.remove('d-none');
-
-    const formData = new FormData(this);
-    
-    try {
-      const res = await fetch('<?= base_url('provider/listings/store') ?>', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      });
-      const json = await res.json();
-      
-      if(json.success) {
-        alert(json.message);
-        window.location.href = '<?= base_url('provider/listings') ?>';
-      } else {
-        if (json.errors) {
-            let errorMsg = 'Please correct the following errors:\n';
-            for (let field in json.errors) {
-                errorMsg += `- ${json.errors[field]}\n`;
-            }
-            alert(errorMsg);
-        } else {
-            alert(json.message || 'Error creating listing.');
-        }
-      }
-    } catch (err) {
-      alert('Network error. Please try again.');
-    } finally {
-      submitBtn.disabled = false;
-      spinner.classList.add('d-none');
-    }
-  });
-
-})();
+});
 </script>
 <?= $this->endSection() ?>

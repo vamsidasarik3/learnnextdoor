@@ -33,16 +33,16 @@
   font-weight:800; font-size:.95rem; color:var(--cnd-dark);
   display:flex; align-items:center; gap:.5rem;
 }
-.bk-card-head i { color:var(--cnd-pink); }
+.bk-card-head i { color:var(--cnd-accent); }
 .bk-card-body { padding:1.3rem; }
 
 /* Steps */
 .bk-steps { display:flex; align-items:center; margin-bottom:1.5rem; }
 .bk-step  { display:flex; align-items:center; gap:.4rem; font-size:.8rem; font-weight:700; color:var(--cnd-muted); }
 .bk-step-dot { width:28px;height:28px;border-radius:50%;background:#e8e0ff;color:var(--cnd-grad-start);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s; }
-.bk-step.active .bk-step-dot { background:var(--cnd-pink);color:#fff; }
+.bk-step.active .bk-step-dot { background:var(--cnd-accent);color:#fff; }
 .bk-step.done   .bk-step-dot { background:#22c55e;color:#fff; }
-.bk-step.active { color:var(--cnd-pink); }
+.bk-step.active { color:var(--cnd-accent); }
 .bk-step-line   { flex:1;height:2px;background:#e8e0ff;margin:0 .4rem; }
 .bk-step.done + .bk-step-line { background:#22c55e; }
 
@@ -86,7 +86,7 @@
   background:#fff;border-radius:var(--cnd-radius-pill);font-size:.85rem;
   font-weight:600;color:var(--cnd-muted);cursor:pointer;transition:all .2s;
 }
-.bk-btn-outline:hover { border-color:var(--cnd-pink);color:var(--cnd-pink); }
+.bk-btn-outline:hover { border-color:var(--cnd-accent);color:var(--cnd-accent); }
 
 /* Aside price card */
 .bk-price-card {
@@ -99,7 +99,7 @@
 .bk-price-label { font-size:.8rem;color:var(--cnd-muted);margin-top:.15rem; }
 .bk-price-divider { height:1px;background:#eac3ff;margin:1rem 0; }
 .bk-class-meta { font-size:.83rem; color:var(--cnd-dark);display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.65rem; }
-.bk-class-meta i { color:var(--cnd-pink);font-size:.95rem;flex-shrink:0;margin-top:.1rem; }
+.bk-class-meta i { color:var(--cnd-accent);font-size:.95rem;flex-shrink:0;margin-top:.1rem; }
 .bk-early-bird { background:linear-gradient(135deg,#fff8e1,#fef3c7);border:1.5px solid #fde68a;border-radius:10px;padding:.7rem .9rem;font-size:.82rem;margin-top:.8rem; }
 
 /* Cover image */
@@ -142,7 +142,7 @@
 .batch-name { font-weight: 800; font-size: 0.95rem; color: var(--cnd-dark); margin-bottom: 0.4rem; }
 .batch-info { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; }
 .batch-stat { display: flex; align-items: center; gap: 0.35rem; color: var(--cnd-muted); }
-.batch-stat i { color: var(--cnd-pink); font-size: 0.9rem; }
+.batch-stat i { color: var(--cnd-accent); font-size: 0.9rem; }
 .batch-price-tag {
   margin-top: 0.8rem; display: flex; align-items: center; justify-content: space-between;
   padding-top: 0.6rem; border-top: 1px dashed #e8e0ff;

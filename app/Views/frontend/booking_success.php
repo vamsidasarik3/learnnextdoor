@@ -43,7 +43,7 @@
   font-weight: 800; font-size: .9rem;
   display: flex; align-items: center; gap: .5rem;
 }
-.bk-success-card-head i { color: var(--cnd-pink); }
+.bk-success-card-head i { color: var(--cnd-accent); }
 .bk-success-card-body { padding: 1.4rem; }
 .bk-detail-row {
   display: flex; justify-content: space-between; align-items: flex-start;

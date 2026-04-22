@@ -38,7 +38,7 @@
         .cert-title { font-size: 42px; font-weight: 800; color: var(--cnd-purple); text-transform: uppercase; letter-spacing: 5px; margin: 0; }
         .cert-subtitle { font-size: 18px; margin: 10px 0 30px; color: #555; letter-spacing: 2px; }
         .presented-to { font-size: 16px; font-weight: 400; font-style: italic; color: #777; margin-bottom: 10px; }
-        .student-name { font-family: 'Dancing Script', cursive; font-size: 56px; color: var(--cnd-pink); margin-bottom: 20px; border-bottom: 2px solid #eee; padding: 0 40px; }
+        .student-name { font-family: 'Dancing Script', cursive; font-size: 56px; color: var(--cnd-accent); margin-bottom: 20px; border-bottom: 2px solid #eee; padding: 0 40px; }
         .completion-text { font-size: 16px; line-height: 1.6; color: #444; max-width: 600px; }
         .course-title { font-weight: 700; color: #000; display: block; font-size: 20px; margin-top: 5px; }
         .footer { 
@@ -58,7 +58,7 @@
 
         .print-btn {
             position: fixed; top: 20px; right: 20px;
-            background: var(--cnd-pink); color: #fff; border: none;
+            background: var(--cnd-accent); color: #fff; border: none;
             padding: 12px 25px; border-radius: 30px; cursor: pointer;
             font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }

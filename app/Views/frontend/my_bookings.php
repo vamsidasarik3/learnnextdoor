@@ -29,7 +29,7 @@
 }
 .cnd-booking-title { font-weight: 800; font-size: .97rem; color: var(--cnd-dark); margin: 0; }
 .cnd-booking-title a { color: inherit; text-decoration: none; }
-.cnd-booking-title a:hover { color: var(--cnd-pink); }
+.cnd-booking-title a:hover { color: var(--cnd-accent); }
 .cnd-booking-badge {
   font-size: .7rem; font-weight: 700; padding: .25rem .7rem;
   border-radius: var(--cnd-radius-pill); text-transform: uppercase; letter-spacing: .04em;
@@ -39,11 +39,11 @@
 .cnd-booking-badge.cancelled  { background: #fee2e2; color: #dc2626; }
 .cnd-booking-card-body { padding: 1rem 1.3rem; display: flex; flex-wrap: wrap; gap: 1rem; }
 .cnd-booking-meta { font-size: .82rem; color: var(--cnd-muted); display: flex; align-items: center; gap: .4rem; }
-.cnd-booking-meta i { color: var(--cnd-pink); font-size: .95rem; }
+.cnd-booking-meta i { color: var(--cnd-accent); font-size: .95rem; }
 .cnd-booking-amount { font-size: 1.1rem; font-weight: 800; color: var(--cnd-dark); }
 .cnd-booking-amount small { font-size: .72rem; font-weight: 500; color: var(--cnd-muted); }
 .cnd-empty-bookings { text-align: center; padding: 5rem 2rem; }
-.cnd-empty-bookings i { font-size: 3.5rem; color: var(--cnd-pink); opacity: .4; }
+.cnd-empty-bookings i { font-size: 3.5rem; color: var(--cnd-accent); opacity: .4; }
 .cnd-empty-bookings h3 { font-size: 1.2rem; font-weight: 800; margin: 1rem 0 .5rem; color: var(--cnd-dark); }
 .cnd-empty-bookings p  { color: var(--cnd-muted); margin-bottom: 1.5rem; }
 </style>
@@ -253,7 +253,7 @@
                   <?php else: ?>
                     <div class="d-flex flex-column gap-1 align-items-end">
                       <span class="badge bg-success bg-opacity-10 text-success rounded-pill mb-1">Reviewed</span>
-                      <a href="<?= base_url('booking/certificate/' . (int)$bk['id']) ?>" class="btn btn-sm btn-pink rounded-pill px-3 fw-bold">
+                      <a href="<?= base_url('booking/certificate/' . (int)$bk['id']) ?>" class="btn btn-sm btn-accent rounded-pill px-3 fw-bold">
                         <i class="bi bi-file-earmark-pdf me-1"></i> Certificate
                       </a>
                     </div>
@@ -311,7 +311,7 @@
         </div>
         <div class="modal-footer border-0 pt-0">
           <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-pink rounded-pill px-4 fw-bold">Post Review</button>
+          <button type="submit" class="btn btn-accent rounded-pill px-4 fw-bold">Post Review</button>
         </div>
       </form>
     </div>

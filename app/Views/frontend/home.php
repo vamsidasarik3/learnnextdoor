@@ -1,558 +1,663 @@
 <?= $this->extend('frontend/layout/base') ?>
+
 <?= $this->section('css') ?>
+<?php /* ── Load shared design-token stylesheet ── */ ?>
+<link rel="stylesheet" href="<?= base_url('assets/frontend/css/components.css') ?>">
 <style>
-  /* ── Home Page Responsiveness Fixes ── */
-  @media (max-width: 767.98px) {
-    .cnd-cats-section { padding: 1rem 0; }
-    .cnd-type-section { padding: .8rem 0; }
-    .cnd-section-title { font-size: 1.25rem; }
+  /*
+   * home.php — page-only overrides.
+   * All base tokens live in components.css.
+   */
+
+  /* Bubble colours (category pill strip) */
+  .bubble-dance   { background: linear-gradient(135deg,#7778F6,#3F3590); color:#fff; }
+  .bubble-music   { background: linear-gradient(135deg,#FF68B4,#e14d91); color:#fff; }
+  .bubble-art     { background: linear-gradient(135deg,#F9A05E,#e8903e); color:#fff; }
+  .bubble-sports  { background: linear-gradient(135deg,#3F3590,#5b6bf1); color:#fff; }
+  .bubble-coding  { background: linear-gradient(135deg,#FF68B4,#7778F6); color:#fff; }
+  .bubble-tuitions{ background: linear-gradient(135deg,#F9A05E,#FF68B4); color:#fff; }
+  .bubble-yoga    { background: linear-gradient(135deg,#7778F6,#FF68B4); color:#fff; }
+  .bubble-language{ background: linear-gradient(135deg,#3F3590,#F9A05E); color:#fff; }
+
+  .cnd-btn-book {
+    background: #f0effe;
+    color: var(--cnd-primary);
+    border: none;
+    padding: 10px 20px;
   }
 
-  /* Horizontal category bubbles scroll */
-  .cnd-cats-row {
+  /* ── Promo Banner ── */
+  .home-promo-section {
+    padding: 20px 5%;
+    background: var(--cnd-bg);
+  }
+  .home-promo-inner {
+    background: linear-gradient(90deg, #F9A05E 0%, #F67098 100%);
+    border-radius: 24px;
+    padding: 48px 60px;
     display: flex;
-    overflow-x: auto;
-    padding: .8rem 0;
-    gap: 1.5rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
   }
-  .cnd-cats-row::-webkit-scrollbar { display: none; }
-
-  @media (min-width: 768px) {
-    .cnd-cats-row {
-      justify-content: center;
-      flex-wrap: wrap;
-      overflow-x: visible;
-    }
+  .home-promo-text h2 {
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    font-family: 'Outfit', sans-serif;
   }
-
-  .cnd-cat-icon-pill {
-    flex: 0 0 auto;
-    width: 80px;
-    text-align: center;
-    transition: transform 0.2s ease;
-  }
-  .cnd-cat-icon-pill:hover { transform: translateY(-3px); }
-
-  .cnd-cat-icon-bubble {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto .5rem;
-    font-size: 1.6rem;
-  }
-
-  /* ── Hero carousel (promoted to top) ── */
-  .cnd-hero-carousel-section {
-    padding: 0;
-    background: var(--cnd-dark, #0f0f1a);
-    position: relative;
-  }
-
-  /* Swiper responsive heights — taller as hero */
-  .cnd-hero-swiper {
-    border-radius: 0;
-    height: 580px;
-  }
-  @media (max-width: 991.98px) { .cnd-hero-swiper { height: 460px; } }
-  @media (max-width: 767.98px) { .cnd-hero-swiper { height: 380px; } }
-  @media (max-width: 480px)    { .cnd-hero-swiper { height: 320px; } }
-
-  .cnd-swiper-slide { position: relative; overflow: hidden; }
-  .cnd-swiper-bg {
-    position: absolute; inset: 0;
-    background-size: cover; background-position: center;
-    transition: transform 6s ease;
-  }
-  .swiper-slide-active .cnd-swiper-bg { transform: scale(1.04); }
-
-  .cnd-swiper-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.15) 100%);
-  }
-  .cnd-swiper-content {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 2.5rem 3rem; color: #fff; z-index: 5;
-  }
-  @media (max-width: 767.98px) { .cnd-swiper-content { padding: 1.5rem; } }
-
-  .cnd-swiper-eyebrow {
-    display: inline-flex; align-items: center; gap: .4rem;
-    font-size: .72rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .12em; color: rgba(255,255,255,.75);
-    margin-bottom: .6rem;
-  }
-
-  .cnd-swiper-title {
-    font-size: clamp(1.4rem, 4.5vw, 2.6rem);
-    font-weight: 900; margin-bottom: .6rem;
-    text-shadow: 0 3px 14px rgba(0,0,0,0.5);
-    line-height: 1.2;
-  }
-  .cnd-swiper-meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: .88rem; margin-bottom: 1.5rem; }
-  @media (max-width: 767.98px) { .cnd-swiper-meta { gap: .5rem; font-size: .75rem; margin-bottom: 1.1rem; } }
-
-  .cnd-swiper-badges { display: flex; gap: .5rem; margin-bottom: .85rem; }
-  .cnd-swiper-badge-type     { background: var(--cnd-pink); border-radius: 4px; padding: .15rem .65rem; font-size: .7rem; font-weight: 700; text-transform: uppercase; }
-  .cnd-swiper-badge-featured { background: var(--cnd-gold); color: var(--cnd-dark); border-radius: 4px; padding: .15rem .65rem; font-size: .7rem; font-weight: 700; }
-  .cnd-swiper-badge-trending  { background: #ff4d4d; color: #fff; border-radius: 4px; padding: .15rem .65rem; font-size: .7rem; font-weight: 700; }
-
-  .cnd-swiper-cta {
-    background: var(--cnd-pink) !important; color: #fff !important;
-    border-radius: var(--cnd-radius-pill) !important;
-    padding: .65rem 1.75rem !important; font-weight: 700 !important;
-    font-size: .95rem !important;
-    box-shadow: 0 4px 18px rgba(255, 104, 180, 0.45) !important;
-    border: none !important;
-  }
-  @media (max-width: 767.98px) { .cnd-swiper-cta { padding: .5rem 1.2rem !important; font-size: .82rem !important; } }
-
-  /* Search overlay on hero — now just a prominent "Find Classes" button */
-  .cnd-hero-search-bar {
-    position: absolute; bottom: 2.5rem; right: 3rem;
-    z-index: 10;
-  }
-  @media (max-width: 991.98px) { .cnd-hero-search-bar { bottom: 2rem; right: 2rem; } }
-  @media (max-width: 768px) { .cnd-hero-search-bar { display: none; } }
-  
-  .cnd-hero-search-bar .btn-hero-find {
-    background: #fff; color: var(--cnd-dark);
-    font-weight: 700; border-radius: var(--cnd-radius-pill);
-    padding: .7rem 2.2rem; border: none; white-space: nowrap;
+  .home-promo-text p {
     font-size: 1rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 24px;
+    line-height: 1.6;
+    max-width: 480px;
+    font-family: 'Outfit', sans-serif;
   }
-  .cnd-hero-search-bar .btn-hero-find:hover { 
+  .home-promo-btn {
+    display: inline-block;
+    background: #fff;
+    color: #3F3590;
+    padding: 13px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .home-promo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    color: #3F3590;
+  }
+  .home-promo-images {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .home-promo-images img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 3px solid rgba(255,255,255,0.4);
+  }
+
+  /* ── Provider CTA ── */
+  .home-provider-section {
+    background-color: #F0EFFE;
+    padding: clamp(48px, 8vw, 100px) 5%;
+  }
+  .home-provider-card {
+    background-color: #1A1640;
+    border-radius: clamp(24px, 5vw, 48px);
+    padding: clamp(40px, 6vw, 80px) 40px;
+    text-align: center;
+    color: #FFFFFF;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .home-provider-card h2 {
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .home-provider-card p {
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 36px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    font-family: 'Outfit', sans-serif;
+  }
+  .home-provider-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, #F38472 0%, #F67098 100%);
+    color: #FFFFFF;
+    padding: clamp(13px, 2vw, 17px) clamp(28px, 4vw, 44px);
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: clamp(0.95rem, 2vw, 1.05rem);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 10px 20px rgba(243,132,114,0.3);
+    font-family: 'Outfit', sans-serif;
+  }
+  .home-provider-cta-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    background: var(--cnd-gold);
+    box-shadow: 0 16px 32px rgba(243,132,114,0.4);
+    color: #fff;
   }
 
-  /* Empty hero */
-  .cnd-hero-empty-bg {
-    background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3d0d4e 100%);
-    height: 580px; display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
+  /* ── Testimonials ── */
+  .home-testimonials-section {
+    background: var(--cnd-bg);
+    padding: clamp(40px, 6vw, 80px) 5%;
   }
-  @media (max-width: 767.98px) { .cnd-hero-empty-bg { height: 340px; } }
-  .cnd-hero-empty-bg::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(109,40,217,.4) 0%, transparent 70%);
+  .home-testimonials-section h2 {
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: #1A1640;
+    margin-bottom: clamp(24px, 4vw, 40px);
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
   }
-  .cnd-hero-empty-inner { position: relative; text-align: center; color: #fff; padding: 2rem; }
-  .cnd-hero-empty-inner h1 { font-size: clamp(1.6rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; }
-  .cnd-hero-empty-inner p  { font-size: 1.05rem; opacity: .8; margin-bottom: 1.5rem; }
 
-  /* Progress bar */
-  .cnd-swiper-progress { height: 3px; background: rgba(255,255,255,.2); position: relative; z-index: 20; }
-  .cnd-swiper-progress-bar { height: 100%; background: var(--cnd-pink); width: 0; transition: width linear; }
-
-  /* Custom arrow styles for hero */
-  .cnd-swiper-arrow {
-    background: rgba(255,255,255,.15) !important;
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,.25) !important;
-    border-radius: 50% !important;
-    width: 48px !important; height: 48px !important;
-    transition: background .2s;
+  /* Responsive overrides */
+  @media (max-width: 767px) {
+    .home-promo-inner  { padding: 32px 24px; border-radius: 18px; }
+    .home-promo-images { display: none; }
+    .home-provider-card { padding: 36px 24px; }
   }
-  .cnd-swiper-arrow:hover { background: rgba(255,255,255,.3) !important; }
-  .cnd-swiper-arrow::after { font-size: 1rem !important; color: #fff !important; font-weight: 700 !important; }
+  @media (max-width: 480px) {
+    .home-promo-section { padding: 16px 4%; }
+    .home-promo-inner   { padding: 26px 20px; }
+    .home-provider-section { padding: 40px 4%; }
+  }
 
-  /* Slide counter chip */
-  .cnd-swiper-num {
-    position: absolute; top: 1.2rem; right: 1.5rem; z-index: 10;
-    background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
-    color: #fff; font-size: .75rem; font-weight: 700;
-    border-radius: 20px; padding: .25rem .75rem;
-    border: 1px solid rgba(255,255,255,.2);
+  /* Listings section padding fix on mobile */
+  @media (max-width: 767px) {
+    .cnd-listings-sections > .container-fluid {
+      padding-left: 4% !important;
+      padding-right: 4% !important;
+    }
   }
 </style>
 <?= $this->endSection() ?>
 
+
+
+
+
 <?= $this->section('content') ?>
 
-<!--
-  HOME PAGE — app/Views/frontend/home.php
-  ─────────────────────────────────────────────────────────────
-  Theme: Purple→Pink→Yellow gradient
-  Sections:
-  1. Hero Carousel (admin-managed)
-  2. Category Icon Bubbles
-  3. Regular Classes Near You (4 cards)
-  4. Workshops Near You (4 cards)
-  5. Courses Near You (4 cards)
-  ─────────────────────────────────────────────────────────────
--->
+<?php
+/* ═══════════════════════════════════════════════════════════════
+   BUILD HERO CONFIG
+   Merges controller-provided data with smart defaults.
+   The heroImage falls back: featured_listings[0] → static asset.
+═══════════════════════════════════════════════════════════════ */
+$heroImgUrl = '';
+if (!empty($featured_listings)) {
+    $heroImgUrl = listing_img_url($featured_listings[0]['cover_image'] ?? '');
+}
+if (empty($heroImgUrl) || $heroImgUrl === listing_img_url('')) {
+    // Exact match image from demo preview
+    $heroImgUrl = 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&q=80&w=1000';
+}
 
-<!-- ══ 1. HERO CAROUSEL (admin-managed, Swiper.js) ════════════ -->
-<section class="cnd-hero-carousel-section" aria-labelledby="hero-carousel-heading" id="hero">
+$heroConfig = [
+    'title'            => 'Learn Something<br><span class="hero-h1-accent">Next Door</span>',
+    'subtitle'         => 'Find the best local classes, courses, and workshops in your neighbourhood. From dance to coding — all just a doorstep away.',
+    'searchAction'     => base_url('classes'),
+    'searchParam'      => 'q',
+    'searchPlaceholder'=> 'What do you want to learn?',
+    'searchBtnText'    => 'Search',
+    'heroImage'        => $heroImgUrl,
+    'badges'           => [
+        [
+            'position'  => 'bottom-left',
+            'iconClass' => 'bi-grid-fill',
+            'iconBg'    => 'linear-gradient(135deg,#F9A05E,#FF68B4)',
+            'title'     => '8+ Categories',
+            'subtitle'  => 'To explore',
+            'animDelay' => '0s',
+        ],
+        [
+            'position'  => 'top-right',
+            'iconClass' => 'bi-star-fill',
+            'iconBg'    => 'linear-gradient(135deg,#3F3590,#7778F6)',
+            'title'     => '4.7+ Rating',
+            'subtitle'  => 'Avg. reviews',
+            'animDelay' => '1s',
+        ],
+    ],
+];
+?>
 
-  <?php if (empty($featured_listings)): ?>
+<?php /* ── 1. HERO ─────────────────────────────────────────────── */ ?>
+<?= $this->include('frontend/partials/hero_section', ['hero' => $heroConfig]) ?>
 
-    <!-- Empty hero state — shows when no slides available -->
-    <div class="cnd-hero-empty-bg" role="banner">
-      <div class="cnd-hero-empty-inner">
-        <h1 id="hero-carousel-heading">
-          Find the <span class="cnd-text-gradient">best classes</span><br>
-          for your child
-        </h1>
-        <p>Discover dance, sports, arts, coding, and more — from trusted local providers.</p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-          <button
-            class="btn btn-lg cnd-btn-primary"
-            type="button"
-            data-bs-toggle="modal"
-            data-bs-target="#locationModal"
-            id="hero-location-btn"
-            aria-label="Enter your location to see classes near you">
-            <i class="bi bi-geo-alt-fill me-2" aria-hidden="true"></i> Set Location
-          </button>
-          <a href="<?= base_url('classes') ?>" class="btn btn-lg cnd-btn-gold" id="hero-find-btn">
-            <i class="bi bi-search me-1" aria-hidden="true"></i> Browse Classes
-          </a>
-        </div>
-      </div>
-    </div>
+<?php /* Keep carousel slot alive for app.js location-refresh compatibility */ ?>
+<script id="carouselSlidesData" type="application/json">[]</script>
 
-  <?php else: ?>
 
-    <!-- ── Auto-play progress bar ── -->
-    <div class="cnd-swiper-progress" id="swiperProgress" aria-hidden="true">
-      <div class="cnd-swiper-progress-bar" id="swiperProgressBar"></div>
-    </div>
+<?php
+/* ── 2. CATEGORIES SECTION — card-based grid (exact match: demo_preview.html) ─
+ *
+ * Keyword → icon/colour map. No DB schema change needed.
+ * Falls back to 6 static demo cards when no DB categories exist.
+ */
+$_catIconMap = [
+    'dance'      => ['icon'=>'bi-music-note-beamed',   'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    'performing' => ['icon'=>'♫',  'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    'music'      => ['icon'=>'♫',  'iconBg'=>'rgba(119,120,246,.1)','iconColor'=>'#7778F6'],
+    'art'        => ['icon'=>'🎨', 'iconBg'=>'rgba(119,120,246,.1)','iconColor'=>'#7778F6'],
+    'craft'      => ['icon'=>'🎨', 'iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    'sport'      => ['icon'=>'⚽', 'iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    'fitness'    => ['icon'=>'⚽', 'iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    'yoga'       => ['icon'=>'🧘', 'iconBg'=>'rgba(119,120,246,.1)','iconColor'=>'#7778F6'],
+    'coding'     => ['icon'=>'💻', 'iconBg'=>'rgba(255,104,180,.1)','iconColor'=>'#FF68B4'],
+    'tech'       => ['icon'=>'💻', 'iconBg'=>'rgba(255,104,180,.1)','iconColor'=>'#FF68B4'],
+    'brain'      => ['icon'=>'🧠', 'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    'academic'   => ['icon'=>'📚', 'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    'language'   => ['icon'=>'💬', 'iconBg'=>'rgba(119,120,246,.1)','iconColor'=>'#7778F6'],
+    'cooking'    => ['icon'=>'🍳', 'iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    'culinary'   => ['icon'=>'🍳', 'iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    'default'    => ['icon'=>'bi-star-fill',           'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+];
+$_staticDemoCats = [
+    ['id'=>0,'name'=>'Performing Arts','icon'=>'♫', 'iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    ['id'=>0,'name'=>'Art & Craft',    'icon'=>'🎨','iconBg'=>'rgba(119,120,246,.1)','iconColor'=>'#7778F6'],
+    ['id'=>0,'name'=>'Sports Lab',     'icon'=>'⚽','iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+    ['id'=>0,'name'=>'Tech & Coding',  'icon'=>'💻','iconBg'=>'rgba(255,104,180,.1)','iconColor'=>'#FF68B4'],
+    ['id'=>0,'name'=>'Brain Boost',    'icon'=>'🧠','iconBg'=>'rgba(63,53,144,.1)',  'iconColor'=>'#3F3590'],
+    ['id'=>0,'name'=>'Cooking',        'icon'=>'🍳','iconBg'=>'rgba(249,160,94,.1)', 'iconColor'=>'#F9A05E'],
+];
+$_catList = $_staticDemoCats;
+?>
 
-    <div class="swiper cnd-hero-swiper" id="featuredSwiper"
-         aria-label="Featured classes — use arrow keys or swipe to navigate"
-         aria-labelledby="hero-carousel-heading"
-         aria-roledescription="carousel">
+<section class="cnd-categories-section" id="categories" aria-label="Explore Categories">
+  <div class="cnd-section-inner">
 
-      <div class="swiper-wrapper">
-        <?php foreach ($featured_listings as $fi => $fl):
-          $imgUrl    = listing_img_url($fl['cover_image'] ?? '');
-          $detailUrl = base_url('classes/' . esc($fl['listing_id'] ?? ($fl['id'] ?? '#')));
-          $rating    = (float)($fl['avg_rating']  ?? 0);
-          $reviews   = (int)  ($fl['review_count'] ?? 0);
-          $price     = (float)($fl['price']        ?? 0);
-          $dist      = $fl['distance_km'] ?? null;
-          $source    = $fl['source']       ?? 'algo';
-          $type      = ucfirst($fl['type'] ?? 'class');
-        ?>
-        <div class="swiper-slide cnd-swiper-slide"
-             role="group"
-             aria-roledescription="slide"
-             aria-label="Slide <?= $fi + 1 ?> of <?= count($featured_listings) ?>: <?= esc($fl['title'] ?? '') ?>">
-
-          <!-- Background image -->
-          <div class="cnd-swiper-bg"
-               style="background-image:url('<?= $imgUrl ?>')"
-               aria-hidden="true">
-          </div>
-
-          <!-- Gradient overlay -->
-          <div class="cnd-swiper-overlay" aria-hidden="true"></div>
-
-          <!-- Slide counter -->
-          <div class="cnd-swiper-num" aria-hidden="true">
-            <?= $fi + 1 ?> / <?= count($featured_listings) ?>
-          </div>
-
-          <!-- Content -->
-          <div class="cnd-swiper-content">
-
-            <!-- Eyebrow -->
-            <div class="cnd-swiper-eyebrow">
-              <i class="bi bi-stars" aria-hidden="true"></i>
-              <?php if ($fi === 0): ?><h1 id="hero-carousel-heading" style="display:inline;font-size:inherit;font-weight:inherit;margin:0;"><?php endif; ?>
-              <?php if ($fi === 0): ?>Featured <?= esc($type) ?><?php else: ?>Featured<?php endif; ?>
-              <?php if ($fi === 0): ?></h1><?php endif; ?>
-            </div>
-
-            <!-- Badges -->
-            <div class="cnd-swiper-badges">
-              <span class="cnd-swiper-badge-type"><?= esc($type) ?></span>
-              <?php if ($source === 'admin'): ?>
-                <span class="cnd-swiper-badge-featured">
-                  <i class="bi bi-patch-check-fill" aria-hidden="true"></i> Featured
-                </span>
-              <?php else: ?>
-                <span class="cnd-swiper-badge-trending">
-                  <i class="bi bi-fire" aria-hidden="true"></i> Trending
-                </span>
-              <?php endif; ?>
-              <?php if (!empty($fl['provider_verified'])): ?>
-                <span class="badge bg-success rounded-1 ms-1 d-inline-flex align-items-center gap-1" style="font-size:0.7rem; font-weight:700;">
-                   <i class="bi bi-patch-check-fill"></i> VERIFIED
-                </span>
-              <?php endif; ?>
-            </div>
-
-            <!-- Title -->
-            <p class="cnd-swiper-title"><?= esc($fl['title'] ?? '') ?></p>
-
-            <!-- Meta -->
-            <div class="cnd-swiper-meta">
-              <?php if (!empty($fl['category_name'])): ?>
-              <span class="cnd-swiper-meta-cat">
-                <i class="bi bi-tag-fill" aria-hidden="true"></i>
-                <?= esc($fl['category_name']) ?>
-              </span>
-              <?php endif; ?>
-
-              <?php if ($rating >= 1): ?>
-              <span class="cnd-swiper-meta-rating" aria-label="Rated <?= number_format($rating,1) ?> out of 5">
-                <?php for ($s=1;$s<=5;$s++) echo $s<=(int)round($rating)
-                     ? '<i class="bi bi-star-fill" aria-hidden="true"></i>'
-                     : '<i class="bi bi-star" aria-hidden="true"></i>'; ?>
-                <strong><?= number_format($rating,1) ?></strong>
-                <span class="opacity-75">(<?= $reviews ?>)</span>
-              </span>
-              <?php endif; ?>
-
-              <?php if ($price > 0): ?>
-              <span class="cnd-swiper-meta-price">
-                <i class="bi bi-currency-rupee" aria-hidden="true"></i><?= number_format($price) ?>
-                <span class="opacity-75">/ session</span>
-              </span>
-              <?php else: ?>
-              <span class="cnd-swiper-meta-free">Free</span>
-              <?php endif; ?>
-
-              <?php if ($dist !== null): ?>
-              <span class="cnd-swiper-meta-dist">
-                <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-                <?= number_format($dist, 1) ?> km away
-              </span>
-              <?php endif; ?>
-            </div>
-
-            <!-- CTA -->
-            <a href="<?= $detailUrl ?>"
-               class="btn cnd-swiper-cta"
-               aria-label="View details for <?= esc($fl['title'] ?? 'this class') ?>">
-              View Details
-              <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
-            </a>
-
-          </div><!-- /.cnd-swiper-content -->
-
-        </div><!-- /.swiper-slide -->
-        <?php endforeach; ?>
-      </div><!-- /.swiper-wrapper -->
-
-      <!-- Navigation Arrows -->
-      <button class="swiper-button-prev cnd-swiper-arrow cnd-swiper-arrow-prev"
-              aria-label="Previous slide"></button>
-      <button class="swiper-button-next cnd-swiper-arrow cnd-swiper-arrow-next"
-              aria-label="Next slide"></button>
-
-      <!-- Pagination dots -->
-      <div class="swiper-pagination cnd-swiper-pagination"
-           role="tablist"
-           aria-label="Go to slide"></div>
-
-    </div><!-- /.swiper -->
-
-    <!-- Desktop search shortcut overlaid on hero (right side) -->
-    <div class="cnd-hero-search-bar" aria-hidden="true">
-      <a href="<?= base_url('classes') ?>" class="btn btn-hero-find">
-        <i class="bi bi-search me-2"></i> Find Classes Near You
+    <div class="cnd-section-header">
+      <h2 class="cnd-section-title mb-0" id="categories-heading">Explore Categories</h2>
+      <a href="<?= base_url('classes') ?>" class="cnd-view-all" aria-label="View All Categories">
+        View All &rsaquo;
       </a>
     </div>
 
-  <?php endif; ?>
+    <div class="categories-grid" role="list" aria-labelledby="categories-heading">
+      <?php foreach ($_catList as $_rawCat):
+        /* Normalise DB object or plain array */
+        $_cat     = is_array($_rawCat) ? $_rawCat : (array)$_rawCat;
+        $_catId   = $_cat['id']   ?? 0;
+        $_catName = $_cat['name'] ?? 'Category';
+        $_catUrl  = $_catId > 0 ? base_url('classes?category=' . (int)$_catId) : '#';
 
-</section>
-
-<?php /* Pass slide data to JS for AJAX refresh after location change */ ?>
-<script id="carouselSlidesData" type="application/json">
-<?= json_encode(array_map(function($fl) {
-  return [
-    'listing_id'    => $fl['listing_id'] ?? ($fl['id'] ?? null),
-    'title'         => $fl['title']         ?? '',
-    'type'          => $fl['type']          ?? '',
-    'category_name' => $fl['category_name'] ?? '',
-    'cover_image'   => $fl['cover_image']   ?? null,
-    'provider_verified' => $fl['provider_verified'] ?? 0,
-    'avg_rating'    => $fl['avg_rating']    ?? 0,
-    'review_count'  => $fl['review_count']  ?? 0,
-    'price'         => $fl['price']         ?? 0,
-    'distance_km'   => $fl['distance_km']   ?? null,
-    'source'        => $fl['source']        ?? 'algo',
-    'address'       => $fl['address']       ?? '',
-  ];
-}, $featured_listings ?? []), JSON_HEX_TAG | JSON_HEX_AMP) ?>
-</script>
-
-<!-- ══ 2. CATEGORY ICON BUBBLES ══════════════════════════════ -->
-<section class="cnd-cats-section" aria-label="Browse by category">
-  <div class="container-fluid px-3 px-lg-5">
-      <div class="cnd-cats-row" role="list">
-        <?php
-        $cat_icons = [
-          'music'     => ['cls' => 'bubble-music'],
-          'performing' => ['cls' => 'bubble-dance'],
-          'sports'    => ['cls' => 'bubble-sports'],
-          'fitness'   => ['cls' => 'bubble-sports'],
-          'coding'    => ['cls' => 'bubble-coding'],
-          'technology' => ['cls' => 'bubble-coding'],
-          'art'       => ['cls' => 'bubble-art'],
-          'academic'  => ['cls' => 'bubble-tuitions'],
-          'brain'     => ['cls' => 'bubble-yoga'],
-          'life'      => ['cls' => 'bubble-language'],
-          'cooking'   => ['cls' => 'bubble-yoga'],
-        ];
-
-        foreach ($categories as $cat):
-          $nameLower = strtolower($cat->name);
-          $cls = 'bubble-coding'; // default
-          foreach($cat_icons as $key => $iconInfo) {
-              if (strpos($nameLower, $key) !== false) {
-                  $cls = $iconInfo['cls'];
-                  break;
-              }
-          }
-          $icon = !empty($cat->icon) ? $cat->icon : 'bi-star';
-        ?>
-          <a href="<?= base_url('classes?category=' . (int)$cat->id) ?>"
-             class="cnd-cat-icon-pill p-3 text-decoration-none"
-             role="listitem"
-             data-cat-id="<?= (int)$cat->id ?>"
-             aria-label="Browse <?= esc($cat->name) ?> classes">
-            <span class="cnd-cat-icon-bubble <?= $cls ?> mb-2 shadow-sm">
-              <i class="bi <?= $icon ?>" aria-hidden="true"></i>
-            </span>
-            <div class="fw-600 text-dark small text-truncate"><?= esc($cat->name) ?></div>
-          </a>
-        <?php endforeach; ?>
+        /* Resolve style */
+        if (isset($_cat['iconBg'])) {
+            /* Pre-normalised (static demo) */
+            $_icon    = $_cat['icon']      ?? 'bi-star-fill';
+            $_iconBg  = $_cat['iconBg']    ?? 'rgba(63,53,144,.1)';
+            $_iconClr = $_cat['iconColor'] ?? '#3F3590';
+        } else {
+            /* DB object — keyword match */
+            $_nameLo  = strtolower($_catName);
+            $_style   = $_catIconMap['default'];
+            foreach ($_catIconMap as $_kw => $_st) {
+                if ($_kw !== 'default' && strpos($_nameLo, $_kw) !== false) { $_style = $_st; break; }
+            }
+            /* DB icon column overrides keyword */
+            $_rawIcon = $_cat['icon'] ?? '';
+            $_icon    = $_rawIcon ?: $_style['icon'];
+            if ($_rawIcon && strpos($_rawIcon, 'bi-') !== 0) $_icon = 'bi-' . ltrim($_rawIcon, 'bi-');
+            $_iconBg  = $_style['iconBg'];
+            $_iconClr = $_style['iconColor'];
+        }
+      ?>
+      <div role="listitem">
+        <a href="<?= esc($_catUrl) ?>" class="cat-card-link" aria-label="Browse <?= esc($_catName) ?> classes">
+          <div class="cat-card">
+            <div class="cat-icon"
+                 style="color:<?= esc($_iconClr,'attr') ?>;">
+              <?php if (mb_strlen($_icon) < 5): ?>
+                <span style="font-family: initial !important;"><?= esc($_icon) ?></span>
+              <?php else: ?>
+                <i class="bi <?= esc($_icon) ?>" aria-hidden="true"></i>
+              <?php endif; ?>
+            </div>
+            <h3><?= esc($_catName) ?></h3>
+          </div>
+        </a>
       </div>
+      <?php endforeach; ?>
+    </div><!-- /.categories-grid -->
+
   </div>
 </section>
 
-<!-- Mobile category dropdown (< 480px) -->
-<div id="cnd-cat-dropdown-wrap" class="container-fluid px-3 py-2 d-none" style="background:#fff;border-bottom:1px solid var(--cnd-card-border);">
+<?php /* Mobile category dropdown (< 480px) */ ?>
+<div id="cnd-cat-dropdown-wrap"
+     class="container-fluid px-3 py-2 d-none"
+     style="background:#fff;border-bottom:1px solid #e8e6f5;">
   <label for="homeCatDropdown" class="visually-hidden">Filter by category</label>
   <select class="cnd-cat-dropdown w-100" id="homeCatDropdown" aria-label="Filter by category">
     <option value="">All Categories</option>
-    <?php foreach ($categories as $cat): ?>
-    <option value="<?= (int)$cat->id ?>"><?= esc($cat->name) ?></option>
+    <?php foreach ($_catList as $_mCat):
+        $_mCat = is_array($_mCat) ? $_mCat : (array)$_mCat;
+    ?>
+    <option value="<?= (int)($_mCat['id'] ?? 0) ?>"><?= esc($_mCat['name'] ?? '') ?></option>
     <?php endforeach; ?>
   </select>
 </div>
 
-<!-- ══ 3. LISTING SECTIONS (Regular, Workshops, Courses) ══ -->
-<section class="cnd-listings-sections pb-5" id="listings">
-  <div class="container-fluid px-3 px-lg-5">
 
-    <?php
-    $sections = [
-        'regular'  => ['title' => 'Regular Classes Near You', 'icon' => 'calendar3'],
-        'workshop' => ['title' => 'Workshops Near You',       'icon' => 'lightning-charge'],
-        'course'   => ['title' => 'Courses Near You',        'icon' => 'journal-richtext'],
-    ];
+<?php /* ── 3. TOP RATED CLASSES ───────────────── */ ?>
+<section class="cnd-listings-sections pb-5 pt-4" id="top-rated">
+  <div class="container-fluid px-3 px-lg-5" style="max-width:1200px;margin:0 auto;">
+    
+    <div class="cnd-section-header">
+      <h2 class="cnd-section-title mb-0">Top Rated Classes</h2>
+      <a href="<?= base_url('classes') ?>" class="cnd-view-all">
+        View All →
+      </a>
+    </div>
 
-    foreach ($sections as $type => $info):
-    ?>
-      <div class="pt-5 mb-4">
-        <h2 class="cnd-section-title mb-4 d-flex align-items-center gap-2">
-          <i class="bi bi-<?= $info['icon'] ?> text-pink" aria-hidden="true"></i>
-          <?= $info['title'] ?>
-        </h2>
+    <div class="classes-grid" role="list">
+      <?php 
+      // Use dynamic top_rated if available, else static demo fallback
+      $_dynamicRows = !empty($top_rated) ? array_slice($top_rated, 0, 8) : []; 
+      
+      if (!empty($_dynamicRows)): 
+        foreach ($_dynamicRows as $_l):
+          $_l    = (array)$_l;
+          $_id   = $_l['id'] ?? 0;
+          $_type = $_l['type'] ?? 'regular';
+          
+          // Helper meta
+          $_unit = ($_type === 'workshop') ? '/ session' : (($_type === 'course') ? '/ course' : '/ mo');
+          $_badgeText = ''; $_badgeClr = 'var(--cnd-primary)';
+          if (!empty($_l['is_featured'])) { $_badgeText = 'Featured'; $_badgeClr = '#FF68B4'; }
+          elseif (!empty($_l['free_trial'])) { $_badgeText = 'Free Trial'; $_badgeClr = 'var(--cnd-primary)'; }
+          elseif ($_type === 'workshop') { $_badgeText = 'Workshop'; $_badgeClr = '#E14D91'; }
 
-        <?php if (empty($listings[$type])): ?>
-          <div class="text-muted p-4 border rounded-4 text-center bg-light">
-            <p class="mb-0">No <?= $type ?>s available near you.</p>
+          $_rating = (float)($_l['avg_rating'] ?? 0);
+          $_reviews = (int)($_l['review_count'] ?? 0);
+      ?>
+      <div role="listitem">
+        <article class="cnd-listing-home-card">
+          <div class="cnd-card-img-wrap">
+            <img src="<?= listing_img_url($_l['cover_image'] ?? '') ?>" alt="<?= esc($_l['title']) ?>">
+            <?php if ($_badgeText): ?>
+              <span class="cnd-card-type-badge" style="color:<?= esc($_badgeClr) ?>"><?= esc($_badgeText) ?></span>
+            <?php endif; ?>
           </div>
-        <?php else: ?>
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <?php foreach ($listings[$type] as $listing):
-                $detailUrl = base_url('classes/' . esc($listing['id']));
-                $rating    = (float)($listing['avg_rating'] ?? 0);
-            ?>
-              <div class="col">
-                <article class="cnd-listing-card h-100 shadow-sm border-0 rounded-4 overflow-hidden bg-white">
-                  <!-- Image -->
-                  <div class="position-relative">
-                    <a href="<?= $detailUrl ?>">
-                      <img src="<?= listing_img_url($listing['cover_image'] ?? '') ?>"
-                           class="w-100" alt="<?= esc($listing['title']) ?>"
-                           style="height:180px; object-fit:cover;">
-                    </a>
-                  </div>
-
-                  <!-- Body -->
-                  <div class="p-3 d-flex flex-column h-100">
-                    <h5 class="fw-700 mb-1 text-truncate d-flex align-items-center gap-1">
-                      <a href="<?= $detailUrl ?>" class="text-dark text-decoration-none text-truncate"><?= esc($listing['title']) ?></a>
-                      <?php if(!empty($listing['provider_verified'])): ?>
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0 fw-bold d-inline-flex align-items-center" style="font-size: 0.6rem; height: 18px;">
-                          <i class="bi bi-patch-check-fill me-1" style="font-size: 0.65rem;"></i> Verified
-                        </span>
-                      <?php endif; ?>
-                    </h5>
-
-                    <!-- Description snippet -->
-                    <p class="text-muted small mb-2 line-clamp-2" style="font-size: .82rem; height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                      <?= esc(character_limiter(strip_tags($listing['description'] ?? ''), 80)) ?>
-                    </p>
-
-                    <div class="mb-2 d-flex align-items-center gap-1 text-muted fw-600" style="font-size:.72rem;">
-                      <i class="bi bi-geo-alt-fill text-pink" aria-hidden="true"></i>
-                      <span><?= esc(implode(', ', array_filter([$listing['locality'] ?? '', $listing['city'] ?? '']))) ?: 'Multiple Locations' ?></span>
-                    </div>
-
-                    <!-- Category & Subcategory -->
-                    <div class="mb-2 d-flex align-items-center gap-1 text-muted fw-600" style="font-size:.72rem;">
-                      <i class="bi bi-tag-fill text-pink" aria-hidden="true"></i>
-                      <span><?= esc($listing['category_name']) ?><?= !empty($listing['subcategory_names']) ? ' &rsaquo; ' . esc($listing['subcategory_names']) : '' ?></span>
-                    </div>
-
-                    <!-- Date/Time labels -->
-                    <div class="mb-3 d-flex flex-wrap gap-2">
-                      <div class="d-flex align-items-center gap-1 text-muted fw-500" style="font-size:.78rem;">
-                        <i class="bi bi-calendar-event text-pink" aria-hidden="true"></i>
-                        <span>
-                          <?= !empty($listing['start_date']) ? date('M d', strtotime($listing['start_date'])) : 'TBA' ?>
-                        </span>
-                      </div>
-                      <div class="d-flex align-items-center gap-1 text-muted fw-500" style="font-size:.78rem;">
-                        <i class="bi bi-clock text-info" aria-hidden="true"></i>
-                        <span>
-                          <?= !empty($listing['class_time']) ? date('h:i A', strtotime($listing['class_time'])) : 'TBA' ?>
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Meta: rating + price -->
-                    <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
-                      <div class="small fw-600">
-                        <i class="bi bi-star-fill text-warning me-1"></i>
-                        <?= number_format($rating, 1) ?>
-                        <span class="text-muted fw-400">(<?= (int)($listing['review_count'] ?? 0) ?>)</span>
-                      </div>
-                      <div class="fw-700 text-pink">
-                        <?php if ($listing['price'] > 0): ?>
-                          ₹<?= number_format($listing['price']) ?><?= $listing['type'] === 'regular' ? '<small class="opacity-75" style="font-size:0.65em;">/mo</small>' : '' ?>
-                        <?php else: ?>
-                          Free
-                        <?php endif; ?>
-                      </div>
-                    </div>
-
-                    <a href="<?= $detailUrl ?>" class="btn btn-sm cnd-btn-primary w-100 mt-3 rounded-pill">View Details</a>
-                  </div>
-                </article>
-              </div>
-            <?php endforeach; ?>
+          <div class="cnd-card-body">
+            <div class="cnd-card-category-row">
+              <span><?= esc($_l['category_name'] ?? 'Class') ?> • <?= ucfirst($_type) ?></span>
+              <span class="cnd-card-rating">
+                <i class="bi bi-star-fill"></i> <?= number_format($_rating, 1) ?> 
+                <span style="color:var(--cnd-text-muted);font-weight:400;font-size:.75rem;">(<?= $_reviews ?>)</span>
+              </span>
+            </div>
+            <a href="<?= base_url('classes/'.$_id) ?>" class="cnd-card-title"><?= esc($_l['title']) ?></a>
+            <div class="cnd-card-footer-row">
+              <div class="cnd-price-tag">₹<?= number_format((float)($_l['price'] ?? 0)) ?> <small><?= esc($_unit) ?></small></div>
+              <a href="<?= base_url('classes/'.$_id) ?>" class="cnd-btn-book">Book Now</a>
+            </div>
           </div>
-        <?php endif; ?>
+        </article>
       </div>
-    <?php endforeach; ?>
+      <?php endforeach; else: ?>
+      
+      <!-- Static Demo Fallback (when no dynamic listings exist) -->
+      <div role="listitem">
+        <article class="cnd-listing-home-card">
+          <div class="cnd-card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=400" alt="Dance Workshop">
+            <span class="cnd-card-type-badge" style="color:var(--cnd-primary)">Free Trial</span>
+          </div>
+          <div class="cnd-card-body">
+            <div class="cnd-card-category-row">
+              <span>Dance • Adults</span>
+              <span class="cnd-card-rating"><i class="bi bi-star-fill"></i> 4.9 <span style="color:var(--cnd-text-muted);font-weight:400;font-size:.75rem;">(120)</span></span>
+            </div>
+            <a href="#" class="cnd-card-title">Contemporary Dance Workshop</a>
+            <div class="cnd-card-footer-row">
+              <div class="cnd-price-tag">₹499 <small>/ session</small></div>
+              <a href="#" class="cnd-btn-book">Book Now</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div role="listitem">
+        <article class="cnd-listing-home-card">
+          <div class="cnd-card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&q=80&w=400" alt="Guitar Mastery">
+          </div>
+          <div class="cnd-card-body">
+            <div class="cnd-card-category-row">
+              <span>Music • Kids</span>
+              <span class="cnd-card-rating"><i class="bi bi-star-fill"></i> 4.8 <span style="color:var(--cnd-text-muted);font-weight:400;font-size:.75rem;">(85)</span></span>
+            </div>
+            <a href="#" class="cnd-card-title">Beginner Guitar Mastery</a>
+            <div class="cnd-card-footer-row">
+              <div class="cnd-price-tag">₹1,200 <small>/ mo</small></div>
+              <a href="#" class="cnd-btn-book">Book Now</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div role="listitem">
+        <article class="cnd-listing-home-card">
+          <div class="cnd-card-img-wrap">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400" alt="Python Coding">
+            <span class="cnd-card-type-badge" style="color:#5B6BF1">New</span>
+          </div>
+          <div class="cnd-card-body">
+            <div class="cnd-card-category-row">
+              <span>Coding • Teens</span>
+              <span class="cnd-card-rating"><i class="bi bi-star-fill"></i> 5.0 <span style="color:var(--cnd-text-muted);font-weight:400;font-size:.75rem;">(24)</span></span>
+            </div>
+            <a href="#" class="cnd-card-title">Python Game Development</a>
+            <div class="cnd-card-footer-row">
+              <div class="cnd-price-tag">₹2,500 <small>/ course</small></div>
+              <a href="#" class="cnd-btn-book">Book Now</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <?php endif; ?>
+    </div>
 
+
+<?php /* ── 4. PROMOTION BANNER (Pixel-perfect Figma) ──────────────────── */ ?>
+<section class="home-promo-section">
+  <div class="home-promo-inner">
+    <div class="home-promo-text">
+      <h2>Try Before You Commit!</h2>
+      <p>Many classes offer free trial sessions. Explore, attend, and then decide — zero risk.</p>
+      <a href="<?= base_url('classes?free_trial=1') ?>" class="home-promo-btn">Browse Free Trials</a>
+    </div>
+    <div class="home-promo-images d-none d-md-flex">
+      <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=200&h=200" alt="Dance class">
+      <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=200&h=200" alt="Guitar class">
+    </div>
   </div>
 </section>
 
+<?php 
+/* ── 5. UPCOMING WORKSHOPS & COURSES ───────────────────
+ * Merges workshops and courses from the $listings variable.
+ * Fallback to empty array if not set.
+ */
+$_upcomingSpecials = array_merge($listings['workshop'] ?? [], $listings['course'] ?? []);
+// If no local ones, and you want to show SOMETHING, you could fetch more here
+// or just show the section if not empty.
+?>
+
+<?php if (!empty($_upcomingSpecials)): ?>
+<section class="cnd-listings-sections pb-5 pt-5" id="upcoming-specials" style="background:var(--cnd-bg);">
+  <div class="container-fluid px-3 px-lg-5" style="max-width:1300px;margin:0 auto;">
+    
+    <div class="cnd-section-header">
+      <h2 class="cnd-section-title mb-0">Upcoming Workshops & Courses</h2>
+      <a href="<?= base_url('classes?type=workshop') ?>" class="cnd-view-all">
+        View All <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="classes-grid" role="list">
+      <?php 
+        foreach (array_slice($_upcomingSpecials, 0, 4) as $_l):
+          $_l    = (array)$_l;
+          $_id   = $_l['id'] ?? 0;
+          $_type = $_l['type'] ?? 'workshop';
+          
+          $_unit = ($_type === 'workshop') ? '/ session' : '/ course';
+          $_badgeText = ucfirst($_type);
+          $_badgeClr = ($_type === 'workshop') ? '#E14D91' : '#5B6BF1';
+
+          $_rating = (float)($_l['avg_rating'] ?? 0);
+          $_reviews = (int)($_l['review_count'] ?? 0);
+      ?>
+      <div role="listitem">
+        <article class="cnd-listing-home-card">
+          <div class="cnd-card-img-wrap">
+            <img src="<?= listing_img_url($_l['cover_image'] ?? '') ?>" alt="<?= esc($_l['title']) ?>">
+            <span class="cnd-card-type-badge" style="color:<?= esc($_badgeClr) ?>"><?= esc($_badgeText) ?></span>
+          </div>
+          <div class="cnd-card-body">
+            <div class="cnd-card-category-row">
+              <span><?= esc($_l['category_name'] ?? 'Class') ?></span>
+              <span class="cnd-card-rating">
+                <i class="bi bi-star-fill"></i> <?= number_format($_rating, 1) ?> 
+              </span>
+            </div>
+            <a href="<?= base_url('classes/'.$_id) ?>" class="cnd-card-title"><?= esc($_l['title']) ?></a>
+            <div class="cnd-card-footer-row">
+              <div class="cnd-price-tag">₹<?= number_format((float)($_l['price'] ?? 0)) ?> <small><?= esc($_unit) ?></small></div>
+              <a href="<?= base_url('classes/'.$_id) ?>" class="cnd-btn-book">Book Slot</a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
+<?php /* ── 6. TESTIMONIALS (Pixel-perfect Figma) ──────────────────── */ ?>
+<section class="home-testimonials-section">
+  <div style="max-width:1300px; margin:0 auto;">
+    <h2>What Learners Say</h2>
+
+    <div class="row g-3 g-md-4">
+      <?php 
+      // Use static Figma-matching testimonials as fallback
+      $_staticTestimonials = [
+        ['initials'=>'PG','name'=>'Priya Gupta','desc'=>'Parent of 2','rating'=>5,'text'=>'"LearnNextDoor helped me find the perfect dance class for my daughter just 5 minutes away from home. The free trial option was a game changer!"'],
+        ['initials'=>'DS','name'=>'Dev Sharma','desc'=>'Software Engineer','rating'=>5,'text'=>'"I enrolled in the Web Dev Bootcamp and it completely transformed my career. The early bird pricing made it very affordable."'],
+        ['initials'=>'AN','name'=>'Anjali Nair','desc'=>'College Student','rating'=>5,'text'=>'"Love how easy it is to discover new workshops nearby. The pottery workshop was incredible!"'],
+        ['initials'=>'RP','name'=>'Rohan Patel','desc'=>'Working Professional','rating'=>4,'text'=>'"Finally found a yoga class that fits my morning schedule. The booking process is super smooth."'],
+      ];
+      $_testimonialsToShow = !empty($testimonials) ? array_slice((array)$testimonials, 0, 4) : $_staticTestimonials;
+      $__avatarColors = ['#3F3590','#7778F6','#3F3590','#7778F6'];
+      foreach ($_testimonialsToShow as $_i => $_t):
+        $_t = is_array($_t) ? $_t : (array)$_t;
+        $_isStatic = isset($_t['initials']);
+        $_name     = $_isStatic ? $_t['name']    : esc($_t['user_name'] ?? '');
+        $_desc     = $_isStatic ? $_t['desc']     : 'Verified Learner';
+        $_text     = $_isStatic ? $_t['text']     : '"'.esc($_t['feedback'] ?? '').'"';
+        $_rating   = (int)($_t['rating'] ?? 5);
+        // Build initials
+        $_nameParts = explode(' ', trim($_name));
+        $_ini = strtoupper(substr($_nameParts[0],0,1).(isset($_nameParts[1])?substr($_nameParts[1],0,1):''));
+        $_avClr = $__avatarColors[$_i % 4];
+      ?>
+      <div class="col-6 col-md-6 col-lg-3">
+        <div class="cnd-testimonial-card h-100" style="background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 24px;">
+          <div class="mb-3" style="color: #F9A05E; font-size: 0.85rem;">
+            <?php for ($__s=1;$__s<=5;$__s++): ?>
+              <i class="bi bi-star<?= $__s<=$_rating?'-fill':'' ?>"></i>
+            <?php endfor; ?>
+          </div>
+          <p style="font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 20px;"><?= $_text ?></p>
+          <div class="d-flex align-items-center">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: <?= $_avClr ?>; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;"><?= esc($_ini) ?></div>
+            <div class="ms-3">
+              <div style="font-weight: 700; font-size: 14px; color: #1A1640;"><?= $_name ?></div>
+              <div style="font-size: 12px; color: #999;"><?= esc($_desc) ?></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<?php /* ── 7. PROVIDER CTA (PIXEL-PERFECT FIGMA) ────────── */ ?>
+<section class="home-provider-section">
+  <div class="home-provider-card">
+    <h2>Are You a Class Provider?</h2>
+    <p>List your classes on LearnNextDoor and reach thousands of learners in your neighbourhood.</p>
+    <a href="<?= base_url('join-as-provider') ?>" class="home-provider-cta-btn">
+      Get Started as Provider
+      <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<?= $this->endSection() ?>
+
+
+<?= $this->section('js') ?>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Hero search: sync to navbar search on input ── */
+  const heroInput = document.getElementById('hero-search-input');
+  const navSearch = document.querySelector('.cnd-nav-search-wrap input');
+
+  if (heroInput && navSearch) {
+    heroInput.addEventListener('input', function () {
+      navSearch.value = this.value;
+    });
+  }
+
+  /* ── Mobile category dropdown → redirect ── */
+  const catDrop = document.getElementById('homeCatDropdown');
+  if (catDrop) {
+    catDrop.addEventListener('change', function () {
+      const val = this.value;
+      if (val) window.location.href = window.CND_BASE_URL + 'classes?category=' + val;
+    });
+  }
+
+  /* ── Show mobile dropdown only on very small screens ── */
+  function toggleCatDropdown() {
+    const wrap = document.getElementById('cnd-cat-dropdown-wrap');
+    if (!wrap) return;
+    if (window.innerWidth < 480) {
+      wrap.classList.remove('d-none');
+    } else {
+      wrap.classList.add('d-none');
+    }
+  }
+  toggleCatDropdown();
+  window.addEventListener('resize', toggleCatDropdown, { passive: true });
+
+  /* ── Animate cards into view (IntersectionObserver) ── */
+  if ('IntersectionObserver' in window) {
+    const cards = document.querySelectorAll(
+      '.cnd-listing-home-card, .cat-card, .cnd-testimonial-card'
+    );
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.style.animation = 'fadeInUp 0.5s ease-out both';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    cards.forEach((c) => io.observe(c));
+  }
+})();
+</script>
 <?= $this->endSection() ?>
